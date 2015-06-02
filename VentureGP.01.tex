@@ -125,7 +125,7 @@ both, $k_3$ and $k_4$ are valid covariance function structures. This leads to an
 [ASSUME sf (gamma 1 2)]
 [ASSUME a (gamma 2 2)]
 
-$\smash{k_{LIN}(x,x^\prime) = \sigma_1^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
+$\smash{k_{LIN}(x,x^\prime) = \sigma_1^2 (x - \ell) (x^\prime - \ell)}$
 
 $\smash{k_{PER}(x,x^\prime) := \sigma_2^2 \exp(-\frac{2 \sin^2(\pi(x-x^\prime)/p}{\ell^2})}$
 
@@ -219,7 +219,21 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
 \end{figure}
 
 
-\subsection{Structure Learning}
+\subsection{Structure Learning}.
+To inspect the posterior of the structure of the covariance function we convert each kernel expression into a sum of products and subsequently simplify expressions using the following grammar:
+\begin{minipage}{\linewidth}
+
+\begin{lstlisting}[frame=single,label=alg:simplify,caption=Grammar to simplify expressions,mathescape]
+SE $\times$ SE                  $\rightarrow$ SE 
+{SE,PER,C,WN} $\times$ WN       $\rightarrow$ WN
+LIN $+$ LIN                $\rightarrow$ LIN
+{SE,PER,C,WN,LIN} $\times$ C    $\rightarrow$  {SE,PER,C,WN,LIN} 
+\end{lstlisting}
+
+\end{minipage}
+
+
+
 We defined a set of covariance structures so that we could reproduce results for covariance function structure learning as in the Automated Statistician. Our results are very similar to what has been reported by previous work (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structure}).
 \begin{figure}[p]
 
