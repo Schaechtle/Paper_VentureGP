@@ -76,14 +76,18 @@ Smaller variations can be achieved by exchanging these hyper-parameters. Below, 
 \begin{minipage}{\linewidth}
 \belowcaptionskip=-10pt
 \begin{lstlisting}[frame=single,label=alg:gpsmooth,caption=GP Smoothing,mathescape]
-[ASSUME l 1]
-[ASSUME sf 2]
+[ASSUME l  1] $\in$ {hyper-parameters} 
+[ASSUME sf 2] $\in$ {hyper-parameters}
 
 $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 
 [ASSUME f VentureFunction($k,\sigma,\ell$) ]
 [ASSUME SE make-se (apply-function f l sf) ]
 [ASSUME (make-gp 0 SE ) ]
+
+[OBSERVE GP D]
+
+[INFER  (REPEAT 100 ( DO ( MH hyper-parameters one 10 ) ) ]
 \end{lstlisting}
 \end{minipage}
 
@@ -232,7 +236,29 @@ LIN $+$ LIN                $\rightarrow$ LIN
 
 \end{minipage}
 
+For reproducing results from the Automated Statistician Project in a Bayesian fashion we first define a prior on the hypothesis space. Note that, as in the implementation of the Automated Statistician, we upper-bound the complexity of the space of covariance functions we want to explore. We also put vague priors on hyper-parameters.
 
+
+\begin{minipage}{\linewidth}
+
+\begin{lstlisting}[frame=single,label=alg:structureVent,caption=Venture Code for Bayesian GP Structure Learning,mathescape]
+[ASSUME S (array K$_1$,K$_2$,$\cdots$,K$_n$)] // (defined as above)
+[ASSUME p$_n$ (uniform_structure n)]
+[ASSUME S (array K$_1$,K$_2$,$\cdots$,K$_n$)]
+[ASSUME K$^*$ (grammar S p$_n$)]
+[ASSUME GP (make-gp 0 K$^*$ ]
+
+[OBSERVE GP D]
+
+[INFER  (REPEAT 3000 (DO 
+			(MH 10 p$_n$ one 1) 
+			(MH 10 K$^*$ one 1) 
+			(MH 10 {hyper-parameters} one 10)) ]
+
+
+\end{lstlisting}
+
+\end{minipage}
 
 We defined a set of covariance structures so that we could reproduce results for covariance function structure learning as in the Automated Statistician. Our results are very similar to what has been reported by previous work (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structure}).
 \begin{figure}[p]
