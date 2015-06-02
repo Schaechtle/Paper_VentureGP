@@ -1,0 +1,36 @@
+% This file was created by matplotlib v0.1.0.
+% Copyright (c) 2010--2014, Nico Schlömer <nico.schloemer@gmail.com>
+% All rights reserved.
+% 
+% The lastest updates can be retrieved from
+% 
+% https://github.com/nschloe/matplotlib2tikz
+% 
+% where you can also submit bug reports and leavecomments.
+% 
+\begin{tikzpicture}
+
+\definecolor{color1}{rgb}{0.917647058823529,0.917647058823529,0.949019607843137}
+\definecolor{color0}{rgb}{0.298039215686275,0.447058823529412,0.690196078431373}
+
+\begin{axis}[
+xmin=-0.5, xmax=53.5,
+ymin=0, ymax=20,
+width=4cm,
+height=4cm,
+xtick={0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53},
+xticklabels={LIN*SE + PER*SE + RQ*SE + SE,LIN + PER*SE + RQ*SE + SE,LIN + PER*SE + RQ + SE,LIN + PER*RQ*SE + SE,LIN*SE + PER*SE + RQ + SE,LIN + PER*SE + RQ,LIN + PER*SE + RQ*SE,LIN + PER + RQ + 2*SE,LIN*SE + PER*SE + RQ*SE,LIN + PER*RQ + RQ*SE + SE,PER*SE + RQ*SE,LIN*PER + PER*RQ + 2*PER*SE,LIN + 2*PER*SE + RQ,LIN*PER + PER*SE + RQ + SE,LIN*PER + RQ + 2*SE,LIN*PER + PER*SE + RQ,PER*RQ,LIN + PER*RQ*SE + PER*SE,PER*SE + RQ*SE + SE,LIN + PER*RQ + 2*SE,LIN + PER*RQ + SE,LIN + PER*RQ + 2*RQ*SE,LIN*PER + PER*RQ,PER*SE,PER*RQ*SE,LIN*PER + 2*PER*SE + RQ,PER + RQ + 2*SE,LIN*SE + PER*SE + SE,LIN*SE + PER*SE + RQ,LIN + PER + RQ + SE,LIN + PER*RQ + PER*SE + SE,LIN*PER + PER*RQ + PER*SE + SE,PER*RQ + RQ*SE,PER*RQ + 2*RQ*SE,LIN + PER*SE,LIN*PER*SE + PER*RQ*SE + SE,LIN*PER + RQ + SE,PER + RQ*SE + SE,PER*SE + SE,LIN*SE + PER + RQ*SE + SE,LIN*PER + PER*RQ + 2*SE,PER*RQ + 2*PER*SE,LIN*PER*SE + RQ,LIN + PER*RQ,LIN*SE + PER + RQ + SE,LIN + PER*RQ + PER*SE,LIN*SE + PER*RQ*SE + SE,PER*RQ + 2*SE,LIN*PER*SE + RQ + SE,LIN*SE + PER*RQ*SE,LIN*PER + 2*PER*SE,LIN + PER*RQ*SE + RQ*SE,LIN*PER + LIN*SE,PER*RQ*SE + RQ*SE},
+xmajorgrids,
+ymajorgrids
+]
+\path [draw=white, fill opacity=0] (axis cs:13,20)--(axis cs:13,20);
+
+\path [draw=white, fill opacity=0] (axis cs:53.5,13)--(axis cs:53.5,13);
+
+\path [draw=white, fill opacity=0] (axis cs:13,4.44089209850063e-16)--(axis cs:13,4.44089209850063e-16);
+
+\path [draw=white, fill opacity=0] (axis cs:-0.5,13)--(axis cs:-0.5,13);
+
+\end{axis}
+
+\end{tikzpicture}
