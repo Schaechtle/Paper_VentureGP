@@ -116,7 +116,7 @@ k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime)
 \begin{equation}
 k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime);
 \end{equation}
-both, $k_3$ and $k_4$ are valid covariance function structures. This leads to an infinite space of possible structures that could potentially explain the observed data best (e.g. Fig. \ref{fig:composition}). In the following, we will refer to covariance functions that are not composite as base covariance functions. Note that this form of composition can be easily expressed in Venture, for example if one wishes to add a linear and a periodic kernel:
+both, $k_3$ and $k_4$ are valid covariance function structures. This leads to an infinite space of possible structures that could potentially explain the observed data best (e.g. Fig. \ref{fig:composite}). In the following, we will refer to covariance functions that are not composite as base covariance functions. Note that this form of composition can be easily expressed in Venture, for example if one wishes to add a linear and a periodic kernel:
 
 \begin{minipage}{\linewidth}
 
@@ -142,9 +142,8 @@ $\smash{k_{PER}(x,x^\prime) := \sigma_2^2 \exp(-\frac{2 \sin^2(\pi(x-x^\prime)/p
 
 
 \begin{figure}[p]
-\label{fig:composition}
 \centering
-    \input{figs/composition.tikz}
+    \input{figs/composition.tikz}\label{fig:composite}
     \caption{Composition of covariance functions (blue, left) and samples from the distribution of curves they can produce (red, right).}
 \end{figure}
 
@@ -188,13 +187,45 @@ P(s \mid n) = \frac{n!}{ \mid s \mid !}
 where $P(n)$ is a prior on the number of base kernels used. It is possible to also assign a prior for the probability to sample global or local priors, however, we have assigned complete uncertainty to this with the binomial $p = 0.5$.
 
 \section{Experiments}
+
+Neal suggested the treatment of outliers as a use-case for a Bayesian treatment of Gaussian processes~\citeyearpar{neal1997monte}. He evaluates his MCMC setting using the following synthetic data problem. Let $f$ be the underlying function that generates the data:
+\begin{equation}
+f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
+\end{equation}
+We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the case and to $\sigma = 1$ in the remaining cases. Venture GPs can capture the true underlying function within only 100 MH steps (see Fig. \ref{fig:neal}). Note that Neal devices an additional noise model and performs large numbe of Hybrid-Monte Carlo and Gibbs steps.  
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_se_1a.png}
+                \caption{Prior}
+                \label{fig:NealBO}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_se_2a.png}
+                \caption{Observed}
+                \label{fig:NealAO))}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_se_3a.png}
+                \caption{Inferred}
+                \label{fig:NealAI}
+        \end{subfigure}
+        \caption{Running a Venture GP on Neal's example for MCMC showing the prior, after having observed the data and after performing inference on the hyper-parameters. Note how the GP is choosing outliers to smooth instead of essential data. }\label{fig:neal}
+\end{figure}
+
+
 \subsection{Structure Learning}
-We defined a set of covariance structures so that we could reproduce results for covariance function structure learning as in the Automated Statistician. Our results are very similar to what has been reported by previous work~\cite{duvenaud2013structure}.
+We defined a set of covariance structures so that we could reproduce results for covariance function structure learning as in the Automated Statistician. Our results are very similar to what has been reported by previous work (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structure}).
 \begin{figure}[p]
-\label{fig:composition}
+
 \centering
     \includegraphics[width=\textwidth]{figs/prelimCO2structure.png}
-    \caption{Preliminary results from the cross-validation on the CO2 data. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE. We have run a leave one out cross-validation on this data set. Above we see the preliminary results on 181 validations (of a total of 545 $\times$ 2 runs).}
+    \caption{Preliminary results from the cross-validation on the CO2 data. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE. We have run a leave one out cross-validation on this data set. Above we see the preliminary results on 181 validations (of a total of 545 $\times$ 2 runs).}\label{fig:structure}
 \end{figure}
 
 \begin{figure}
