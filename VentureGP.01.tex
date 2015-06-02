@@ -219,8 +219,8 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
 \end{figure}
 
 
-\subsection{Structure Learning}.
-To inspect the posterior of the structure of the covariance function we convert each kernel expression into a sum of products and subsequently simplify expressions using the following grammar:
+\subsection{Structure Learning}
+Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. Certain covariance functions can differ in terms of the hyper-parameterization but can be absorbed into a single covariance function with a different parameterization. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify expressions using the following grammar:
 \begin{minipage}{\linewidth}
 
 \begin{lstlisting}[frame=single,label=alg:simplify,caption=Grammar to simplify expressions,mathescape]
