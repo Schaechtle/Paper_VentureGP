@@ -10,6 +10,11 @@
 \usepackage{natbib}
 \usepackage{listings}
 \usepackage[framemethod=TikZ]{mdframed}% http://ctan.org/pkg/mdframed
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
 
 \usetikzlibrary{pgfplots.groupplots}
 %opening
@@ -192,6 +197,31 @@ We defined a set of covariance structures so that we could reproduce results for
     \caption{Preliminary results from the cross-validation on the CO2 data. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE. We have run a leave one out cross-validation on this data set. Above we see the preliminary results on 181 validations (of a total of 545 $\times$ 2 runs).}
 \end{figure}
 
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{\textwidth} \centering
+                \includegraphics[height=3cm]{figs/airline_sexper_1a.png}
+                \caption{Prior, before having seen any data.}
+                \label{fig:airlineBO}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+          
+        \begin{subfigure}[b]{\textwidth} \centering
+                \includegraphics[height=3cm]{figs/airline_sexper_2a.png}
+                \caption{After having seen any data but before inference}
+                \label{fig:AirlineA))}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+          
+        \begin{subfigure}[b]{\textwidth} \centering
+                \includegraphics[height=3cm]{figs/airline_sexper_3a.png}
+                \caption{After 1000 MH steps.}
+                \label{fig:airlineAI}
+        \end{subfigure}
+        \caption{Running a Venuter GP with covariance structure PER x SE on the airline data}\label{fig:airline}
+\end{figure}
 
 \subsection{Log-Likelihood}
 
