@@ -83,11 +83,11 @@ $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 
 [ASSUME f VentureFunction($k,\sigma,\ell$) ]
 [ASSUME SE make-se (apply-function f l sf) ]
-[ASSUME (make-gp 0 SE ) ]
+[ASSUME (make-gp 0 SE) ]
 
 [OBSERVE GP D]
 
-[INFER  (REPEAT 100 ( DO ( MH hyper-parameters one 10 ) ) ]
+[INFER  (MH {hyper-parameters} one 100) ]
 \end{lstlisting}
 \end{minipage}
 
