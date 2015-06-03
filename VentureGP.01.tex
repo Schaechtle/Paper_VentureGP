@@ -264,7 +264,7 @@ For reproducing results from the Automated Statistician Project in a Bayesian fa
 
 [OBSERVE GP D]
 
-[INFER  (REPEAT 3000 (DO 
+[INFER  (REPEAT 2000 (DO 
 			(MH 10 p$_n$ one 1) 
 			(MH 10 K$^*$ one 1) 
 			(MH 10 {hyper-parameters} one 10)) ]
@@ -274,12 +274,15 @@ For reproducing results from the Automated Statistician Project in a Bayesian fa
 
 \end{minipage}
 
-We defined a set of covariance structures so that we could reproduce results for covariance function structure learning as in the Automated Statistician. Our results are very similar to what has been reported by previous work (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structure}).
+We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. We ran a leave one out cross-validation to gain confidence on the posterior. This resulted in 545 independent runs of the Markov chain that produced a coherent posterior. Our Bayesian interpretation of GP structure and GPs produced a posterior of structures that is in line with previous results on this data set (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structureCo2}).
+
+We found the final sample of multiple runs to be most informative. This kind of Markov Chain seems to produce samples that are highly auto-correlated.
+
 \begin{figure}[p]
 
 \centering
-    \includegraphics[width=\textwidth]{figs/prelimCO2structure.png}
-    \caption{Preliminary results from the cross-validation on the CO2 data. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE. We have run a leave one out cross-validation on this data set. Above we see the preliminary results on 181 validations (of a total of 545 $\times$ 2 runs).}\label{fig:structure}
+    \includegraphics[width=\textwidth]{figs/structureCo2a.png}
+    \caption{Posterior on structure of the CO2 data. We have cut the tail of the distribution for space reasons since the number of possible structures is large. We see the final sample of the each of the 545 chains with 2000 nested steps each. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE.}\label{fig:structureCo2}
 \end{figure}
 
 \begin{figure}
