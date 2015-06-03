@@ -49,6 +49,11 @@
 Abstract
 \end{abstract}
 \section{Introduction}
+Probabilistic programming could be revolutionary for machine intelligence due to universal inference engines and the rapid prototyping for novel models~\citep{ghahramani2015probabilistic}.
+
+In the following, we will present how to do Bayesian non-parametrics in form of Gaussian Processe 
+
+
 MCMC lends itself to Bayesian interpretations of Gaussian Processes since they can provide a vehicle to express otherwise intractable integrals necessary for a fully Bayesian representation.
 
 \section{Gaussian Processes}
@@ -233,7 +238,7 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
                 \caption{Inferred}
                 \label{fig:NealAI}
         \end{subfigure}
-        \caption{Running a Venture GP on Neal's example for MCMC showing the prior, after having observed the data and after performing inference on the hyper-parameters. Note how the GP is choosing outliers to smooth instead of essential data. }\label{fig:neal}
+        \caption{Running a Venture GP on Neal's example for MCMC showing the prior, after having observed the data and after performing inference on the hyper-parameters. Note how the GP is choosing outliers to smooth instead of essential data before inference takes place. }\label{fig:neal}
 \end{figure}
 
 
@@ -330,6 +335,16 @@ We found the final sample of multiple runs to be most informative. This kind of 
 %\end{figure}
 
 \subsection{Residuals}
+
+\section{Bayesian Optimization}
+Bayesian Optimization poses the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}. Evaluating the actual function can be very expensive. For example, finding the best configuration for the learning algorithm of a large convolutional neural network implies expensive function evaluations to compare a potentially infinite number of configurations. Another common example is the example of data acquisition. For problems with large amounts of data available it may be interested to chose certain informative data-points to evaluate a model on. In continuous domains, many Bayesian Optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
+
+The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}.
+
+We consider a true and  unknown reward function $r(x)$ that we estimate with a GP prior $\mathcal{GP}(0,K(\mathbf{x},\mathbf{x}))$. We denote past observations with $\mathcal{D} = \{(x;
+
+
+
 \bibliography{May2015}
 \bibliographystyle{apalike}
 \end{document}
