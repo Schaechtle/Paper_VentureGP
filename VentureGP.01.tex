@@ -85,11 +85,25 @@ $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 [ASSUME SE make-se (apply-function f l sf) ]
 [ASSUME (make-gp 0 SE) ]
 
+[SAMPLE GP (array 1 2 3)] % Prior
+
 [OBSERVE GP D]
 
+[SAMPLE GP (array 1 2 3)] 
+
 [INFER  (MH {hyper-parameters} one 100) ]
+
+[SAMPLE GP (array 1 2 3)] % Posterior
+
 \end{lstlisting}
 \end{minipage}
+
+The first two lines depict the hyper-parameters. We tag both of them to belong to the set \{hyper-parameters\}. Every member of this set belongs to the same inference scope. This scope controls the application of the inference procedure used. In this paper, we use MH throughout. Each scope is further subdivided into blocks that allow to do block-proposals. In the following we omit the block notation for readability, since we always choose the block of a certain scope at random.
+
+The ASSUME directives describe the assumptions we make for the GP model, we assume the hyper-parameters l and sf (corresponding to $\ell,\sigma$) to be 1 and 2. The squared exponential covariance function can be defined outside the Venture code with foreign conventional programming languages, e.g. Python. In that way, the user can define custom covariance functions without being restricted to the most common ones. We then integrate the foreign function into Venture as VentureFunction. In the next line this function is associated with the hyper-parameters. Finally, we assume a Gaussian Process SP with a zero mean and the previously assumed squared exponential covariance function.
+
+
+
 
 
 In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte}. Extending the program described in listing \ref{alg:gpsmooth} for a Bayesian treatment of hyper-parameters is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution:
