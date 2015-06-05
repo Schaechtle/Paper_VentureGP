@@ -213,38 +213,7 @@ In the following, we will explore a Bayesian representation of GP. The probabili
 \label{eq:hyperProbability}
 P(\bm{\theta} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{K})P(\bm{\theta} \mid  \mathbf{K})}{P(\mathbf{D} \mid \mathbf{K})}.
 \end{equation}
-We are interested in the case where covariance structure is not given. Our probabilistic programming based MCMC framework approximates the following intractable integrals of the expectation for the prediction:
-\begin{equation}
-\mathbb{E}[y^* \mid x^*,D,\mathbf{K}^s_{\Omega}] =\iint f(x^*,\bm{\theta},\mathbf{K})\,P(\bm{\theta} \mid \mathbf{D,\mathbf{K}})\,P(\mathbf{K}|\bm{\Omega},s,n) \; \mathbf{d} \bm{\theta} \mathbf{d} \mathbf{K}.  
-\end{equation}
-This is done by sampling from the posterior probability distribution of the hyper-parameters and the possible kernel:
-\begin{equation}
-y^* \approx \frac{1}{T} \sum^T_{t=1} f(x^* | \bm{\theta}^{(t)},\mathbf{K}^{(t)}). 
-\end{equation}
 
-
-
-
-
-\section{Stochastic Processes}
-In order to provide the sampling of the kernel, we introduce a stochastic process to the SP that simulates the grammar for algebraic expressions of kernel algebra. Here, we start with a set of possible kernels and draw a random subset. For this subset of size $n$, we sample a set of possible operators that operate on the base kernels. 
-
-The marginal probability of a kernel structure which allows us to sample  is characterized by the probability of a uniformly chosen subset of the set of $n$ possible covariance functions times the probability of sampling a global or a local structure which is given by a binomial distribution: 
-
-\begin{equation}
-P(\mathbf{K} \mid \bm{\Omega},s,n) = P(\bm{\Omega} \mid s,n)\times P(s \mid n) \times P(n),
-\end{equation}
-with
-\begin{equation}
-P(\bm{\Omega} \mid s,n)= {n \choose r}  p_{+\times}^k (1 - p_{+\times})^{n-k}
-\end{equation}
-and
-\begin{equation}
-P(s \mid n) = \frac{n!}{ \mid s \mid !}
-\end{equation}
-where $P(n)$ is a prior on the number of base kernels used. It is possible to also assign a prior for the probability to sample global or local priors, however, we have assigned complete uncertainty to this with the binomial $p = 0.5$.
-
-\section{Experiments}
 
 Neal suggested the treatment of outliers as a use-case for a Bayesian treatment of Gaussian processes~\citeyearpar{neal1997monte}. He evaluates his MCMC setting using the following synthetic data problem. Let $f$ be the underlying function that generates the data:
 \begin{equation}
@@ -276,9 +245,36 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
         \caption{Running a Venture GP on Neal's example for MCMC showing the prior, after having observed the data and after performing inference on the hyper-parameters. Note how the GP is choosing outliers to smooth instead of essential data before inference takes place. }\label{fig:neal}
 \end{figure}
 
-
 \subsection{Structure Learning}
-\
+
+The case where the covariance structure is not given is even more interesting. Our probabilistic programming based MCMC framework approximates the following intractable integrals of the expectation for the prediction:
+\begin{equation}
+\mathbb{E}[y^* \mid x^*,D,\mathbf{K}^s_{\Omega}] =\iint f(x^*,\bm{\theta},\mathbf{K})\,P(\bm{\theta} \mid \mathbf{D,\mathbf{K}})\,P(\mathbf{K}|\bm{\Omega},s,n) \; \mathbf{d} \bm{\theta} \mathbf{d} \mathbf{K}.  
+\end{equation}
+This is done by sampling from the posterior probability distribution of the hyper-parameters and the possible kernel:
+\begin{equation}
+y^* \approx \frac{1}{T} \sum^T_{t=1} f(x^* | \bm{\theta}^{(t)},\mathbf{K}^{(t)}). 
+\end{equation}
+
+
+In order to provide the sampling of the kernel, we introduce a stochastic process to the SP that simulates the grammar for algebraic expressions of kernel algebra. Here, we start with a set of possible kernels and draw a random subset. For this subset of size $n$, we sample a set of possible operators that operate on the base kernels. 
+
+The marginal probability of a kernel structure which allows us to sample  is characterized by the probability of a uniformly chosen subset of the set of $n$ possible covariance functions times the probability of sampling a global or a local structure which is given by a binomial distribution: 
+
+\begin{equation}
+P(\mathbf{K} \mid \bm{\Omega},s,n) = P(\bm{\Omega} \mid s,n)\times P(s \mid n) \times P(n),
+\end{equation}
+with
+\begin{equation}
+P(\bm{\Omega} \mid s,n)= {n \choose r}  p_{+\times}^k (1 - p_{+\times})^{n-k}
+\end{equation}
+and
+\begin{equation}
+P(s \mid n) = \frac{n!}{ \mid s \mid !}
+\end{equation}
+where $P(n)$ is a prior on the number of base kernels used. It is possible to also assign a prior for the probability to sample global or local priors, however, we have assigned complete uncertainty to this with the binomial $p = 0.5$.
+
+
 
 Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. Certain covariance functions can differ in terms of the hyper-parameterization but can be absorbed into a single covariance function with a different parameterization. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify expressions using the following grammar:
 \begin{minipage}{\linewidth}
@@ -316,16 +312,8 @@ For reproducing results from the Automated Statistician Project in a Bayesian fa
 
 \end{minipage}
 
-We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. We ran a leave one out cross-validation to gain confidence on the posterior. This resulted in 545 independent runs of the Markov chain that produced a coherent posterior. Our Bayesian interpretation of GP structure and GPs produced a posterior of structures that is in line with previous results on this data set (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structureCo2}).
+We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set. We will elaborate the result using a sample from the posterior (Fig. \ref{fig:tutorial}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels.
 
-We found the final sample of multiple runs to be most informative. This kind of Markov Chain seems to produce samples that are highly auto-correlated.
-
-\begin{figure}[p]
-
-\centering
-    \includegraphics[width=\textwidth]{figs/structureCo2a.png}
-    \caption{Posterior on structure of the CO2 data. We have cut the tail of the distribution for space reasons since the number of possible structures is large. We see the final sample of the each of the 545 chains with 2000 nested steps each. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE.}\label{fig:structureCo2}
-\end{figure}
 
 \begin{figure}
         \centering
@@ -349,32 +337,27 @@ We found the final sample of multiple runs to be most informative. This kind of 
         \put(-395,165){SE {\Large $\times$ \bigg(}} 
         \put(-5,165){\Large \bigg)} 
         \put(-185,165){\Large $+$} 
+        \put(-230,146){\vector(0,-1){10}}
+        \put(-20,146){\line(0,-1){78}}
+        \put(-20,68){\vector(-1,0){150}}
         \put(-251,130){\rotatebox{270}{\Large $\Bigg\{$}} 
         \put(-235,95){\Large $\times$} 
         \put(-191,67){\rotatebox{270}{\Large $\Bigg\{$}} 
         \put(-175,33){\Large $\times$} 
-        \caption{a) We see the predictive posterior as an result 1000 MH steps on the airline data set. b) depicts a decomposition of this posterior for the structures sampled by Venture. RQ is the rational quadratic covariance function. Note that although the overall result is in line with what \citet*{duvenaud2013structure} report a slightly different composition is implied by the sampled parameters for the structure. The first line shows the global trend and denotes the rest of the structure that is shown above. In the second line, the see the periodic component on the right hand side. The left hand side denotes short term deviations both multiplied by a smoothing kernel. The third and fourth lines denote how we reach the second line: both periodic and rational quadratic covariance functions are multiplied by a line with slope zero.}
+        \caption{a) We see the predictive posterior as an result 1000 nested MH steps on the airline data set. b) depicts a decomposition of this posterior for the structures sampled by Venture. RQ is the rational quadratic covariance function. Note that although the overall result is in line with what \citet*{duvenaud2013structure} report a slightly different composition is implied by the sampled parameters for the structure. The first line shows the global trend and denotes the rest of the structure that is shown above. In the second line, the see the periodic component on the right hand side. The left hand side denotes short term deviations both multiplied by a smoothing kernel. The third and fourth lines denote how we reach the second line: both periodic and rational quadratic covariance functions are multiplied by a line with slope zero.}\label{fig:tutorial}
 \end{figure}
 
-\subsection{Log-Likelihood}
 
-%\begin{tcolorbox}
-%       ripl.assume('l',"(tag (quote parameter) 0 (log (uniformcontinuous 0.01 8 )))")
-%        ripl.assume('p',"(tag (quote parameter) 1 (log (uniform_continuous 0.1 8 )))")
-%        ripl.assume('sf',"(tag (quote parameter) 2 (log (uniform_continuous 0.01 8 )))")
-%        ripl.assume('gp',"""(tag (quote model) 0
-                       %         (make_gp_part_der zero
-                        %            (apply_function make_per l p sf )))""")
+We further investigated the quality of our stochastic processes by running a leave one out cross-validation to gain confidence on the posterior. This resulted in 545 independent runs of the Markov chain that produced a coherent posterior: our Bayesian interpretation of GP structure and GPs produced a posterior of structures that is in line with previous results on this data set (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structureCo2}).
 
-%\end{tcolorbox}
-%\begin{figure}[p]
-%\centering
-%    \input{figs/underlyingFunctions.tikz}
-%    \caption{We show how the log-Likelihood evolves over an MCMC chain for different test problems. We see how the correct %structures scores highest for each test problems while requiring few datapoint.}
+We found the final sample of multiple runs to be most informative. This kind of Markov Chain seems to produce samples that are highly auto-correlated.
 
-%\end{figure}
+\begin{figure}[p]
 
-\subsection{Residuals}
+\centering
+    \includegraphics[width=\textwidth]{figs/structureCo2a.png}
+    \caption{Posterior on structure of the CO2 data. We have cut the tail of the distribution for space reasons since the number of possible structures is large. We see the final sample of the each of the 545 chains with 2000 nested steps each. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE.}\label{fig:structureCo2}
+\end{figure}
 
 \section{Bayesian Optimization}
 Bayesian Optimization poses the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}. Evaluating the actual function can be very expensive. For example, finding the best configuration for the learning algorithm of a large convolutional neural network implies expensive function evaluations to compare a potentially infinite number of configurations. Another common example is the example of data acquisition. For problems with large amounts of data available it may be interested to chose certain informative data-points to evaluate a model on. In continuous domains, many Bayesian Optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
