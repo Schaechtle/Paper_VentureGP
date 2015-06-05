@@ -62,12 +62,8 @@ We evaluate the performance of the programs with synthetic and real world data.
 Probabilistic programming could be revolutionary for machine intelligence due to universal inference engines and the rapid prototyping for novel models~\citep{ghahramani2015probabilistic}. This levitates the design and testing of new models as well as the incorporation of complex prior knowledge which currently is a difficult and time consuming task. Probabilistic programming languages aim to provide a formal language to specify probabilistic models in the style of computer programming and can represent any computable probability distribution as a program. In this work, we will introduce new features of Venture, a recently developed probabilistic programming language. We consider Venture the most compelling of the probabilistic programming languages because it is the first probabilistic programming language suitable for general purpose use~\citep{mansinghka2014venture}. Venture comes with scalable performance on hard problems and with a general purpose inference engine. The inference engine is based on Markov Chain Monte Carlo (MCMC) methods (for an introduction, see \citet*{andrieu2003introduction}). MCMC lends itself to models with complex structures such as probabilistic programs or hierarchical Bayesian non-parametric models since they can provide a vehicle to express otherwise intractable integrals necessary for a fully Bayesian representation. MCMC is scalable, often distributable and also compositional. That is, one can arbitrarily chain MCMC kernels to infer over several hierarchically connected or nested models as they will emerge in probabilistic programming.
 
 One very powerful model yet unseen in probabilistic programming languages are Gaussian Processes (GPs). GPs are gaining increasing attention for representing unknown functions by posterior probability distributions in various fields such as machine learning, signal processing, computer vision and bio-medical data analysis. Making GPs available in probabilistic programming is crucial to allow a language to solve a wide range of problems. GPs have been part of a recent system for inductive learning of symbolic expressions called the Automated Statistician~\cite{duvenaud2013structure,lloyd2014automatic}. Learning such expressions is a hard problem that requires careful design of approximation techniques since standard inference method do not apply. 
-In the following, we will present GPs as a novel feature for probabilistic programming languages that solves such problems. Our contribution is threefold:
-\begin{itemize}
- \item we introduce a new stochastic process for GPs in a probabilistic programming language;
- \item we show how one can solve hard problems of state-of-the-art machine learning with only a few lines of Venture code; and
- \item we introduce an additional stochastic process that samples from a probabilistic context free grammar for GP covariance structure generation.
-\end{itemize}
+In the following, we will present GPs as a novel feature for probabilistic programming languages that solves such problems. Our contribution is threefold: (i) we introduce a new stochastic process for GPs in a probabilistic programming language; (ii) we show how one can solve hard problems  of state-of-the-art machine learning related to GP with only a few lines of Venture code; and (iii) we introduce an additional stochastic process that samples from a probabilistic context free grammar for GP covariance structure generation.
+
 We evaluate the contribution on hard problems posed by the GP community using real world and synthetic data by assessing quality in terms of posterior distributions of symbolic outcome and in terms of the residuals produced by the model. 
 The paper is structured as follows, we will first provide some background on probabilistic programming in Venture and GPs. We will then elaborate on our new stochastic processes. Finally, we will show how we can apply those on problems of hyper-parameter inference, structure discovery for Gaussian Processes and Bayesian Optimization including experiments with real world and synthetic data.
 \section{Background}
@@ -125,13 +121,13 @@ k(x,x^\prime) = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})
 where $\sigma$ and $\ell$ are hyper-parameters. $\sigma$ is a scaling factor and $\ell$ is the typical length-scale.
 Smaller variations can be achieved by adapting these hyper-parameters. 
 \section{Venture GPs}
-Given a stochastic process that implements the GP algebra above we can implement a GP sampler (\ref{eq:gpsampler}) to perform GP inference in a few lines of code. We can express simple GP smoothing with fixed hyper-parameters and perform MH on it while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
+Given a stochastic process that implements the GP algebra above we can implement a GP sampler (\ref{eq:gpsampler}) to perform GP inference in a few lines of code. We can express simple GP smoothing with fixed hyper-parameters or a prior on hyper-parameters and perform MH on it while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
 \begin{minipage}{\linewidth}
 \footnotesize
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,label=alg:gpsmooth,caption=GP Smoothing,mathescape]
-[ASSUME l  1] $\in$ {hyper-parameters} 
-[ASSUME sf 2] $\in$ {hyper-parameters}
+\begin{lstlisting}[frame=single,label=alg:gpNeal,caption=Bayesian GP Smoothing,mathescape]
+[ASSUME l  (gamma 1 3)] $\in$ {hyper-parameters} 
+[ASSUME sf (gamma 1 3)] $\in$ {hyper-parameters}
 
 $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 
@@ -145,7 +141,7 @@ $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 [INFER  (MH {hyper-parameters} one 100) ]
 [SAMPLE GP (array 1 2 3)] % Posterior
 
-\end{lstlisting}
+\end{lstlisting}\label{alg:gpsmooth}
 \end{minipage}
 
 The first two lines depict the hyper-parameters. We tag both of them to belong to the set \{hyper-parameters\}. Every member of this set belongs to the same inference scope. This scope controls the application of the inference procedure used. In this paper, we use MH throughout. Each scope is further subdivided into blocks that allow to do block-proposals. In the following we omit the block notation for readability, since we always choose the block of a certain scope at random.
@@ -161,22 +157,48 @@ In the case where hyper-parameters are unknown they can be found deterministical
 \ell^{(t)} \sim \Gamma(\alpha_1,\beta_1),\;\sigma^{(t)} \sim \Gamma(\alpha_2,\beta_2)
 \end{equation}
 
-Extending the program described in listing \ref{alg:gpsmooth} to draw the hyper-parameters for a Bayesian treatment of hyper-parameters is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution:
+We have already implemented this in listing 1. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
+The program gives rise to a Bayesian representation of GPs, which we will explore in the following.
 
-\begin{minipage}{\linewidth}
-\scriptsize
-\begin{lstlisting}[frame=single,label=alg:gpNeal,caption=Bayesian GP Smoothing,mathescape]
-[ASSUME l (gamma 1 3)]
-[ASSUME sf (gamma 1 2)]
+\subsection{A Bayesian interpretation}
+The probability of the hyper-parameters of a GP with assumptions as above and given covariance function structure $\mathbf{K}$ can be described as:
+\begin{equation}
+\label{eq:hyperProbability}
+P(\bm{\theta} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{K})P(\bm{\theta} \mid  \mathbf{K})}{P(\mathbf{D} \mid \mathbf{K})}.
+\end{equation}
 
-$\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 
-[ASSUME f VentureFunction($k,\sigma,\ell$) ]
-[ASSUME SE make-se (apply-function f l sf) ]
-[ASSUME (make-gp 0 SE ) ]
-\end{lstlisting}
-\end{minipage}
+Neal suggested the treatment of outliers as a use-case for a Bayesian treatment of Gaussian processes~\citeyearpar{neal1997monte}. He evaluates his MCMC setting using the following synthetic data problem. Let $f$ be the underlying function that generates the data:
+\begin{equation}
+f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
+\end{equation}
+We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. Venture GPs can capture the true underlying function within only 100 MH steps on the hyper-parameters to get a good approximation for their posterior (see Fig. \ref{fig:neal}). Note that Neal devices an additional noise model and performs large number of Hybrid-Monte Carlo and Gibbs steps.  
 
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.3\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_se_1a.png}
+                \caption{Prior}
+                \label{fig:NealBO}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_se_2a.png}
+                \caption{Observed}
+                \label{fig:NealAO))}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.3\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_se_3a.png}
+                \caption{Inferred}
+                \label{fig:NealAI}
+        \end{subfigure}
+        \caption{Running a Venture GP on Neal's example for MCMC showing the prior, after having observed the data and after performing inference on the hyper-parameters. Note how the GP is choosing outliers to smooth instead of essential data before inference takes place. }\label{fig:neal}
+\end{figure}
+
+\subsection{Structure Learning}
 
 Larger variations are achieved by changing the type of the covariance function structure. 
 %A different type could be a linear covariance function:
@@ -227,47 +249,6 @@ $\smash{k_{PER}(x,x^\prime) := \sigma_2^2 \exp(-\frac{2 \sin^2(\pi(x-x^\prime)/p
 \end{figure}
 
 Knowledge about the composite nature of covariance functions is not new, however, until recently, the choice and the composition of covariance functions were done ad-hoc. The Automated Statistician Project came up with an approximate search over the possible space of kernel structures~\citep{duvenaud2013structure,lloyd2014automatic}. However, a fully Bayesian treatment of this was not done before.
-
-\subsection{A Bayesian interpretation}
-In the following, we will explore a Bayesian representation of GP. The probability of the hyper-parameters of a GP with assumptions as above and given covariance function structure $\mathbf{K}$ can be described as:
-\begin{equation}
-\label{eq:hyperProbability}
-P(\bm{\theta} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{K})P(\bm{\theta} \mid  \mathbf{K})}{P(\mathbf{D} \mid \mathbf{K})}.
-\end{equation}
-
-
-Neal suggested the treatment of outliers as a use-case for a Bayesian treatment of Gaussian processes~\citeyearpar{neal1997monte}. He evaluates his MCMC setting using the following synthetic data problem. Let $f$ be the underlying function that generates the data:
-\begin{equation}
-f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
-\end{equation}
-We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. Venture GPs can capture the true underlying function within only 100 MH steps (see Fig. \ref{fig:neal}). Note that Neal devices an additional noise model and performs large number of Hybrid-Monte Carlo and Gibbs steps.  
-
-\begin{figure}
-        \centering
-        \begin{subfigure}[b]{0.3\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/neal_se_1a.png}
-                \caption{Prior}
-                \label{fig:NealBO}
-        \end{subfigure}%
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.3\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/neal_se_2a.png}
-                \caption{Observed}
-                \label{fig:NealAO))}
-        \end{subfigure}
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.3\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/neal_se_3a.png}
-                \caption{Inferred}
-                \label{fig:NealAI}
-        \end{subfigure}
-        \caption{Running a Venture GP on Neal's example for MCMC showing the prior, after having observed the data and after performing inference on the hyper-parameters. Note how the GP is choosing outliers to smooth instead of essential data before inference takes place. }\label{fig:neal}
-\end{figure}
-
-\subsection{Structure Learning}
-
 The case where the covariance structure is not given is even more interesting. Our probabilistic programming based MCMC framework approximates the following intractable integrals of the expectation for the prediction:
 \begin{equation}
 \mathbb{E}[y^* \mid x^*,D,\mathbf{K}^s_{\Omega}] =\iint f(x^*,\bm{\theta},\mathbf{K})\,P(\bm{\theta} \mid \mathbf{D,\mathbf{K}})\,P(\mathbf{K}|\bm{\Omega},s,n) \; \mathbf{d} \bm{\theta} \mathbf{d} \mathbf{K}.  
