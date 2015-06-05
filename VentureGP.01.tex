@@ -14,7 +14,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 
-
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
 
 \usetikzlibrary{pgfplots.groupplots}
 %opening
@@ -46,18 +46,47 @@
 \maketitle
 
 \begin{abstract}
-Abstract
+We introduce Venture GPs, a way to formulate Gaussian Processes with probabilistic programming. Gaussian Processes are flexible non-parametric models that can be applied to a broad class of problems.
+We represent Gaussian Processes in Venture, a Turing complete probabilistic programming language. Venture provides a compositional language with a generalized inference engine that builds on a stochastic procedure interface. This stochastic procedure interface specifies and encapsulates primitive random variables analogously conditional probability tables in Bayesian Networks. The programming language is extended with a set of stochastic processes that allow a user to formulate Gaussian Process models and to perform numerically stable inference over them while hiding the linear algebra needed for this inside the language. We show how we can extend the non-parametric model to incorporate hierarchical causal priors on model structure and hyper-parameters with only a few lines of code. We also show state-of-the-art applications of Gaussian Processes in this framework, namely structure discovery of high-level properties of Gaussian Processes, Bayesian Optimization and hyper-parameter inference. 
+We evaluate the performance of the programs with synthetic and real world data. 
 \end{abstract}
 \section{Introduction}
-Probabilistic programming could be revolutionary for machine intelligence due to universal inference engines and the rapid prototyping for novel models~\citep{ghahramani2015probabilistic}.
+Probabilistic programming could be revolutionary for machine intelligence due to universal inference engines and the rapid prototyping for novel models~\citep{ghahramani2015probabilistic}. Probabilistic programming languages aim to provide a formal language to specify probabilistic models in the style of computer programming and can represent any computable probability distribution as a program. In this work, we will introduce new features of Venture, a recently developed probabilistic programming language and the first probabilistic programming language suitable for general purpose use~\citep{mansinghka2014venture}. Venture comes with scalable performance on hard problems and with a general purpose inference engine. The inference engine is based on Markov Chain Monte Carlo (MCMC) methods (for an introduction, see \citet*{andrieu2003introduction}). MCMC lends itself models with complex structures such as probabilistic programs or hierarchical Bayesian non-parametric models since they can provide a vehicle to express otherwise intractable integrals necessary for a fully Bayesian representation. MCMC is scalable, often distributable and also compositional. That is, one can arbitrarily chain MCMC kernels to infer over several hierarchically connected or nested models as they will emerge in probabilistic programming.
 
-In the following, we will present how to do Bayesian non-parametrics in form of Gaussian Processe 
+One very powerful model yet unseen in probabilistic programming languages are Gaussian Processes (GPs). GPs are gaining increasing attention for representing unknown functions by posterior probability distributions in various fields such as machine learning, signal processing, computer vision and bio-medical data analysis. In the following, we will present Gaussian Processes as a novel feature for probabilistic programming languages. Our contribution is threefold:
+\begin{itemize}
+ \item we introduce a new stochastic process for GPs in a probabilistic programming language;
+ \item we show how one can solve hard problems of state-of-the-art machine learning with only a few lines of Venture code; and
+ \item we introduce an additional stochastic process that samples from a probabilistic context free grammar for GP covariance structure generation.
+\end{itemize}
+
+The paper is structured as follows, we will first provide some background on probabilistic programming in Venture and GPs. We will then elaborate on our new stochastic processes. Finally, we will show how we can apply those on problems of hyper-parameter inference, structure discovery for Gaussian Processes and Bayesian Optimization including experiments with real world and synthetic data.
+\section{Background}
+\subsection{Venture}
+Venture is a compositional language for custom inference strategies that comes with a Scheme- and Java-Script-like front-end syntax. It's implementation is based on on three concepts:
+\begin{enumerate}
+ \item stochastic procedure interfaces that specify and encapsulate random variables, analogously to conditional probability tables in a Bayesian network;
+ \item probabilistic execution traces that represent execution histories and capture conditional dependencies; and
+ \item scaffolds that partition execution histories and factor global inference problems into sub-problems.
+\end{enumerate}
+These building blocks provide a powerful way to represent probability distributions; some of which cannot be expressed with density functions. For the purpose of this work the most important Venture directives that operate on these building blocks to understand to are ASSUME, OBSERVE, SAMPLE and INFER. ASSUME induces a hypothesis space for (probabilistic) models including random variables by binding the result of an expression to a symbol. SAMPLE simulates a model expression and returns a value. OBSERVE adds constraints to model expressions. INFER instructions incorporate observations and cause Venture to find a hypothesis that is probable given the data. 
+
+INFER is most commonly done by deploying the Metropolis-Hastings algorithm (MH)~\citep{metropolis1953equation}.  Many algorithms used in the MCMC world can be interpreted as special cases of MH~\citep{andrieu2003introduction}. We can outline the MH algorithm as follows. For $T$ steps we sample $x^*$ from a proposal distribution $q$:
+\begin{equation}
+ x^* \sim q(x^* \mid x^{(t)})
+\end{equation}
+which we accept ($x^{t+1} \leftarrow x ^*$) with ratio:
+\begin{equation}
+\alpha = min \bigg\{1,\frac{p(x^*) q(x^{t}\mid x^*)}{p(x^{(t)}) q(x^* \mid x^{t})} \bigg\}  
+\end{equation}
+Venture implements an MH transition operator for probabilistic execution traces.
 
 
-MCMC lends itself to Bayesian interpretations of Gaussian Processes since they can provide a vehicle to express otherwise intractable integrals necessary for a fully Bayesian representation.
 
-\section{Gaussian Processes}
-In the following, we will introduce GP related theory and notations. We will exclusively work on two variable regression problems. Let the data be real-valued scalars  $\{x_i,y_i\}_{i=1}^n$ (complete data will be denoted by column vectors $\mathbf{x}$, $\mathbf{y}$). GPs present a non-parametric way to express prior knowledge on the space of possible functions  $f$ that we assume to have generated the data.  $f$ is assumed latent and the GP prior is given by a multivariate Gaussian with mean and covariance $f(\mathbf{x})\sim \mathcal{GP}(m(\mathbf{x}),k(\mathbf{x},\mathbf{x}'))$, where $m(\mathbf{x})$ is a function of the mean of all functions that map to $y_i$ at $x_i$ and $k(\mathbf{x},\mathbf{x}')$ is a kernel or covariance function that summarizes the covariance of all functions that map to $y_i$ at $x_i$. We can absorb the mean function into the covariance function so without loss of generality we can set the mean to zero. The marginal likelihood can be expressed as:
+
+
+\subsection{Gaussian Processes}
+In the following, we will introduce GP related theory and notations. We will exclusively work on two variable regression problems. Let the data be real-valued scalars  $\{x_i,y_i\}_{i=1}^n$ (complete data will be denoted by column vectors $\mathbf{x}$, $\mathbf{y}$). GPs present a non-parametric way to express prior knowledge on the space of possible functions  $f$ that we assume to have generated the data.  $f$ is assumed latent and the GP prior is given by a multivariate Gaussian $f(\mathbf{x})\sim \mathcal{GP}(m(\mathbf{x}),k(x_i,x_i'))$, where $m(\mathbf{x})$ is a function of the mean of all functions that map to $y_i$ at $x_i$ and $k(x_i,x_i')$ is a kernel or covariance function that summarizes the covariance of all functions that map to $y_i$ at $x_i$. We can absorb the mean function into the covariance function so without loss of generality we can set the mean to zero. The marginal likelihood can be expressed as:
 \begin{equation}
 \label{eq:marg}
 p(\mathbf{y}|\mathbf{x}) = \int p(\mathbf{y}|\mathbf{f,x})\, p(\mathbf{f}|\mathbf{x}) \, d\mathbf{f} 
@@ -72,12 +101,18 @@ and covariance
 \label{eq:conditonalGaussianCovariance}
 \bm{\Sigma} =  \mathbf{K}(\mathbf{x},\mathbf{x}) + \mathbf{K}(\mathbf{x},\mathbf{x}^*)\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1} \mathbf{K}(\mathbf{x}^*,\mathbf{x}).
 \end{equation}
-where $\mathbf{K}$ is a covariance function. The covariance function covers general high-level properties of the observed data such as linearity, periodicity and smoothness. The most widely used type of covariance function is the squared exponential covariance function:
+where $\mathbf{K}$ is a covariance function. We can compute both the log-likelihood and and the predictive posterior in a Venture SP efficiently by resorting to an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} resulting in a computational complexity of $\mathcal{O}(n^3)$ in the number of data-points.
+
+
+
+The covariance function covers general high-level properties of the observed data such as linearity, periodicity and smoothness. The most widely used type of covariance function is the squared exponential covariance function:
 \begin{equation}
 k(x,x^\prime) = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})
 \end{equation}
 where $\sigma$ and $\ell$ are hyper-parameters. $\sigma$ is a scaling factor and $\ell$ is the typical length-scale.
-Smaller variations can be achieved by exchanging these hyper-parameters. Below, we see how we can express simple GP smoothing with a few lines of Venture code while allowing users to custom design covariance functions. 
+Smaller variations can be achieved by adapting these hyper-parameters. 
+\section{Venture GPs}
+Below, we see how we can express simple GP smoothing with a few lines of Venture code while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
 \begin{minipage}{\linewidth}
 \belowcaptionskip=-10pt
 \begin{lstlisting}[frame=single,label=alg:gpsmooth,caption=GP Smoothing,mathescape]
@@ -166,11 +201,11 @@ $\smash{k_{PER}(x,x^\prime) := \sigma_2^2 \exp(-\frac{2 \sin^2(\pi(x-x^\prime)/p
 
 \begin{figure}[p]
 \centering
-    \input{figs/composition.tikz}\label{fig:composite}
-    \caption{Composition of covariance functions (blue, left) and samples from the distribution of curves they can produce (red, right).}
+    \input{figs/composition.tikz}
+    \caption{Composition of covariance functions (blue, left) and samples from the distribution of curves they can produce (red, right).}\label{fig:composite}
 \end{figure}
 
-Knowledge about the composite nature of covariance functions is not new, however, until recently, the choice and the composition of covariance functions were done ad-hoc. The Automated Statistician Project came up with an approximate search over the possible space of kernel structures~\citep{duvenaud2013structure,lloyd2014automatic}. 
+Knowledge about the composite nature of covariance functions is not new, however, until recently, the choice and the composition of covariance functions were done ad-hoc. The Automated Statistician Project came up with an approximate search over the possible space of kernel structures~\citep{duvenaud2013structure,lloyd2014automatic}. However, a fully Bayesian treatment of this was not done before.
 
 \subsection{A Bayesian interpretation}
 In the following, we will explore a Bayesian representation of GP. The probability of the hyper-parameters of a GP with assumptions as above and given covariance function structure $\mathbf{K}$ can be described as:
@@ -243,6 +278,8 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
 
 
 \subsection{Structure Learning}
+\
+
 Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. Certain covariance functions can differ in terms of the hyper-parameterization but can be absorbed into a single covariance function with a different parameterization. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify expressions using the following grammar:
 \begin{minipage}{\linewidth}
 
@@ -293,27 +330,30 @@ We found the final sample of multiple runs to be most informative. This kind of 
 \begin{figure}
         \centering
         \begin{subfigure}[b]{\textwidth} \centering
-                \includegraphics[height=3cm]{figs/airline_sexper_1a.png}
-                \caption{Prior, before having seen any data.}
+                \includegraphics[height=3cm]{figs/airline_tree_3x.png}
+                \caption{The predictive posterior on given the full grammar structure.}
                 \label{fig:airlineBO}
         \end{subfigure}%
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
           %(or a blank line to force the subfigure onto a new line)
           
         \begin{subfigure}[b]{\textwidth} \centering
-                \includegraphics[height=3cm]{figs/airline_sexper_2a.png}
-                \caption{After having seen any data but before inference}
+                \includegraphics[width=\textwidth]{figs/grammar_tutorial2.png}
+                \caption{Compositional Structure}
                 \label{fig:AirlineA))}
         \end{subfigure}
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-          
-        \begin{subfigure}[b]{\textwidth} \centering
-                \includegraphics[height=3cm]{figs/airline_sexper_3a.png}
-                \caption{After 1000 MH steps.}
-                \label{fig:airlineAI}
-        \end{subfigure}
-        \caption{Running a Venuter GP with covariance structure PER x SE on the airline data}\label{fig:airline}
+        \put(-270,280){SE $\times$ LIN + SE $\times$ LIN (RQ + PER ) $\;\;\; = $} 
+        \put(-271,269){\rotatebox{90}{\Large $\Bigg\{$}} 
+        \put(-250,267){\vector(-3,-1){30}}
+        \put(-220,230){{\Large $+\;\;\;\;\;\;$}SE $\times$ (LIN $\times$ RQ + LIN $\times$ PER) $\;\;\; = $} 
+        \put(-395,165){SE {\Large $\times$ \bigg(}} 
+        \put(-5,165){\Large \bigg)} 
+        \put(-185,165){\Large $+$} 
+        \put(-251,130){\rotatebox{270}{\Large $\Bigg\{$}} 
+        \put(-235,95){\Large $\times$} 
+        \put(-191,67){\rotatebox{270}{\Large $\Bigg\{$}} 
+        \put(-175,33){\Large $\times$} 
+        \caption{a) We see the predictive posterior as an result 1000 MH steps on the airline data set. b) depicts a decomposition of this posterior for the structures sampled by Venture. RQ is the rational quadratic covariance function. Note that although the overall result is in line with what \citet*{duvenaud2013structure} report a slightly different composition is implied by the sampled parameters for the structure. The first line shows the global trend and denotes the rest of the structure that is shown above. In the second line, the see the periodic component on the right hand side. The left hand side denotes short term deviations both multiplied by a smoothing kernel. The third and fourth lines denote how we reach the second line: both periodic and rational quadratic covariance functions are multiplied by a line with slope zero.}
 \end{figure}
 
 \subsection{Log-Likelihood}
@@ -339,9 +379,23 @@ We found the final sample of multiple runs to be most informative. This kind of 
 \section{Bayesian Optimization}
 Bayesian Optimization poses the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}. Evaluating the actual function can be very expensive. For example, finding the best configuration for the learning algorithm of a large convolutional neural network implies expensive function evaluations to compare a potentially infinite number of configurations. Another common example is the example of data acquisition. For problems with large amounts of data available it may be interested to chose certain informative data-points to evaluate a model on. In continuous domains, many Bayesian Optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
 
-The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}.
+The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}. Thompson Sampling is a general framework to solve exploration-exploitation problems that applies to our notion of Bayesian Optimization.
+We we sample a probe from the posterior
+\begin{equation}
+\hat{\bm{\theta}} \sim P( \hat{\bm{\theta}}|\vec{\mathbf{x}}) 
+\end{equation}
+and then optimize the expected reward by choosing an action $a$
+\begin{equation}
+a_i = \argmax{a}\mathbb{E}_{P(\cdots|\theta)}[r(world_\theta(a))]
+\end{equation}
+\begin{equation}
+x_i  \sim world_\theta(a_i) 
+\end{equation}
 
-We consider a true and  unknown reward function $r(x)$ that we estimate with a GP prior $\mathcal{GP}(0,K(\mathbf{x},\mathbf{x}))$. We denote past observations with $\mathcal{D} = \{(x;
+
+
+
+%We consider a true and  unknown reward function $r(x)$ that we estimate with a GP prior $\mathcal{GP}(0,K(\mathbf{x},\mathbf{x}))$. We denote past observations with $\mathcal{D} = \{(x;
 
 
 
