@@ -382,7 +382,7 @@ We found the final sample of multiple runs to be most informative. This kind of 
 \begin{figure}[p]
 
 \centering
-    \includegraphics[width=\textwidth]{figs/structureCo2a.png}
+    \includegraphics[width=0.7\textwidth]{figs/structureCo2a.png}
     \caption{Posterior on structure of the CO2 data. We have cut the tail of the distribution for space reasons since the number of possible structures is large. We see the final sample of the each of the 545 chains with 2000 nested steps each. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE.}\label{fig:structureCo2}
 \end{figure}
 
@@ -408,6 +408,8 @@ x_i  \sim world_\theta(a_i)
 %We consider a true and  unknown reward function $r(x)$ that we estimate with a GP prior $\mathcal{GP}(0,K(\mathbf{x},\mathbf{x}))$. We denote past observations with $\mathcal{D} = \{(x;
 
 \section{Conclusion}
+We have shown Venture GPs. We have introduced novel stochastic processes for a probabilistic programming language. We showed how flexible non-parametric models can be treated in Venture in only a few lines of code. We evaluated our contribution on a range of hard problems for state-of-the-art Bayesian non-parametrics. Venture GPs showed competitive performance in all of them. 
+
 
 
 \bibliography{May2015}
