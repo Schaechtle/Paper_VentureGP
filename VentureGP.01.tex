@@ -91,7 +91,11 @@ In the following, we will introduce GP related theory and notations. We will exc
 \label{eq:marg}
 p(\mathbf{y}|\mathbf{x}) = \int p(\mathbf{y}|\mathbf{f,x})\, p(\mathbf{f}|\mathbf{x}) \, d\mathbf{f} 
 \end{equation}
-where the prior is Gaussian $\mathbf{f}|\mathbf{x} \sim \mathcal{N}\big(0,k(\mathbf{x},\mathbf{x}')\big)$. For a zero mean Gaussian Process this results in a Gaussian posterior $\mathcal{N}(\bm{\mu},\bm{\Sigma})$ with mean:
+where the prior is Gaussian $\mathbf{f}|\mathbf{x} \sim \mathcal{N}\big(0,k(\mathbf{x},\mathbf{x}')\big)$. We can sample a vector of unseen data from the predictive posterior with
+\begin{equation}
+\mathbf{y}^* \sim \mathcal{N}(\bm{\mu},\bm{\Sigma}) 
+\end{equation}
+for a zero mean GP with mean:
 \begin{equation}
 \label{eq:conditonalGaussianMean}
 \bm{\mu} = \mathbf{K}(\mathbf{x},\mathbf{x}^*)\,\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1}\,\mathbf{y}
@@ -101,7 +105,12 @@ and covariance
 \label{eq:conditonalGaussianCovariance}
 \bm{\Sigma} =  \mathbf{K}(\mathbf{x},\mathbf{x}) + \mathbf{K}(\mathbf{x},\mathbf{x}^*)\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1} \mathbf{K}(\mathbf{x}^*,\mathbf{x}).
 \end{equation}
-where $\mathbf{K}$ is a covariance function. We can compute both the log-likelihood and and the predictive posterior in a Venture SP efficiently by resorting to an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} resulting in a computational complexity of $\mathcal{O}(n^3)$ in the number of data-points.
+$\mathbf{K}$ is a covariance function. The log-likelihood is defined as:
+\begin{equation}
+\log P(\mathbf{y} \mid \mathbf{X})  = -\frac{1}{2}\mathbf{y}^\top (\mathbf{K} + \sigma^2\mathbf{I})^{-1}\mathbf{y} -  \frac{1}{2}\log |\mathbf{K} + \sigma^2I| -  \frac{n}{2}\log 2 \pi
+\end{equation}
+with $n$ being the number of data-points and sigma the independent observation noise.
+Both log-likelihood and predictive posterior can be computed efficiently in a Venture SP with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} resulting in a computational complexity of $\mathcal{O}(n^3)$ in the number of data-points.
 
 
 
