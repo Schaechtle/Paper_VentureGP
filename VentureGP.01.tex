@@ -251,7 +251,7 @@ $\smash{k_{PER}(x,x^\prime) := \sigma_2^2 \exp(-\frac{2 \sin^2(\pi(x-x^\prime)/p
 Knowledge about the composite nature of covariance functions is not new, however, until recently, the choice and the composition of covariance functions were done ad-hoc. The Automated Statistician Project came up with an approximate search over the possible space of kernel structures~\citep{duvenaud2013structure,lloyd2014automatic}. However, a fully Bayesian treatment of this was not done before.
 The case where the covariance structure is not given is even more interesting. Our probabilistic programming based MCMC framework approximates the following intractable integrals of the expectation for the prediction:
 \begin{equation}
-\mathbb{E}[y^* \mid x^*,D,\mathbf{K}^s_{\Omega}] =\iint f(x^*,\bm{\theta},\mathbf{K})\,P(\bm{\theta} \mid \mathbf{D,\mathbf{K}})\,P(\mathbf{K}|\bm{\Omega},s,n) \; \mathbf{d} \bm{\theta} \mathbf{d} \mathbf{K}.  
+\mathbb{E}[y^* \mid x^*,\mathbf{D},\mathbf{K}] =\iint f(x^*,\bm{\theta},\mathbf{K})\,P(\bm{\theta} \mid \mathbf{D,\mathbf{K}})\,P(\mathbf{K}|\bm{\Omega},s,n) \; \mathbf{d} \bm{\theta} \mathbf{d} \mathbf{K}.  
 \end{equation}
 This is done by sampling from the posterior probability distribution of the hyper-parameters and the possible kernel:
 \begin{equation}
