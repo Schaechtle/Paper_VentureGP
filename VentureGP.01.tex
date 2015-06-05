@@ -93,9 +93,10 @@ p(\mathbf{y}|\mathbf{x}) = \int p(\mathbf{y}|\mathbf{f,x})\, p(\mathbf{f}|\mathb
 \end{equation}
 where the prior is Gaussian $\mathbf{f}|\mathbf{x} \sim \mathcal{N}\big(0,k(\mathbf{x},\mathbf{x}')\big)$. We can sample a vector of unseen data from the predictive posterior with
 \begin{equation}
+\label{eq:gpsampler}
 \mathbf{y}^* \sim \mathcal{N}(\bm{\mu},\bm{\Sigma}) 
 \end{equation}
-for a zero mean GP with mean:
+for a zero mean prior GP with a posterior mean of:
 \begin{equation}
 \label{eq:conditonalGaussianMean}
 \bm{\mu} = \mathbf{K}(\mathbf{x},\mathbf{x}^*)\,\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1}\,\mathbf{y}
@@ -121,7 +122,7 @@ k(x,x^\prime) = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})
 where $\sigma$ and $\ell$ are hyper-parameters. $\sigma$ is a scaling factor and $\ell$ is the typical length-scale.
 Smaller variations can be achieved by adapting these hyper-parameters. 
 \section{Venture GPs}
-Below, we see how we can express simple GP smoothing with a few lines of Venture code while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
+Given a stochastic process that implements the GP algebra above we can implement a GP sampler (\ref{eq:gpsampler}) to perform GP inference in a few lines of code. We can express simple GP smoothing with fixed hyper-parameters and perform MH on it code while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
 \begin{minipage}{\linewidth}
 \belowcaptionskip=-10pt
 \begin{lstlisting}[frame=single,label=alg:gpsmooth,caption=GP Smoothing,mathescape]
@@ -155,7 +156,15 @@ The ASSUME directives describe the assumptions we make for the GP model, we assu
 
 
 
-In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte}. Extending the program described in listing \ref{alg:gpsmooth} for a Bayesian treatment of hyper-parameters is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution:
+In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte} where we draw hyper-parameters from $\Gamma$ distributions:
+\begin{equation}
+\ell^{(t)} \sim \Gamma(\alpha_1,\beta_1)
+\end{equation}
+\begin{equation}
+\sigma^{(t)} \sim \Gamma(\alpha_2,\beta_2)
+\end{equation}
+
+Extending the program described in listing \ref{alg:gpsmooth} to draw the hyper-parameters for a Bayesian treatment of hyper-parameters is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution:
 
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[frame=single,label=alg:gpNeal,caption=Bayesian GP Smoothing,mathescape]
@@ -266,7 +275,11 @@ y^* \approx \frac{1}{T} \sum^T_{t=1} f(x^* | \bm{\theta}^{(t)},\mathbf{K}^{(t)})
 \end{equation}
 
 
-In order to provide the sampling of the kernel, we introduce a stochastic process to the SP that simulates the grammar for algebraic expressions of kernel algebra. Here, we start with a set of possible kernels and draw a random subset. For this subset of size $n$, we sample a set of possible operators that operate on the base kernels. 
+In order to provide the sampling of the kernel, we introduce a stochastic process to the SP that simulates the grammar for algebraic expressions of covariance function algebra:
+\begin{equation}
+\mathbf{K}^{(t)} \sim  P(\mathbf{K} \mid \bm{\Omega},s,n)
+\end{equation}
+Here, we start with a set of possible kernels and draw a random subset. For this subset of size $n$, we sample a set of possible operators that operate on the base kernels. 
 
 The marginal probability of a kernel structure which allows us to sample  is characterized by the probability of a uniformly chosen subset of the set of $n$ possible covariance functions times the probability of sampling a global or a local structure which is given by a binomial distribution: 
 
@@ -279,9 +292,10 @@ P(\bm{\Omega} \mid s,n)= {n \choose r}  p_{+\times}^k (1 - p_{+\times})^{n-k}
 \end{equation}
 and
 \begin{equation}
+\label{eq:subsets}
 P(s \mid n) = \frac{n!}{ \mid s \mid !}
 \end{equation}
-where $P(n)$ is a prior on the number of base kernels used. It is possible to also assign a prior for the probability to sample global or local priors, however, we have assigned complete uncertainty to this with the binomial $p = 0.5$.
+where $P(n)$ is a prior on the number of base kernels used which can sample from a discrete uniform distribution. This will strongly prefer simple covariance structures with few base kernels since individual base kernels are more likely to be sampled in this case due to (\ref{eq:subsets}). Alternatively, we can approximate a uniform prior over structures by weighting $P(n)$ towards higher numbers. It is possible to also assign a prior for the probability to sample global or local structures, however, we have assigned complete uncertainty to this with the probability of a flip $p = 0.5$.
 
 
 
