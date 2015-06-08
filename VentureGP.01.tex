@@ -173,7 +173,6 @@ Neal suggested the treatment of outliers as a use-case for a Bayesian treatment 
 f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
 \end{equation}
 We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. Venture GPs can capture the true underlying function within only 100 MH steps on the hyper-parameters to get a good approximation for their posterior (see Fig. \ref{fig:neal}). Note that Neal devices an additional noise model and performs large number of Hybrid-Monte Carlo and Gibbs steps.  
-
 \begin{figure}
         \centering
         \begin{subfigure}[b]{0.3\textwidth} \centering
@@ -197,6 +196,25 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
         \end{subfigure}
         \caption{Running a Venture GP on Neal's example for MCMC showing the prior, after having observed the data and after performing inference on the hyper-parameters. Note how the GP is choosing outliers to smooth instead of essential data before inference takes place. }\label{fig:neal}
 \end{figure}
+We illustrate the hyper-parameter by showing the shift of the distribution on the noise parameter $\sigma$ (Fig. \ref{fig:inference}).
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.5\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_unif_sigma_before_ulliDesktop_n503.png}
+                \caption{$\sigma$ Before}
+                \label{fig:before}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.5\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_unif_sigma_after_ulliDesktop_n503.png}
+                \caption{$\sigma$  After}
+                \label{fig:after))}
+        \end{subfigure}
+        \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
+\end{figure}
+
 
 \subsection{Structure Learning}
 
@@ -319,7 +337,7 @@ For reproducing results from the Automated Statistician Project in a Bayesian fa
 
 \end{minipage}
 
-We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set. We will elaborate the result using a sample from the posterior (Fig. \ref{fig:tutorial}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels.
+We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set. We will elaborate the result using a sample from the posterior (Fig. \ref{fig:tutorial}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set~\citep{} and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels.
 
 
 \begin{figure}
@@ -357,6 +375,8 @@ We defined the space of covariance structures in a way allowing us to reproduce 
 
 We further investigated the quality of our stochastic processes by running a leave one out cross-validation to gain confidence on the posterior. This resulted in 545 independent runs of the Markov chain that produced a coherent posterior: our Bayesian interpretation of GP structure and GPs produced a posterior of structures that is in line with previous results on this data set (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structureCo2}).
 
+We ran similar evaluation on the airline data set~\citep{} resulting in a similar structure to what was previously reporte (Fig. \ref{fig:structureAir}, residuals and log-score along the Markov chain see Fig. \ref{fig:reslog}).
+
 We found the final sample of multiple runs to be most informative. This kind of Markov Chain seems to produce samples that are highly auto-correlated.
 
 \begin{figure}
@@ -364,6 +384,31 @@ We found the final sample of multiple runs to be most informative. This kind of 
     \includegraphics[width=0.9\textwidth]{figs/structureCo2b.png}
     \caption{Posterior on structure of the CO2 data. We have cut the tail of the distribution for space reasons since the number of possible structures is large. We see the final sample of the each of the 545 chains with 2000 nested steps each. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE.}\label{fig:structureCo2}
 \end{figure}
+
+\begin{figure}
+\centering
+    \includegraphics[width=0.9\textwidth]{figs/structureAirlinec.png}
+    \caption{Posterior on structure of airline data set. We have cut the tail of the distribution for space reasons since the number of possible structures is large. We see the final sample of the each of the 144 chains with 2000 nested steps each. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ (PER  + RQ) $\times$ SE $\times$ LIN}\label{fig:structureAir}
+\end{figure}
+
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.5\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/structureAirline_res_c.png}
+                \caption{Residuals}
+                \label{fig:res}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.5\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/structureAirline_log_c.png}
+                \caption{Log Likelihood}
+                \label{fig:log))}
+        \end{subfigure}
+        \caption{2000 steps along the Markov Chain.}\label{fig:reslog}
+\end{figure}
+
 
 \section{Bayesian Optimization}
 Bayesian Optimization poses the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}. Evaluating the actual function can be very expensive. For example, finding the best configuration for the learning algorithm of a large convolutional neural network implies expensive function evaluations to compare a potentially infinite number of configurations. Another common example is the example of data acquisition. For problems with large amounts of data available it may be interesting to chose certain informative data-points to evaluate a model on. In continuous domains, many Bayesian Optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
