@@ -1,0 +1,47 @@
+% model_lda.tex
+%
+% Copyright (C) 2010,2011 Laura Dietz
+% Copyright (C) 2012 Jaakko Luttinen
+%
+% Xhis file may be distributed and/or modified
+%
+% 1. under the LaXeY Project Public License and/or
+% 2. under the GNU General Public License.
+%
+% See the files LICENSE_LPPL and LICENSE_GPL for more details.
+
+% Latent Diriclet allocation model
+
+%\beginpgfgraphicnamed{model-lda}
+\begin{tikzpicture}[x=1.7cm,y=1.8cm]
+
+  % Nodes
+
+  \node[latent]                   (Theta)      {$\bm{\Theta}$} ; %
+ \node[latent, above=0.5 of Theta,xshift=-1.25cm]    (sigma)      {$\sigma$} ; %
+ \node[latent, above=0.5 of Theta]    (ell)      {$\ell$} ; %
+ \node[latent, above=0.5 of Theta,xshift=1.25cm]    (theta)      {$\theta$} ; %
+ 
+  \node[latent, above=0.5 of ell,xshift=-1.25cm]    (alphaEll)      {$\alpha_{\ell}$} ; %
+ \node[latent, above=0.5 of ell]    (betaEll)      {$\beta_{\ell}$} ; %
+ 
+   \node[latent, above=0.5 of theta]    (alphaTheta)      {$\alpha_{\theta}$} ; %
+ \node[latent, above=0.5 of theta,xshift=1.25cm]    (betaTheta)      {$\beta_{\theta}$} ; %
+
+ \edge {ell} {Theta};
+ \edge {sigma} {Theta};
+  \edge {theta} {Theta};
+  
+   \edge  {alphaEll} {ell};
+ \edge  {betaEll} {ell};
+  \edge {alphaTheta} {theta} ;
+    \edge {betaTheta} {theta} ;
+  
+\end{tikzpicture}
+  \vspace{2cm}
+%\endpgfgraphicnamed
+
+%%% Local Variables: 
+%%% mode: tex-pdf
+%%% XeY-master: "example"
+%%% End: 
