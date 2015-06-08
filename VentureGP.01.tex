@@ -28,6 +28,9 @@
 %opening
 %\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
 
+\newcommand{\gpmem}{\texttt{gpmem}}
+\newcommand{\emu}{{\textrm{emu}}}
+\newcommand{\restr}{{\textrm{restr}}}
 
 \title{Gaussian Processes with Probabilistic Programming}
 
@@ -125,7 +128,7 @@ Given a stochastic process that implements the GP algebra above we can implement
 \begin{minipage}{\linewidth}
 \footnotesize
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,label=alg:gpNeal,caption=Bayesian GP Smoothing,mathescape]
+\begin{lstlisting}[frame=single,label=alg:gpNeal,caption=Bayesian GP Smoothing,mathescape,label=alg:gpsmooth]
 [ASSUME l  (gamma 1 3)] $\in$ {hyper-parameters} 
 [ASSUME sf (gamma 1 3)] $\in$ {hyper-parameters}
 
@@ -141,7 +144,7 @@ $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 [INFER  (MH {hyper-parameters} one 100) ]
 [SAMPLE GP (array 1 2 3)] % Posterior
 
-\end{lstlisting}\label{alg:gpsmooth}
+\end{lstlisting}
 \end{minipage}
 
 The first two lines depict the hyper-parameters. We tag both of them to belong to the set \{hyper-parameters\}. Every member of this set belongs to the same inference scope. This scope controls the application of the inference procedure used. In this paper, we use MH throughout. Each scope is further subdivided into blocks that allow to do block-proposals. In the following we omit the block notation for readability, since we always choose the block of a certain scope at random.
@@ -157,10 +160,11 @@ In the case where hyper-parameters are unknown they can be found deterministical
 \ell^{(t)} \sim \Gamma(\alpha_1,\beta_1),\;\sigma^{(t)} \sim \Gamma(\alpha_2,\beta_2)
 \end{equation}
 
-We have already implemented this in listing 1. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
+We have already implemented this in listing \ref{alg:gpsmooth}. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
 The program gives rise to a Bayesian representation of GPs, which we will explore in the following.
 
 \subsection{A Bayesian interpretation}
+\subsubsection{The efficacy of learning hyperparameters}
 The probability of the hyper-parameters of a GP with assumptions as above and given covariance function structure $\mathbf{K}$ can be described as:
 \begin{equation}
 \label{eq:hyperProbability}
@@ -214,6 +218,35 @@ We illustrate the hyper-parameter by showing the shift of the distribution on th
         \end{subfigure}
         \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
 \end{figure}
+
+\subsubsection{GP modelling as a special case of \gpmem}
+From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
+Modelling the data set with a GP then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
+Indeed, if $f_\restr$ is defined as a foreign procedure made available as a black-box to Venture:
+\begin{verbatim}
+def f_restr(x):
+  if x in D:
+    return D[x]
+  else:
+    raise Exception('Illegal input')
+\end{verbatim}
+Then the \texttt{OBSERVE} code in Listing \ref{alg:gpsmooth} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
+\begin{verbatim}
+[ASSUME (list f_compute f_emu) (gpmem f_restr)]
+for i=1 to n:
+  [PREDICT (f_compute x[i])]
+[INFER (MH {hyper-parameters} one 100)]
+[SAMPLE (f_emu (array 1 2 3))]
+\end{verbatim}
+This rewriting has at least two benefits: (i) readability (in some cases), and (ii) amenability to active learning.
+As to (i), the statistical code of creating a Gaussian process is replaced with a memoization-like idiom, which will be more familiar to programmers.
+As to (ii), when using \gpmem, it is quite easy to decide incrementally which data point to sample next: for example, the loop from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in which the next index \texttt{i} is chosen by a supplied decision rule.
+In this way, we could use \gpmem\ to perform online learning using only a subset of the available data.
+
+More generally, \gpmem\ is relevant not just when a data set is available, but also whenever we have at hand a function $f_\restr$ which is expensive or impractical to evaluate many times.
+\gpmem\ allows us to model $f_\restr$ with a GP-based emulator $f_\emu$, and also to use $f_\emu$ during the learning process to choose, in an online manner, an effective set of probe points $\{x_i\}$ on which to use our few evaluations of $f_\restr$.
+This idea is illustrated in detail in Section \ref{sec:bayesopt}.
+
 
 
 \subsection{Structure Learning}
@@ -410,7 +443,7 @@ We found the final sample of multiple runs to be most informative. This kind of 
 \end{figure}
 
 
-\section{Bayesian Optimization}
+\section{Bayesian Optimization}\label{sec:bayesopt}
 Bayesian Optimization poses the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}. Evaluating the actual function can be very expensive. For example, finding the best configuration for the learning algorithm of a large convolutional neural network implies expensive function evaluations to compare a potentially infinite number of configurations. Another common example is the example of data acquisition. For problems with large amounts of data available it may be interesting to chose certain informative data-points to evaluate a model on. In continuous domains, many Bayesian Optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
 
 The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}. Thompson Sampling is a general framework to solve exploration-exploitation problems that applies to our notion of Bayesian Optimization.
@@ -429,7 +462,12 @@ The hierarchical nature of Bayesian Optimization makes it an ideal application f
 \begin{figure}
 \centering
     \includegraphics[width=0.9\textwidth]{figs/BayesOpta.png}
-    \caption{Bayesian Optimization. The algortihm explores candidate areas for a global maximum more thoroughly.}\label{fig:structureCo2}
+    \caption{Bayesian Optimization.
+      Each successive probe point $x$ is the (stochastic) maximum of a GP-based emulator conditioned on the values of the previously probed points.
+      In the figure, each probe point $x$ is marked with an $\times$, and a vertical green bar is drawn showing the mean $\pm$ one standard deviation of the ``leave-one-out'' distribution---the distribution that would arise from the same covariance function if all marked points {\em except} $x$ had been probed.
+      Note that there are many probe points near the true maximum, and the uncertainty is quite low.
+      Also note that probed points far away from the true maximum tend to be points at which the uncertainty is high.}
+    \label{fig:structureCo2}
 \end{figure}
 
 
