@@ -581,10 +581,10 @@ The answer will of course depend on the application, but also note that judiciou
   The procedure \texttt{f\_compute} computes \texttt{f} directly, thus improving the GP model \texttt{f\_emu}.
   (\texttt{f\_emu\_pointwise} is simply a shortcut for sampling the GP model at a single point; \texttt{f\_emu} is more general, allowing joint samples to be taken at any set of points.)
   In the loop, \texttt{f\_compute} is called to compute the value of \texttt{f} at a new argument.
-  The new argument, \texttt{(mc\_argmax f\_emu\_pointwise}, is a Monte Carlo estimate of the maximum pointwise sample of \texttt{f\_emu} (itself a stochastic quantity), with the Monte Carlo samples being drawn in this case uniformly between $-20$ and $20$.
+  The new argument, \texttt{(mc\_argmax f\_emu\_pointwise mc\_sampler)}, is a Monte Carlo estimate of the maximum pointwise sample of \texttt{f\_emu} (itself a stochastic quantity), with the Monte Carlo samples being drawn in this case uniformly between $-20$ and $20$.
   After each new call to \texttt{f\_compute}, the Metropolis--Hastings algorithm is used to perform inference on the hyperparameters of the covariance function in the GP model in light of the new conditioning data.
   Once enough calls to \texttt{f\_compute} have been made (in our case we stopped at 15 calls), we can inspect the full list of probed $(x,y)$ pairs with \texttt{extract\_stats}.
-  The answer to our maximization problem is simply the maximum $y$; but our algorithm also learns more potentiall useful information.
+  The answer to our maximization problem is simply the maximum $y$; but our algorithm also learns more potentially useful information.
 },mathescape,label=alg:bayesopt]
 [ASSUME hypers ...]
 [ASSUME se (make-squared-exponential hypers)]
