@@ -169,6 +169,22 @@ k(x,x^\prime) = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})
 \end{equation}
 where $\sigma$ and $\ell$ are hyper-parameters. $\sigma$ is a scaling factor and $\ell$ is the typical length-scale.
 Smaller variations can be achieved by adapting these hyper-parameters. 
+
+
+Larger variations are achieved by changing the type of the covariance function structure. 
+%A different type could be a linear covariance function:
+%\begin{equation}
+% k(x,x^\prime) = \sigma^2 (x-\ell) (x^\prime-\ell). 
+%\end{equation}
+Note that covariance function structures are compositional. We can add covariance functions if we want to model globally valid structures
+\begin{equation}
+k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime)
+\end{equation}
+ and we can multiply covariance functions if the data is best explained by local structure 
+\begin{equation}
+k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime);
+\end{equation}
+both, $k_3$ and $k_4$ are valid covariance function structures.
 \section{Venture GPs}
 Given a stochastic process that implements the GP algebra above we can implement a GP sampler (\ref{eq:gpsampler}) to perform GP inference in a few lines of code. We can express simple GP smoothing with fixed hyper-parameters or a prior on hyper-parameters and perform MH on it while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
 \begin{minipage}{\linewidth}
@@ -267,7 +283,7 @@ We can represent this kind of model using \gpmem\ with only a few lines of code 
 [ASSUME sf (gamma (alpha 2) (beta 2))] $\in$ {hyper-parameters}
 
 $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
-
+$\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 [ASSUME f VentureFunction($k,\sigma,\ell$) ]
 [ASSUME SE make-se (apply-function f l sf) ]
 [ASSUME (make-gp 0 SE) ]
@@ -337,21 +353,9 @@ We illustrate the hyper-parameter by showing the shift of the distribution on th
 \end{figure}
 
 \subsection{Structure Learning}
+The space of possible kernel composition is infinite. Combining inference over this space with the problem of finding a good parameterization that could potentially explain the observed data best poses a hard problem. The natural language interpretation of the meaning of a kernel and it's composition renders this a problem of symbolic computation. Duvenaud and colleagues note that sum of kernels can be interpreted as logical OR operations and kernel multiplication as logical AND~\citeyearpar{duvenaud2013structure}. This is due to the kernel rendering two points similar if $k_1$ OR $k_2$ outputs a high value in the case of a sum. Respectively, multiplication of two kernel results in high values only if $k_1$ AND $k_2$ have high values (see Fig. \ref{fig:composite} for examples how to interpret global vs. local aspects and its symbolic analog respectively). 
 
-Larger variations are achieved by changing the type of the covariance function structure. 
-%A different type could be a linear covariance function:
-%\begin{equation}
-% k(x,x^\prime) = \sigma^2 (x-\ell) (x^\prime-\ell). 
-%\end{equation}
-Note that covariance function structures are compositional. We can add covariance functions if we want to model globally valid structures
-\begin{equation}
-k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime)
-\end{equation}
- and we can multiply covariance functions if the data is best explained by local structure 
-\begin{equation}
-k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime);
-\end{equation}
-both, $k_3$ and $k_4$ are valid covariance function structures. This leads to an infinite space of possible structures that could potentially explain the observed data best (e.g. Fig. \ref{fig:composite}). In the following, we will refer to covariance functions that are not composite as base covariance functions. Note that this form of composition can be easily expressed in Venture, for example if one wishes to add a linear and a periodic kernel:
+In the following, we will refer to covariance functions that are not composite as base covariance functions. Note that this form of composition can be easily expressed in Venture, for example if one wishes to add a linear and a periodic kernel:
 
 \begin{minipage}{\linewidth}
 \scriptsize
