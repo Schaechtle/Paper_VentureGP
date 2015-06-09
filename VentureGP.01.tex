@@ -226,33 +226,6 @@ The program gives rise to a Bayesian representation of GPs, which we will explor
 \subsection{A Bayesian interpretation}
 
 
-\subsubsection{GP modelling as a special case of \gpmem}
-From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
-Modelling the data set with a GP then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
-Indeed, if $f_\restr$ is defined as a foreign procedure made available as a black-box to Venture:
-\begin{verbatim}
-def f_restr(x):
-  if x in D:
-    return D[x]
-  else:
-    raise Exception('Illegal input')
-\end{verbatim}
-Then the \texttt{OBSERVE} code in Listing \ref{alg:gpNeal} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
-\begin{verbatim}
-[ASSUME (list f_compute f_emu) (gpmem f_restr)]
-for i=1 to n:
-  [PREDICT (f_compute x[i])]
-[INFER (MH {hyper-parameters} one 100)]
-[SAMPLE (f_emu (array 1 2 3))]
-\end{verbatim}
-This rewriting has at least two benefits: (i) readability (in some cases), and (ii) amenability to active learning.
-As to (i), the statistical code of creating a Gaussian process is replaced with a memoization-like idiom, which will be more familiar to programmers.
-As to (ii), when using \gpmem, it is quite easy to decide incrementally which data point to sample next: for example, the loop from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in which the next index \texttt{i} is chosen by a supplied decision rule.
-In this way, we could use \gpmem\ to perform online learning using only a subset of the available data.
-
-More generally, \gpmem\ is relevant not just when a data set is available, but also whenever we have at hand a function $f_\restr$ which is expensive or impractical to evaluate many times.
-\gpmem\ allows us to model $f_\restr$ with a GP-based emulator $f_\emu$, and also to use $f_\emu$ during the learning process to choose, in an online manner, an effective set of probe points $\{x_i\}$ on which to use our few evaluations of $f_\restr$.
-This idea is illustrated in detail in Section \ref{sec:bayesopt}.First, we will show how one can utilize \gpmem\ for reproducing state-of-the-art models that are based on GP.
 \subsubsection{The efficacy of learning hyperparameters}
 
 
@@ -357,6 +330,37 @@ We illustrate the hyper-parameter by showing the shift of the distribution on th
         \end{subfigure}
         \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
 \end{figure}
+
+\subsubsection{GP modelling as a special case of \gpmem}\label{sec:special-case-gpmem}
+From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
+Modelling the data set with a GP then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
+Indeed, if $f_\restr$ is a foreign procedure made available as a black-box to Venture, whose secret underlying source code is:
+\begin{verbatim}
+def f_restr(x):
+  if x in D:
+    return D[x]
+  else:
+    raise Exception('Illegal input')
+\end{verbatim}
+Then the \texttt{OBSERVE} code in Listing \ref{alg:gpNeal} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
+\begin{verbatim}
+[ASSUME (list f_compute f_emu) (gpmem f_restr)]
+for i=1 to n:
+  [PREDICT (f_compute x[i])]
+[INFER (MH {hyper-parameters} one 100)]
+[SAMPLE (f_emu (array 1 2 3))]
+\end{verbatim}
+This rewriting has at least two benefits: (i) readability (in some cases), and (ii) amenability to active learning.
+As to (i), the statistical code of creating a Gaussian process is replaced with a memoization-like idiom, which will be more familiar to programmers.
+As to (ii), when using \gpmem, it is quite easy to decide incrementally which data point to sample next: for example, the loop from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in which the next index \texttt{i} is chosen by a supplied decision rule.
+In this way, we could use \gpmem\ to perform online learning using only a subset of the available data.
+
+More generally, \gpmem\ is relevant not just when a data set is available, but also whenever we have at hand a function $f_\restr$ which is expensive or impractical to evaluate many times.
+\gpmem\ allows us to model $f_\restr$ with a GP-based emulator $f_\emu$, and also to use $f_\emu$ during the learning process to choose, in an online manner, an effective set of probe points $\{x_i\}$ on which to use our few evaluations of $f_\restr$.
+This idea is illustrated in detail in Section \ref{sec:bayesopt}.
+First, we will show how one can utilize \gpmem\ for reproducing state-of-the-art models that are based on GP.
+
+
 
 \subsection{Structure Learning}
 The space of possible kernel composition is infinite. Combining inference over this space with the problem of finding a good parameterization that could potentially explain the observed data best poses a hard problem. The natural language interpretation of the meaning of a kernel and it's composition renders this a problem of symbolic computation. Duvenaud and colleagues note that sum of kernels can be interpreted as logical OR operations and kernel multiplication as logical AND~\citeyearpar{duvenaud2013structure}. This is due to the kernel rendering two points similar if $k_1$ OR $k_2$ outputs a high value in the case of a sum. Respectively, multiplication of two kernel results in high values only if $k_1$ AND $k_2$ have high values (see Fig. \ref{fig:composite} for examples how to interpret global vs. local aspects and its symbolic analog respectively). 
@@ -543,7 +547,33 @@ We found the final sample of multiple runs to be most informative. This kind of 
 \section{Bayesian Optimization}\label{sec:bayesopt}
 Bayesian Optimization poses the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}. Evaluating the actual function can be very expensive. For example, finding the best configuration for the learning algorithm of a large convolutional neural network implies expensive function evaluations to compare a potentially infinite number of configurations. Another common example is the example of data acquisition. For problems with large amounts of data available it may be interesting to chose certain informative data-points to evaluate a model on. In continuous domains, many Bayesian Optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
 
-The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}. Thompson Sampling is a general framework to solve exploration-exploitation problems that applies to our notion of Bayesian Optimization.
+The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}, a general framework to solve exploration-exploitation problems.
+In our case, ``exploration'' is probing the true value of the function $f$ by performing an expensive computation, and ``exploitation'' is using samples from a GP-based model (conditioned on the previously computed true values of $f$) to approximate the values of $f$ at new points; the cost of doing so will depend on the application.
+In the language of \gpmem\ (see Section \ref{sec:special-case-gpmem}), the function $f_\restr$ is $f$, and the exploration-exploitation trade-off is: given a point $x$, should we evaluate $f_\restr$ directly, thus resulting in a more accurate value and more training data for the emulator $f_\emu$, or should we just sample $f_\emu$ for a good-enough approximation?
+The answer will of course depend on the application, but also note that judicious choice of when to do each will result in more useful training data for the GP model.
+
+\begin{lstlisting}[frame=single,caption={
+  Code for Bayesian optimization using \gpmem.
+  The procedure \texttt{f\_compute} computes \texttt{f} directly, thus improving the GP model \texttt{f\_emu}.
+  (\texttt{f\_emu\_pointwise} is simply a shortcut for sampling the GP model at a single point; \texttt{f\_emu} is more general, allowing joint samples to be taken at any set of points.)
+  In the loop, \texttt{f\_compute} is called to compute the value of \texttt{f} at a new argument.
+  The new argument, \texttt{(mc\_argmax f\_emu\_pointwise}, is a Monte Carlo estimate of the maximum pointwise sample of \texttt{f\_emu} (itself a stochastic quantity), with the Monte Carlo samples being drawn in this case uniformly between $-20$ and $20$.
+  After each new call to \texttt{f\_compute}, the Metropolis--Hastings algorithm is used to perform inference on the hyperparameters of the covariance function in the GP model in light of the new conditioning data.
+  Once enough calls to \texttt{f\_compute} have been made (in our case we stopped at 15 calls), we can inspect the full list of probed $(x,y)$ pairs with \texttt{extract\_stats}.
+  The answer to our maximization problem is simply the maximum $y$; but our algorithm also learns more potentiall useful information.
+},mathescape,label=alg:bayesopt]
+[ASSUME hypers ...]
+[ASSUME se (make-squared-exponential hypers)]
+[ASSUME (list f_compute f_emu) (gpmem f se)]
+[ASSUME f_emu_pointwise (lambda (x) (first (f_emu (array x))))]
+[ASSUME mc_sampler (uniform_sampler -20 20)]
+
+for i=1 to 15:
+  [PREDICT (f_compute (mc_argmax f_emu_pointwise mc_sampler))]
+  [INFER (MH 'hypers one 50)
+
+[INFER (collect_stats f_emu)]
+\end{lstlisting}
 %We sample a probe from the posterior
 %\begin{equation}
 %\hat{\bm{\theta}} \sim P( \hat{\bm{\theta}}|\vec{\mathbf{x}}) 
