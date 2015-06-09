@@ -188,75 +188,12 @@ The ASSUME directives describe the assumptions we make for the GP model, we assu
 
 
 
-In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte} where we draw hyper-parameters from $\Gamma$ distributions:
-\begin{equation}
-\ell^{(t)} \sim \Gamma(\alpha_1,\beta_1),\;\sigma^{(t)} \sim \Gamma(\alpha_2,\beta_2)
-\end{equation}
+In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte}. 
 
 We have already implemented this in listing \ref{alg:gpsmooth}. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
 The program gives rise to a Bayesian representation of GPs, which we will explore in the following.
 
 \subsection{A Bayesian interpretation}
-\subsubsection{The efficacy of learning hyperparameters}
-The probability of the hyper-parameters of a GP with assumptions as above and given covariance function structure $\mathbf{K}$ can be described as:
-\begin{equation}
-\label{eq:hyperProbability}
-P(\bm{\theta} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{K})P(\bm{\theta} \mid  \mathbf{K})}{P(\mathbf{D} \mid \mathbf{K})}.
-\end{equation}
-
-
-Neal suggested the treatment of outliers as a use-case for a hierarchical Bayesian treatment of Gaussian processes~\citeyearpar{neal1997monte}. He evaluates his MCMC setting using the following synthetic data problem. Let $f$ be the underlying function that generates the data:
-\begin{equation}
-f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
-\end{equation}
-We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. Venture GPs can capture the true underlying function within only 100 MH steps on the hyper-parameters to get a good approximation for their posterior (see Fig. \ref{fig:neal}). Note that Neal devices an additional noise model and performs large number of Hybrid-Monte Carlo and Gibbs steps.  
-\begin{figure}
-        \centering
-        \begin{subfigure}[b]{0.49\textwidth} \centering
-                \input{figs/graphicalHyper}
-                \caption{Prior}
-                \label{fig:NealpriorStruct}
-        \end{subfigure}%
-        \begin{subfigure}[b]{0.49\textwidth} \centering
-                \includegraphics[height=7.5cm]{figs/neal_se_1final.png}
-                \caption{Prior}
-                \label{fig:NealBO}
-        \end{subfigure}%
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-          
-        \begin{subfigure}[b]{0.49\textwidth} \centering
-                \includegraphics[height=7.5cm]{figs/neal_se_2final.png}
-                \caption{Observed}
-                \label{fig:NealAO))}
-        \end{subfigure}
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.49\textwidth} \centering
-                \includegraphics[height=7.5cm]{figs/neal_se_3final.png}
-                \caption{Inferred}
-                \label{fig:NealAI}
-        \end{subfigure}
-        \caption{Running a Venture GP on Neal's example for MCMC showing the prior, after having observed the data and after performing inference on the hyper-parameters. Note how the GP is choosing outliers to smooth instead of essential data before inference takes place. }\label{fig:neal}
-\end{figure}
-We illustrate the hyper-parameter by showing the shift of the distribution on the noise parameter $\sigma$ (Fig. \ref{fig:inference}).
-
-\begin{figure}
-        \centering
-        \begin{subfigure}[b]{0.5\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/neal_unif_sigma_before_desktop_50_5.png}
-                \caption{$\sigma$ Before}
-                \label{fig:before}
-        \end{subfigure}%
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.5\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/neal_unif_sigma_after_ulliDesktop_n503.png}
-                \caption{$\sigma$  After}
-                \label{fig:after))}
-        \end{subfigure}
-        \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
-\end{figure}
 
 \subsubsection{GP modelling as a special case of \gpmem}
 From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
@@ -284,7 +221,107 @@ In this way, we could use \gpmem\ to perform online learning using only a subset
 
 More generally, \gpmem\ is relevant not just when a data set is available, but also whenever we have at hand a function $f_\restr$ which is expensive or impractical to evaluate many times.
 \gpmem\ allows us to model $f_\restr$ with a GP-based emulator $f_\emu$, and also to use $f_\emu$ during the learning process to choose, in an online manner, an effective set of probe points $\{x_i\}$ on which to use our few evaluations of $f_\restr$.
-This idea is illustrated in detail in Section \ref{sec:bayesopt}.
+This idea is illustrated in detail in Section \ref{sec:bayesopt}. First, we will show how one can utilize \gpmem\ for reproducing state-of-the-art models that are based on GP.
+\subsubsection{The efficacy of learning hyperparameters}
+
+
+
+The probability of the hyper-parameters of a GP with assumptions as above and given covariance function structure $\mathbf{K}$ can be described as:
+\begin{equation}
+\label{eq:hyperProbability}
+P(\bm{\theta} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{K})P(\bm{\theta} \mid  \mathbf{K})}{P(\mathbf{D} \mid \mathbf{K})}.
+\end{equation}
+Let the $\mathbf{K}$ be the sum of a smoothing and a white noise (WN) kernel. For this case, Neal suggested the problem of outliers in data as a use-case for a hierarchical Bayesian treatment of Gaussian processes~\citeyearpar{neal1997monte}\footnote{In \citep{neal1997monte} the sum of an SE plus a constant kernel is used. We stick to the WN kernel for illustrative purposes.}. The work suggests a hierarchical system of hyper-parameterization (Fig. \ref{fig:NealpriorStruct}). Here, we draw hyper-parameters from a $\Gamma$ distributions:
+\begin{equation}
+\ell^{(t)} \sim \Gamma(\alpha_1,\beta_1),\;\sigma^{(t)} \sim \Gamma(\alpha_2,\beta_2)
+\end{equation} 
+and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
+\begin{equation}
+\alpha_1^{(t)} \sim \Gamma(\alpha^1_{\alpha},\beta^1_{ \alpha } ),\; \alpha_2^{(t)} \sim \Gamma(\alpha^2_{\alpha},\beta^2_{\alpha}),\cdots
+\end{equation}
+We can represent this kind of model using \gpmem\ with only a few lines of code {\bf ToDo: Turn this into \gpmem\ and change cov structure so that it accounts for WN kernel, move the background on kernel composition from structure learning to background so that one can understand SE + WN in the case below}:
+\begin{minipage}{\linewidth}
+\footnotesize
+\belowcaptionskip=-10pt
+\begin{lstlisting}[frame=single,caption=Bayesian GP Smoothing,mathescape,label=alg:gphierarch]
+
+[ASSUME alpha (mem (lambda (i)  (gamma  1 3 )))] $\in$ {hyper-parameters-$\Gamma$} 
+[ASSUME beta  (mem (lambda (i)  (gamma  1 3 )))] $\in$ {hyper-parameters-$\Gamma$} 
+
+
+[ASSUME l  (gamma (alpha 1) (beta 1))] $\in$ {hyper-parameters} 
+[ASSUME sf (gamma (alpha 2) (beta 2))] $\in$ {hyper-parameters}
+
+$\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
+
+[ASSUME f VentureFunction($k,\sigma,\ell$) ]
+[ASSUME SE make-se (apply-function f l sf) ]
+[ASSUME (make-gp 0 SE) ]
+
+[SAMPLE GP (array 1 2 3)] % Prior
+[OBSERVE GP D]
+[SAMPLE GP (array 1 2 3)] 
+[INFER (REPEAT 100 
+	(DO (MH {hyper-parameters} one 2)
+	    (MH {hyper-parameters-$\Gamma$} one 2) ))]
+[SAMPLE GP (array 1 2 3)] % Posterior
+
+\end{lstlisting}
+\end{minipage}
+
+Neal provides a custom inference algorithm setting and evaluates it using the following synthetic data problem. Let $f$ be the underlying function that generates the data:
+\begin{equation}
+f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
+\end{equation}
+We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. \gpmem\  can capture the true underlying function within only 100 MH steps on the hyper-parameters to get a good approximation for their posterior (see Fig. \ref{fig:neal}). Note that Neal devices an additional noise model and performs large number of Hybrid-Monte Carlo and Gibbs steps.  
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.49\textwidth} \centering
+                \input{figs/graphicalHyper}
+                \caption{Hierarchical Prior}
+                \label{fig:NealpriorStruct}
+        \end{subfigure}%
+        \begin{subfigure}[b]{0.49\textwidth} \centering
+                \includegraphics[height=7.5cm]{figs/neal_se_1final.png}
+                \caption{Prior Inference}
+                \label{fig:NealBO}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+          
+        \begin{subfigure}[b]{0.49\textwidth} \centering
+                \includegraphics[height=7.5cm]{figs/neal_se_2final.png}
+                \caption{Observed}
+                \label{fig:NealAO))}
+        \end{subfigure}
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.49\textwidth} \centering
+                \includegraphics[height=7.5cm]{figs/neal_se_3final.png}
+                \caption{Inferred}
+                \label{fig:NealAI}
+        \end{subfigure}
+        \caption{(a) depicts the hierarchical structure of the hyper-parameter as constructed in the work by Neal as a Bayesian Network. (b)-(d) shows a Venture GP on Neal's example. We see that prior renders functions all over the place (a). After \gpmem\ observes a some data-points an arbitrary smooth trend with a high level of noise is sampled. After running inference on the hierarchical system of hyper-parameters we see that the posterior reflects the actual curve well. Outliers are treated as such and do not confound the GP}\label{fig:neal}
+\end{figure}
+We illustrate the hyper-parameter by showing the shift of the distribution on the noise parameter $\sigma$ (Fig. \ref{fig:inference}). We see that \gpmem\ learns the posterior distribution well, the posterior even exhibits a bimodal histogram when sampling $\sigma$ 100 times reflecting the two modes of data generation, that is normal noise and outliers\footnote{For this pedagogical example we have increased the probability for outliers in the data generation slightly from 0.05 to 0.2}. 
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.5\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_unif_sigma_before_desktop_50_5.png}
+                \caption{$\sigma$ Before}
+                \label{fig:before}
+        \end{subfigure}%
+        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+          %(or a blank line to force the subfigure onto a new line)
+        \begin{subfigure}[b]{0.5\textwidth} \centering
+                \includegraphics[height=4.5cm]{figs/neal_unif_sigma_after_ulliDesktop_n503.png}
+                \caption{$\sigma$  After}
+                \label{fig:after))}
+        \end{subfigure}
+        \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
+\end{figure}
+
 
 
 
