@@ -261,7 +261,7 @@ We illustrate the hyper-parameter by showing the shift of the distribution on th
 \subsubsection{GP modelling as a special case of \gpmem}
 From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
 Modelling the data set with a GP then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
-Indeed, if $f_\restr$ is defined as a foreign procedure made available as a black-box to Venture:
+Indeed, if $f_\restr$ is a foreign procedure made available as a black-box to Venture, whose secret underlying source code is:
 \begin{verbatim}
 def f_restr(x):
   if x in D:
