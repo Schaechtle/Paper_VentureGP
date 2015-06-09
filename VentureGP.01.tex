@@ -161,7 +161,7 @@ Given a stochastic process that implements the GP algebra above we can implement
 \begin{minipage}{\linewidth}
 \footnotesize
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,label=alg:gpNeal,caption=Bayesian GP Smoothing,mathescape,label=alg:gpsmooth]
+\begin{lstlisting}[frame=single,caption=Bayesian GP Smoothing,mathescape,label=alg:gpNeal]
 [ASSUME l  (gamma 1 3)] $\in$ {hyper-parameters} 
 [ASSUME sf (gamma 1 3)] $\in$ {hyper-parameters}
 
@@ -190,10 +190,11 @@ The ASSUME directives describe the assumptions we make for the GP model, we assu
 
 In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte}. 
 
-We have already implemented this in listing \ref{alg:gpsmooth}. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
+We have already implemented this in listing \ref{alg:gpNeal}. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
 The program gives rise to a Bayesian representation of GPs, which we will explore in the following.
 
 \subsection{A Bayesian interpretation}
+
 
 \subsubsection{GP modelling as a special case of \gpmem}
 From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
@@ -206,7 +207,7 @@ def f_restr(x):
   else:
     raise Exception('Illegal input')
 \end{verbatim}
-Then the \texttt{OBSERVE} code in Listing \ref{alg:gpsmooth} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
+Then the \texttt{OBSERVE} code in Listing \ref{alg:gpNeal} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
 \begin{verbatim}
 [ASSUME (list f_compute f_emu) (gpmem f_restr)]
 for i=1 to n:
@@ -221,7 +222,7 @@ In this way, we could use \gpmem\ to perform online learning using only a subset
 
 More generally, \gpmem\ is relevant not just when a data set is available, but also whenever we have at hand a function $f_\restr$ which is expensive or impractical to evaluate many times.
 \gpmem\ allows us to model $f_\restr$ with a GP-based emulator $f_\emu$, and also to use $f_\emu$ during the learning process to choose, in an online manner, an effective set of probe points $\{x_i\}$ on which to use our few evaluations of $f_\restr$.
-This idea is illustrated in detail in Section \ref{sec:bayesopt}. First, we will show how one can utilize \gpmem\ for reproducing state-of-the-art models that are based on GP.
+This idea is illustrated in detail in Section \ref{sec:bayesopt}.First, we will show how one can utilize \gpmem\ for reproducing state-of-the-art models that are based on GP.
 \subsubsection{The efficacy of learning hyperparameters}
 
 
@@ -301,7 +302,7 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
                 \caption{Inferred}
                 \label{fig:NealAI}
         \end{subfigure}
-        \caption{(a) depicts the hierarchical structure of the hyper-parameter as constructed in the work by Neal as a Bayesian Network. (b)-(d) shows a Venture GP on Neal's example. We see that prior renders functions all over the place (a). After \gpmem\ observes a some data-points an arbitrary smooth trend with a high level of noise is sampled. After running inference on the hierarchical system of hyper-parameters we see that the posterior reflects the actual curve well. Outliers are treated as such and do not confound the GP}\label{fig:neal}
+        \caption{(a) depicts the hierarchical structure of the hyper-parameter as constructed in the work by Neal as a Bayesian Network. (b)-(d) shows a Venture GP on Neal's example. We see that prior renders functions all over the place (a). After \gpmem\ observes a some data-points an arbitrary smooth trend with a high level of noise is sampled. After running inference on the hierarchical system of hyper-parameters we see that the posterior reflects the actual curve well. Outliers are treated as such and do not confound the GP.}\label{fig:neal}
 \end{figure}
 We illustrate the hyper-parameter by showing the shift of the distribution on the noise parameter $\sigma$ (Fig. \ref{fig:inference}). We see that \gpmem\ learns the posterior distribution well, the posterior even exhibits a bimodal histogram when sampling $\sigma$ 100 times reflecting the two modes of data generation, that is normal noise and outliers\footnote{For this pedagogical example we have increased the probability for outliers in the data generation slightly from 0.05 to 0.2}. 
 
@@ -322,9 +323,6 @@ We illustrate the hyper-parameter by showing the shift of the distribution on th
         \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
 \end{figure}
 
-
-
-
 \subsection{Structure Learning}
 
 Larger variations are achieved by changing the type of the covariance function structure. 
@@ -344,7 +342,7 @@ both, $k_3$ and $k_4$ are valid covariance function structures. This leads to an
 
 \begin{minipage}{\linewidth}
 \scriptsize
-\begin{lstlisting}[frame=single,label=alg:gpNeal,caption=LIN $\times$ PER,mathescape]
+\begin{lstlisting}[frame=single,caption=LIN $\times$ PER,mathescape]
 [ASSUME l (gamma 1 3)]
 [ASSUME sf (gamma 1 2)]
 [ASSUME a (gamma 2 2)]
