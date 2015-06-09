@@ -563,7 +563,7 @@ Bayesian Optimization poses the problem of finding the global maximum of an unkn
 
 The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}, a general framework to solve exploration-exploitation problems.
 In our case, ``exploration'' is probing the true value of the function $f$ by performing an expensive computation, and ``exploitation'' is using samples from a GP-based model (conditioned on the previously computed true values of $f$) to approximate the values of $f$ at new points; the cost of doing so will depend on the application.
-In the language of \gpmem\ (see Section \ref{sec:special-case-gpmem}), the function $f_\restr$ is $f$, and the exploration-exploitation trade-off is: given a point $x$, should we evaluate $f_\restr$ directly, thus resulting in a more accurate value and more training data for the emulator $f_\emu$, or should we just sample $f_\emu$ for a good-enough approximation?
+In the terminology of \gpmem\ (see Section \ref{sec:special-case-gpmem}), the function $f_\restr$ is $f$, and the exploration-exploitation trade-off is: given a point $x$, should we evaluate $f_\restr$ directly, thus resulting in a more accurate value and more training data for the emulator $f_\emu$, or should we just sample $f_\emu$ for a good-enough approximation?
 The answer will of course depend on the application, but also note that judicious choice of when to do each will result in more useful training data for the GP model.
 
 \begin{lstlisting}[frame=single,caption={
