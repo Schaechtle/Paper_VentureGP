@@ -254,6 +254,7 @@ Assuming the covariance structure is an additive comprised of a smoothing and a 
 [ASSUME l  (gamma (alpha 1) (beta 1))]   $\in$ {hyper-parameters} 
 [ASSUME sf (gamma (alpha 2) (beta 2))]   $\in$ {hyper-parameters}
 [ASSUME sigma (uniform 0 5 )]            $\in$ {hyper-parameters}
+% above: structured prior, Fig. '\ref{fig:NealpriorStruct}'
 
 $\smash{k_1(x,x^\prime) := \theta^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 $\smash{k_2(x,x^\prime) := \sigma^2 \delta_{x,x^\prime}}$
@@ -274,7 +275,7 @@ for i=1 to n:
 [INFER (REPEAT 100 
 	(DO (MH {hyper-parameters} one 2)
 	    (MH {hyper-parameters-$\Gamma$} one 2) ))]
-[SAMPLE (f_emu (array 1 2 3))]  % Posterior , Fig. '\ref{fig:NealAI}'
+[SAMPLE (f_emu (array 1 2 3))]  % posterior , Fig. '\ref{fig:NealAI}'
 \end{lstlisting}
 \end{minipage}
 
@@ -437,7 +438,7 @@ where $P(n)$ is a prior on the number of base kernels used which can sample from
 
 Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. Certain covariance functions can differ in terms of the hyper-parameterization but can be absorbed into a single covariance function with a different parameterization. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify expressions using the following grammar:
 \begin{minipage}{\linewidth}
-\scriptsize
+
 \begin{lstlisting}[frame=single,label=alg:simplify,caption=Grammar to simplify expressions,mathescape]
 SE $\times$ SE                  $\rightarrow$ SE 
 {SE,PER,C,WN} $\times$ WN       $\rightarrow$ WN
@@ -451,20 +452,33 @@ For reproducing results from the Automated Statistician Project in a Bayesian fa
 
 
 \begin{minipage}{\linewidth}
-\scriptsize
+\small
 \begin{lstlisting}[frame=single,label=alg:structureVent,caption=Venture Code for Bayesian GP Structure Learning,mathescape]
-[ASSUME S (array K$_1$,K$_2$,$\cdots$,K$_n$)] // (defined as above)
-[ASSUME p$_n$ (uniform_structure n)]
-[ASSUME S (array K$_1$,K$_2$,$\cdots$,K$_n$)]
-[ASSUME K$^*$ (grammar S p$_n$)]
-[ASSUME GP (make-gp 0 K$^*$ ]
+[ASSUME base_kernels (list K$_1$,K$_2$,$\cdots$,K$_n$)] % defined as above
+[ASSUME p$_n$ (uniform_structure n)]        % prior on the number of kernels
+[ASSUME S$_{\emph{K}}$ (subset  base_kernels p$_n$)]    % sampling a subset of size n
+[ASSUME composition (lambda (l)          % kernel composition
+                     (if (lte ( size l) 1)
+                         (first l)
+                          (if (flip)
+                              (func_plus (first l) (cov_compo (rest l)))
+                              (func_times (first l) (cov_compo (rest l)))
+                          )
+                     )
+              )
 
-[OBSERVE GP D]
+[ASSUME K (composition  S$_{\emph{K}}$)]
+
+[ASSUME (list f_compute f_emu) (gpmem f_restr K )]
+
+for i=1 to n:
+  [PREDICT (f_compute x[i])] % observing with a look-up function
 
 [INFER  (REPEAT 2000 (DO 
-			(MH 10 p$_n$ one 1) 
-			(MH 10 K$^*$ one 1) 
-			(MH 10 {hyper-parameters} one 10)) ]
+			(MH p$_n$ one 1) 
+			(MH S$_{\emph{K}}$ one 1) 
+			(MH K$^*$ one 1) 
+			(MH {hyper-parameters} one 10)) ]
 
 
 \end{lstlisting}
