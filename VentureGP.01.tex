@@ -14,6 +14,7 @@
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{etoolbox}
+\usepackage{fancyvrb}
 \usetikzlibrary{bayesnet}
 \newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
 
@@ -269,33 +270,38 @@ and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
 \begin{equation}
 \alpha_1^{(t)} \sim \Gamma(\alpha^1_{\alpha},\beta^1_{ \alpha } ),\; \alpha_2^{(t)} \sim \Gamma(\alpha^2_{\alpha},\beta^2_{\alpha}),\cdots
 \end{equation}
-We can represent this kind of model using \gpmem\ with only a few lines of code {\bf ToDo: Turn this into \gpmem\ and change cov structure so that it accounts for WN kernel, move the background on kernel composition from structure learning to background so that one can understand SE + WN in the case below}:
+Assuming the covariance structure is an additive comprised of a smoothing and a white noise kernel, one can represent this kind of model using \gpmem\ with only a few lines of code:
 \begin{minipage}{\linewidth}
 \footnotesize
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,caption=Bayesian GP Smoothing,mathescape,label=alg:gphierarch]
-
+\begin{lstlisting}[frame=single,caption=Hierarchical  GP Smoothing,mathescape,label=alg:gphierarch,escapechar=']
 [ASSUME alpha (mem (lambda (i)  (gamma  1 3 )))] $\in$ {hyper-parameters-$\Gamma$} 
 [ASSUME beta  (mem (lambda (i)  (gamma  1 3 )))] $\in$ {hyper-parameters-$\Gamma$} 
 
+[ASSUME l  (gamma (alpha 1) (beta 1))]   $\in$ {hyper-parameters} 
+[ASSUME sf (gamma (alpha 2) (beta 2))]   $\in$ {hyper-parameters}
+[ASSUME sigma (uniform 0 5 )]            $\in$ {hyper-parameters}
 
-[ASSUME l  (gamma (alpha 1) (beta 1))] $\in$ {hyper-parameters} 
-[ASSUME sf (gamma (alpha 2) (beta 2))] $\in$ {hyper-parameters}
+$\smash{k_1(x,x^\prime) := \theta^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
+$\smash{k_2(x,x^\prime) := \sigma^2 \delta_{x,x^\prime}}$
 
-$\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
-$\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
-[ASSUME f VentureFunction($k,\sigma,\ell$) ]
-[ASSUME SE make-se (apply-function f l sf) ]
-[ASSUME (make-gp 0 SE) ]
+[ASSUME k$_1$ VentureFunction($k_1,\theta,\ell$) ]
+[ASSUME k$_2$ VentureFunction($k_2,\sigma$) ]
 
-[SAMPLE GP (array 1 2 3)] % Prior
-[OBSERVE GP D]
-[SAMPLE GP (array 1 2 3)] 
+[ASSUME SE make-se (apply-function k$_1$ l sf) ]
+[ASSUME WN make-se (apply-function k$_1$ sigma) ]
+
+[ASSUME (list f_compute f_emu) (gpmem f_restr (function-plus SE WN) )]
+[SAMPLE (f_emu (array 1 2 3))]  % prior, Fig. '\ref{fig:NealBO}'
+
+for i=1 to n:
+  [PREDICT (f_compute x[i])] % observing with a look-up function
+[SAMPLE (f_emu (array 1 2 3))]  % after observation, Fig. '\ref{fig:NealAO}'
+  
 [INFER (REPEAT 100 
 	(DO (MH {hyper-parameters} one 2)
 	    (MH {hyper-parameters-$\Gamma$} one 2) ))]
-[SAMPLE GP (array 1 2 3)] % Posterior
-
+[SAMPLE (f_emu (array 1 2 3))]  % Posterior , Fig. '\ref{fig:NealAI}'
 \end{lstlisting}
 \end{minipage}
 
@@ -322,7 +328,7 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
         \begin{subfigure}[b]{0.49\textwidth} \centering
                 \includegraphics[height=7.5cm]{figs/neal_se_2final.png}
                 \caption{Observed}
-                \label{fig:NealAO))}
+                \label{fig:NealAO}
         \end{subfigure}
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
           %(or a blank line to force the subfigure onto a new line)
