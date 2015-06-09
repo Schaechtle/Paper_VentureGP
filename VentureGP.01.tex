@@ -596,7 +596,7 @@ for i=1 to 15:
   [PREDICT (f_compute (mc_argmax f_emu_pointwise mc_sampler))]
   [INFER (MH 'hypers one 50)
 
-[INFER (collect_stats f_emu)]
+[INFER (extract_stats f_emu)]
 \end{lstlisting}
 %We sample a probe from the posterior
 %\begin{equation}
