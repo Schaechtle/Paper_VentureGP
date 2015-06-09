@@ -112,10 +112,14 @@ We evaluate the contribution on problems posed by the GP community using real wo
 The paper is structured as follows, we will first provide some background on memoization. We will explain programming in Venture and provide a brief introduction to GPs. We introduce \gpmem\ and its use in probabilistic programming and Bayesian modeling. Finally, we will show how we can apply \gpmem\ on problems of causally structured hierarchical priors for hyper-parameter inference, structure discovery for Gaussian Processes and Bayesian Optimization including experiments with real world and synthetic data.
 \section{Background}
 \subsection{Memoization}
-\begin{itemize}
- \item standard memoization
- \item memoization as described in~\citep{goodman2008church}
-\end{itemize}
+Memoization is the idea of computing the value of a function given an input once and then store it. If the function is called again at the same input, we return the stored value without evaluating the function body again. Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a program for determinstic programs it does for stochastic ones. This implies that one can stochastically decide on each function evaluation whether to use a stored value or a new function evaluation. Here, memoization induces random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the probabilistic program: we interpret a specific mapping from function input to function output as a single possible world~\citep{mcallester2008random}.
+
+
+%Here, the theoretically infinite infinite-dimensional generalization of the Dirichlet Distribution i distribution Generative processes considering  have been introduced for the discrete case where models infinitely valued process is treated computationally as finite. 
+
+
+%cases where latent values are treated infinite 
+
 
 \subsection{Venture}
 Venture is a compositional language for custom inference strategies that comes with a Scheme- and Java-Script-like front-end syntax. Its implementation is based on on three concepts. (i) stochastic procedure interfaces that specify and encapsulate random variables, analogously to conditional probability tables in a Bayesian network; (ii) probabilistic execution traces that represent execution histories and capture conditional dependencies; and (iii) scaffolds that partition execution histories and factor global inference problems into sub-problems. These building blocks provide a powerful way to represent probability distributions; some of which cannot be expressed with density functions. For the purpose of this work the most important Venture directives that operate on these building blocks to understand are ASSUME, OBSERVE, SAMPLE and INFER. ASSUME induces a hypothesis space for (probabilistic) models including random variables by binding the result of an expression to a symbol. SAMPLE simulates a model expression and returns a value. OBSERVE adds constraints to model expressions. INFER instructions incorporate observations and cause Venture to find a hypothesis that is probable given the data. 
@@ -226,9 +230,39 @@ The program gives rise to a Bayesian representation of GPs, which we will explor
 \subsection{A Bayesian interpretation}
 
 
+\subsubsection{GP modelling as a special case of \gpmem}\label{sec:special-case-gpmem}
+From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
+Modelling the data set with a GP then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
+Indeed, if $f_\restr$ is a foreign procedure made available as a black-box to Venture, whose secret underlying source code is:
+
+\begin{minipage}{8cm}
+\begin{verbatim}
+def f_restr(x):
+  if x in D:
+    return D[x]
+  else:
+    raise Exception('Illegal input')
+\end{verbatim}
+\end{minipage}
+
+Then the \texttt{OBSERVE} code in Listing \ref{alg:gpNeal} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
+
+\begin{minipage}{10cm}
+\begin{verbatim}
+[ASSUME (list f_compute f_emu) (gpmem f_restr)]
+for i=1 to n:
+  [PREDICT (f_compute x[i])]
+  [INFER (MH {hyper-parameters} one 100)]
+[SAMPLE (f_emu (array 1 2 3))]
+\end{verbatim}
+\end{minipage}
+
+This rewriting has at least two benefits: (i) readability (in some cases), and (ii) amenability to active learning.
+As to (i), the statistical code of creating a Gaussian process is replaced with a memoization-like idiom, which will be more familiar to programmers.
+As to (ii), when using \gpmem, it is quite easy to decide incrementally which data point to sample next: for example, the loop from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in which the next index \texttt{i} is chosen by a supplied decision rule.
+In this way, we could use \gpmem\ to perform online learning using only a subset of the available data.
+
 \subsubsection{The efficacy of learning hyperparameters}
-
-
 
 The probability of the hyper-parameters of a GP with assumptions as above and given covariance function structure $\mathbf{K}$ can be described as:
 \begin{equation}
@@ -253,7 +287,7 @@ Assuming the covariance structure is an additive comprised of a smoothing and a 
 
 [ASSUME l  (gamma (alpha 1) (beta 1))]   $\in$ {hyper-parameters} 
 [ASSUME sf (gamma (alpha 2) (beta 2))]   $\in$ {hyper-parameters}
-[ASSUME sigma (uniform 0 5 )]            $\in$ {hyper-parameters}
+[ASSUME sigma (uniform 0 5 )]            $\in$ {hyper-parameters} % Fig. '\ref{fig:inference}'
 % above: structured prior, Fig. '\ref{fig:NealpriorStruct}'
 
 $\smash{k_1(x,x^\prime) := \theta^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
@@ -332,38 +366,18 @@ We illustrate the hyper-parameter by showing the shift of the distribution on th
         \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
 \end{figure}
 
-\subsubsection{GP modelling as a special case of \gpmem}\label{sec:special-case-gpmem}
-From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
-Modelling the data set with a GP then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
-Indeed, if $f_\restr$ is a foreign procedure made available as a black-box to Venture, whose secret underlying source code is:
-\begin{verbatim}
-def f_restr(x):
-  if x in D:
-    return D[x]
-  else:
-    raise Exception('Illegal input')
-\end{verbatim}
-Then the \texttt{OBSERVE} code in Listing \ref{alg:gpNeal} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
-\begin{verbatim}
-[ASSUME (list f_compute f_emu) (gpmem f_restr)]
-for i=1 to n:
-  [PREDICT (f_compute x[i])]
-[INFER (MH {hyper-parameters} one 100)]
-[SAMPLE (f_emu (array 1 2 3))]
-\end{verbatim}
-This rewriting has at least two benefits: (i) readability (in some cases), and (ii) amenability to active learning.
-As to (i), the statistical code of creating a Gaussian process is replaced with a memoization-like idiom, which will be more familiar to programmers.
-As to (ii), when using \gpmem, it is quite easy to decide incrementally which data point to sample next: for example, the loop from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in which the next index \texttt{i} is chosen by a supplied decision rule.
-In this way, we could use \gpmem\ to perform online learning using only a subset of the available data.
+\subsubsection{Broader applicability of \gpmem}
 
 More generally, \gpmem\ is relevant not just when a data set is available, but also whenever we have at hand a function $f_\restr$ which is expensive or impractical to evaluate many times.
 \gpmem\ allows us to model $f_\restr$ with a GP-based emulator $f_\emu$, and also to use $f_\emu$ during the learning process to choose, in an online manner, an effective set of probe points $\{x_i\}$ on which to use our few evaluations of $f_\restr$.
 This idea is illustrated in detail in Section \ref{sec:bayesopt}.
-First, we will show how one can utilize \gpmem\ for reproducing state-of-the-art models that are based on GP.
+Before doing this, we will illustrate another benefit of having a probabilistic programming apparatus for GP modelling: the linguistically unified treatment of inference over structure and inference over parameters.
+This unification makes interleaved joint inference over structure and parameters very natural, and allows us to give a short, elegant description of what it means to ``learn the covariance function,'' both in prose and in code.
+Furthermore, the example in Section \ref{sec:structurelearning} below recovers the performance of current state-of-the-art GP-based models.
 
 
 
-\subsection{Structure Learning}
+\subsection{Structure Learning}\label{sec:structurelearning}
 The space of possible kernel composition is infinite. Combining inference over this space with the problem of finding a good parameterization that could potentially explain the observed data best poses a hard problem. The natural language interpretation of the meaning of a kernel and it's composition renders this a problem of symbolic computation. Duvenaud and colleagues note that sum of kernels can be interpreted as logical OR operations and kernel multiplication as logical AND~\citeyearpar{duvenaud2013structure}. This is due to the kernel rendering two points similar if $k_1$ OR $k_2$ outputs a high value in the case of a sum. Respectively, multiplication of two kernel results in high values only if $k_1$ AND $k_2$ have high values (see Fig. \ref{fig:composite} for examples how to interpret global vs. local aspects and its symbolic analog respectively). 
 
 In the following, we will refer to covariance functions that are not composite as base covariance functions. Note that this form of composition can be easily expressed in Venture, for example if one wishes to add a linear and a periodic kernel:
@@ -475,10 +489,10 @@ for i=1 to n:
   [PREDICT (f_compute x[i])] % observing with a look-up function
 
 [INFER  (REPEAT 2000 (DO 
-			(MH p$_n$ one 1) 
-			(MH S$_{\emph{K}}$ one 1) 
-			(MH K$^*$ one 1) 
-			(MH {hyper-parameters} one 10)) ]
+                        (MH p$_n$ one 1) 
+                        (MH S$_{\emph{K}}$ one 1) 
+                        (MH K$^*$ one 1) 
+                        (MH {hyper-parameters} one 10)) ]
 
 
 \end{lstlisting}
@@ -563,7 +577,7 @@ Bayesian Optimization poses the problem of finding the global maximum of an unkn
 
 The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}, a general framework to solve exploration-exploitation problems.
 In our case, ``exploration'' is probing the true value of the function $f$ by performing an expensive computation, and ``exploitation'' is using samples from a GP-based model (conditioned on the previously computed true values of $f$) to approximate the values of $f$ at new points; the cost of doing so will depend on the application.
-In the language of \gpmem\ (see Section \ref{sec:special-case-gpmem}), the function $f_\restr$ is $f$, and the exploration-exploitation trade-off is: given a point $x$, should we evaluate $f_\restr$ directly, thus resulting in a more accurate value and more training data for the emulator $f_\emu$, or should we just sample $f_\emu$ for a good-enough approximation?
+In the terminology of \gpmem\ (see Section \ref{sec:special-case-gpmem}), the function $f_\restr$ is $f$, and the exploration-exploitation trade-off is: given a point $x$, should we evaluate $f_\restr$ directly, thus resulting in a more accurate value and more training data for the emulator $f_\emu$, or should we just sample $f_\emu$ for a good-enough approximation?
 The answer will of course depend on the application, but also note that judicious choice of when to do each will result in more useful training data for the GP model.
 
 \begin{lstlisting}[frame=single,caption={
