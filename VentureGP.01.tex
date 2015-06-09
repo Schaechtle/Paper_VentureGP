@@ -161,7 +161,7 @@ Given a stochastic process that implements the GP algebra above we can implement
 \begin{minipage}{\linewidth}
 \footnotesize
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,label=alg:gpNeal,caption=Bayesian GP Smoothing,mathescape,label=alg:gpsmooth]
+\begin{lstlisting}[frame=single,caption=Bayesian GP Smoothing,mathescape,label=alg:gpNeal]
 [ASSUME l  (gamma 1 3)] $\in$ {hyper-parameters} 
 [ASSUME sf (gamma 1 3)] $\in$ {hyper-parameters}
 
@@ -193,7 +193,7 @@ In the case where hyper-parameters are unknown they can be found deterministical
 \ell^{(t)} \sim \Gamma(\alpha_1,\beta_1),\;\sigma^{(t)} \sim \Gamma(\alpha_2,\beta_2)
 \end{equation}
 
-We have already implemented this in listing \ref{alg:gpsmooth}. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
+We have already implemented this in listing \ref{alg:gpNeal}. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
 The program gives rise to a Bayesian representation of GPs, which we will explore in the following.
 
 \subsection{A Bayesian interpretation}
@@ -269,7 +269,7 @@ def f_restr(x):
   else:
     raise Exception('Illegal input')
 \end{verbatim}
-Then the \texttt{OBSERVE} code in Listing \ref{alg:gpsmooth} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
+Then the \texttt{OBSERVE} code in Listing \ref{alg:gpNeal} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
 \begin{verbatim}
 [ASSUME (list f_compute f_emu) (gpmem f_restr)]
 for i=1 to n:
@@ -307,7 +307,7 @@ both, $k_3$ and $k_4$ are valid covariance function structures. This leads to an
 
 \begin{minipage}{\linewidth}
 \scriptsize
-\begin{lstlisting}[frame=single,label=alg:gpNeal,caption=LIN $\times$ PER,mathescape]
+\begin{lstlisting}[frame=single,caption=LIN $\times$ PER,mathescape]
 [ASSUME l (gamma 1 3)]
 [ASSUME sf (gamma 1 2)]
 [ASSUME a (gamma 2 2)]
