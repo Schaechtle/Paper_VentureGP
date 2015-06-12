@@ -589,11 +589,11 @@ Bayesian optimization casts the problem of finding the global maximum of an unkn
 Evaluating the actual function may be very expensive, either in computation time or in some other resource.
 For one example, when searching for the best configuration for the learning algorithm of a large convolutional neural network, a large amount of computational work is required to evaluate a candidate configuration, and the space of possible configurations is high-dimensional.
 Another common example, alluded to in Section \ref{sec:gpmem-broader}, is data acquisition: for machine learning problems in which a large body of data is available, it is often desirable to choose the right queries to produce a data set on which learning will be most effective.
-In continuous settings, many Bayesian optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
+In continuous settings, many Bayesian optimization methods employ GPs~\citep[e.g.][]{snoek2012practical}.
 
 We have implemented a version of Thompson sampling using GPs in Venture.
 Thompson sampling~\cite{thompson1933likelihood} is a widely-used Bayesian framework for solving exploration-exploitation problems.
-Our implementation has two notable features: (i) the ability to search over a broader class of contexts than typical parametric families of contexts, and (ii) the parsimony of the resulting probabilistic program.
+Our implementation has two notable features: (i) the ability to search over a broader space of contexts than the parametric families that are typically used, and (ii) the parsimony of the resulting probabilistic program.
 
 \subsection{Thompson sampling framework}
 We now lay out the setup of Thompson sampling for Markov decision processes (MDPs).
@@ -613,30 +613,31 @@ Thompson sampling thus has the following steps, repeated as long as desired:
 \end{enumerate}
 Note that when $P(\theta)$ has high entropy, the chosen action $a$ may be far from optimal, but the information gained by probing action $a$ will improve the belief $\theta$.
 This amounts to ``exploration.''
-When $P(\theta)$ has high entropy and is concentrated on a region of belief space that closely matches the true distributions $P_\true$, exploration will be less likely to occur, but the chosen actions $a$ will tend to receive high rewards.
+When $P(\theta)$ has high entropy and is concentrated on a region of belief space that closely matches the true distributions $P_\true(r|a)$, exploration will be less likely to occur, but the chosen actions $a$ will tend to receive high rewards.
 This amounts to ``exploitation.''
 
 Typically, when Thompson sampling is implemented, the search over contexts $\theta \in \Theta$ is limited by the choice of representation.
 In traditional programming environments, $\theta$ often consists of a few numerical parameters for a family of distributions of a fixed functional form.
 With work, a mixture of a few functional forms is possible; but without probabilistic programming machinery, implementing a rich context space $\Theta$ would be an unworkably large technical burden.
-In a probabilstic programing platform, however, the representation of heterogeneously structured or infinite-dimensional context spaces is quite natural.
-Any computable model of the conditional distributions $\br{P(r|a)}_{a \in \Acal}$ can be represented as a procedure-valued random variable $(\lambda (a) \ldots)$.
-Thus, for computational Thompson sampling, the most general context space $\hat\Theta$ is the space of program texts.
-Any other context space $\Theta$ will be a subset of $\hat\Theta$.
+In a probabilstic programing language, however, the representation of heterogeneously structured or infinite-dimensional context spaces is quite natural.
+Any computable model of the conditional distributions $\br{P(r|a)}_{a \in \Acal}$ can be represented as a (stochastic-)procedure-valued random variable $(\lambda (a) \ldots)$.
+Thus, for computational Thompson sampling, the most general context space $\widehat\Theta$ is the space of program texts.
+Any other context space $\Theta$ has a natural embedding as a subset of $\widehat\Theta$.
 
 \subsection{Thompson sampling in Venture}
-Because Venture supports sampling and inference on procedure-valued random variables (and the generative models which produce those procedures), Venture can capture arbitrary context spaces as described above.
+Because Venture supports sampling and inference on (stochastic-)procedure-valued random variables (and the generative models which produce those procedures), Venture can capture arbitrary context spaces as described above.
 To demonstrate, we have implemented Thompson sampling in Venture in which the contexts $\theta$ are Gaussian processes over the action space $\Acal = \R$.
 That is, $\theta = (\mu, K)$, where the mean $\mu$ is a computable function $\Acal \to \R$ and the covariance $K$ is a computable (symmetric, positive-semidefinite) function $\Acal \times \Acal \to \R$.
 This represents a Gaussian process $\br{R_a}_{a \in \Acal}$, where $R_a$ represents the reward for action $a$.
 % where for any finite subset $\br{a_i}_{i=1}^{n} \subset \Acal$, the marginal distribution on $\pn{R_{a_i}}$ is Gaussian with mean $\pn{\mu(a_i)}_{i=1}^{n}$ and covariance matrix $\begin{pmatrix} K(a_i,a_j) \end{pmatrix}_{1 \leq i,j \leq n}$.
-Computationally, we represent a context as $\theta = (\sigma, \ell, \abf_\past, \rbf_\past)$, where
+Computationally, we represent a context not as a pair of infinite lookup tables for $\mu$ and $K$, but as a finite data structure $\theta = (K_\prior, \sigma, \ell, \abf_\past, \rbf_\past)$, where
 \begin{itemize}
-  \item $\sigma$ and $\ell$ are hyperparameters for a smoothing kernel $K_\prior(a,a') = \sigma^2 \exp\pn{-\frac{(a-a')^2}{2\ell^2}}$
+  \item $K_\prior = K_{\prior,\sigma,\ell}$ is a procedure, with parameters $\sigma,\ell$, to be used as the prior covariance function: $K_\prior(a,a') = \sigma^2 \exp\pn{-\frac{(a-a')^2}{2\ell^2}}$
+  \item $\sigma$ and $\ell$ are (hyper)parameters for $K_\prior$
   \item $\abf_\past = \pn{a_i}_{i=1}^{n}$ are the previously probed actions
   \item $\rbf_\past = \pn{r_i}_{i=1}^{n}$ are the corresponding rewards
 \end{itemize}
-To simplify the treatment, we take prior mean $\mu_\prior \equiv 0$.  The mean and covariance for $\theta$ are then gotten by the usual computational procedure:
+To simplify the treatment, we take prior mean $\mu_\prior \equiv 0$.  The mean and covariance for $\theta$ are then gotten by the usual conditioning formula:
 \begin{align*}
   \mu(\abf)
   &= \mu\pn{\abf \mvert \abf_\past, \rbf_\past} \\
@@ -651,11 +652,11 @@ To simplify the treatment, we take prior mean $\mu_\prior \equiv 0$.  The mean a
        \,K_\prior(\abf_\past, \abf).
 \end{align*}
 Note that even in this simple example, the context space $\Theta$ is not a finite-dimensional parametric family, since the vectors $\abf_\past$ and $\rbf_\past$ grow as more samples are taken.
-$\Theta$ is, however, quite easily representable as a computational procedure together with parameters and past samples, as we do in the representation $\theta = (\sigma, \ell, \abf_\past, \rbf_\past)$.
+$\Theta$ is, however, quite easily representable as a computational procedure together with parameters and past samples, as we do in the representation $\theta = (K_\prior, \sigma, \ell, \abf_\past, \rbf_\past)$.
 
 \subsection{Implementation with \gpmem}
 As a demonstration, we use Thompson sampling to optimize an unknown function $V(x)$ (the value function) using \gpmem.
-(\textbf{TODO} we should not assume $V$ is deterministic, it would be easy enough to make it random.)
+(\textbf{TODO} we should not assume $V$ is deterministic, it would be easy enough to make it random or have it give noisy samples.)
 We assume $V$ is made available to Venture as a black-box.
 The code for optimizing $V$ is given in Listing \ref{alg:bayesopt}.
 For step \ref{itm:Thompson-conditioning} of Thompson sampling, the Bayesian update, we not only condition on the new data (the chosen action $a$ and the received reward $r$), but also perform inference on the hyperparameters $\sigma, \ell$ using a Metropolis--Hastings sampler.
