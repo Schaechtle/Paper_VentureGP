@@ -169,7 +169,7 @@ for a zero mean prior GP with a posterior mean of:
 and covariance
 \begin{equation}
 \label{eq:conditonalGaussianCovariance}
-\bm{\Sigma} =  \mathbf{K}(\mathbf{x},\mathbf{x}) + \mathbf{K}(\mathbf{x},\mathbf{x}^*)\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1} \mathbf{K}(\mathbf{x}^*,\mathbf{x}).
+\bm{\Sigma} =  \mathbf{K}(\mathbf{x},\mathbf{x}) - \mathbf{K}(\mathbf{x},\mathbf{x}^*)\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1} \mathbf{K}(\mathbf{x}^*,\mathbf{x}).
 \end{equation}
 $\mathbf{K}$ is a covariance function. The log-likelihood is defined as:
 \begin{equation}
