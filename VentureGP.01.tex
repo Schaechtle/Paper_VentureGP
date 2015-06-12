@@ -15,6 +15,7 @@
 \usepackage{subcaption}
 \usepackage{etoolbox}
 \usepackage{fancyvrb}
+\usepackage{placeins}
 \usetikzlibrary{bayesnet}
 \newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
 
@@ -588,6 +589,7 @@ We found the final sample of multiple runs to be most informative. This kind of 
 \end{figure}
 
 
+\FloatBarrier
 \section{Bayesian Optimization}\label{sec:bayesopt}
 Bayesian optimization casts the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}.
 Evaluating the actual function may be very expensive, either in computation time or in some other resource.
@@ -670,11 +672,7 @@ We can see from the figure that, roughly speaking, each successive probe point $
 In the latter case, probing at $a$ decreases this uncertainty and, due to the smoothing kernel, also decreases the uncertainty at points near $a$.
 We thus see that our Thompson sampler simultaneously learns the value function and optimizes it.
 
-
-
-
-
-\begin{lstlisting}[frame=single,caption={
+\begin{lstlisting}[float,frame=single,caption={
   Code for Bayesian optimization using \gpmem.
   %The procedure \texttt{V\_compute} probes \texttt{V} directly, thus improving the GP model \texttt{V\_emu}.
   %(\texttt{V\_emu\_pointwise} is simply a shortcut for sampling the GP model at a single point; \texttt{V\_emu} is more general, allowing joint samples to be taken at any set of points.)
@@ -697,17 +695,6 @@ for i=1 to 15:
 
 [INFER (extract_stats V_emu)]
 \end{lstlisting}
-%We sample a probe from the posterior
-%\begin{equation}
-%\hat{\bm{\theta}} \sim P( \hat{\bm{\theta}}|\vec{\mathbf{x}}) 
-%\end{equation}
-%and then optimize the expected reward by choosing an action $a$
-%\begin{equation}
-%a_i = \argmax{a}\mathbb{E}_{P(\cdots|\theta)}[r(world_\theta(a))]
-%\end{equation}
-%\begin{equation}
-%x_i  \sim world_\theta(a_i) 
-%\end{equation}
 
 \begin{figure}
 \centering
@@ -726,6 +713,7 @@ for i=1 to 15:
 
 %We consider a true and  unknown reward function $r(x)$ that we estimate with a GP prior $\mathcal{GP}(0,K(\mathbf{x},\mathbf{x}))$. We denote past observations with $\mathcal{D} = \{(x;
 
+\FloatBarrier
 \section{Conclusion}
 We have shown Venture GPs. We have introduced novel stochastic processes for a probabilistic programming language. We showed how flexible non-parametric models can be treated in Venture in only a few lines of code. We evaluated our contribution on a range of hard problems for state-of-the-art Bayesian non-parametrics. Venture GPs showed competitive performance in all of them. 
 
