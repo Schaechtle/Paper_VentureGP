@@ -33,6 +33,22 @@
 \newcommand{\gpmem}{\texttt{gpmem}}
 \newcommand{\emu}{{\textrm{emu}}}
 \newcommand{\restr}{{\textrm{restr}}}
+\newcommand{\true}{{\textrm{true}}}
+\newcommand{\rmnew}{{\textrm{new}}}
+\newcommand{\past}{{\textrm{past}}}
+\newcommand{\prior}{{\textrm{prior}}}
+
+\newcommand{\Acal}{\mathcal{A}}
+\newcommand{\R}{\mathbb{R}}
+
+\newcommand{\abf}{\mathbf{a}}
+\newcommand{\rbf}{\mathbf{r}}
+
+\newcommand{\pn}[1]{\left( #1 \right)}
+\newcommand{\bkt}[1]{\left[ #1 \right]}
+\newcommand{\br}[1]{\left\{ #1 \right\}}
+\newcommand{\Ebkt}[1]{\mathbb{E}\bkt{#1}}
+\newcommand{\mvert}{\ \middle\vert\ }
 
 % The following is a modified version of what's available on Wikibooks,
 % http://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
@@ -362,7 +378,7 @@ We illustrate the hyper-parameter by showing the shift of the distribution on th
         \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
 \end{figure}
 
-\subsubsection{Broader applicability of \gpmem}
+\subsubsection{Broader applicability of \gpmem}\label{sec:gpmem-broader}
 
 More generally, \gpmem\ is relevant not just when a data set is available, but also whenever we have at hand a function $f_\restr$ which is expensive or impractical to evaluate many times.
 \gpmem\ allows us to model $f_\restr$ with a GP-based emulator $f_\emu$, and also to use $f_\emu$ during the learning process to choose, in an online manner, an effective set of probe points $\{x_i\}$ on which to use our few evaluations of $f_\restr$.
@@ -569,34 +585,112 @@ We found the final sample of multiple runs to be most informative. This kind of 
 
 
 \section{Bayesian Optimization}\label{sec:bayesopt}
-Bayesian Optimization poses the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}. Evaluating the actual function can be very expensive. For example, finding the best configuration for the learning algorithm of a large convolutional neural network implies expensive function evaluations to compare a potentially infinite number of configurations. Another common example is the example of data acquisition. For problems with large amounts of data available it may be interesting to chose certain informative data-points to evaluate a model on. In continuous domains, many Bayesian Optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
+Bayesian optimization casts the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}.
+Evaluating the actual function may be very expensive, either in computation time or in some other resource.
+For one example, when searching for the best configuration for the learning algorithm of a large convolutional neural network, a large amount of computational work is required to evaluate a candidate configuration, and the space of possible configurations is high-dimensional.
+Another common example, alluded to in Section \ref{sec:gpmem-broader}, is data acquisition: for machine learning problems in which a large body of data is available, it is often desirable to choose the right queries to produce a data set on which learning will be most effective.
+In continuous settings, many Bayesian optimization methods deploy GPs~\citep[e.g.][]{snoek2012practical}.
 
-The hierarchical nature of Bayesian Optimization makes it an ideal application for GPs in Venture. The following Bayesian Optimization scheme is closely related to Thompson Sampling~\cite{thompson1933likelihood}, a general framework to solve exploration-exploitation problems.
-In our case, ``exploration'' is probing the true value of the function $f$ by performing an expensive computation, and ``exploitation'' is using samples from a GP-based model (conditioned on the previously computed true values of $f$) to approximate the values of $f$ at new points; the cost of doing so will depend on the application.
-In the terminology of \gpmem\ (see Section \ref{sec:special-case-gpmem}), the function $f_\restr$ is $f$, and the exploration-exploitation trade-off is: given a point $x$, should we evaluate $f_\restr$ directly, thus resulting in a more accurate value and more training data for the emulator $f_\emu$, or should we just sample $f_\emu$ for a good-enough approximation?
-The answer will of course depend on the application, but also note that judicious choice of when to do each will result in more useful training data for the GP model.
+We have implemented a version of Thompson sampling using GPs in Venture.
+Thompson sampling~\cite{thompson1933likelihood} is a widely-used Bayesian framework for solving exploration-exploitation problems.
+Our implementation has two notable features: (i) the ability to search over a broader class of contexts than typical parametric families of contexts, and (ii) the parsimony of the resulting probabilistic program.
+
+\subsection{Thompson sampling framework}
+We now lay out the setup of Thompson sampling for Markov decision processes (MDPs).
+An agent is to take a sequence of actions $a_1, a_2, \ldots$ from a (possibly infinite) set of possible actions $\Acal$.
+After each action, a reward $r \in \R$ is received, according to an unknown conditional distribution $P_\true(r|a)$.
+The agent's goal is to maximize the total reward received for all actions.
+In Thompson sampling, the Bayesian agent accomplishes this by placing a prior distribution $P(\theta)$ on the possible ``contexts'' $\theta \in \Theta$.
+Here a context is a believed model of the conditional distributions $\{P(r|a)\}_{a \in \Acal}$, or at least, a believed statistic of these conditional distributions which is sufficient for deciding an action $a$.
+One example of such a sufficient statistic is the conditional mean $V(a|\theta) = \Ebkt{r|a,\theta}$, which can be thought of as a value function.
+Thompson sampling thus has the following steps, repeated as long as desired:
+\begin{enumerate}
+  \item Sample a context $\theta \sim P(\theta)$.
+  \item Choose an action $a \in \Acal$ which (approximately) maximizes $V(a|\theta) = \Ebkt{r|a,\theta}$.
+  \item\label{itm:Thompson-conditioning}
+    Let $r_\true$ be the reward received for action $a$.
+    Update the believed distribution on $\theta$, i.e., $P(\theta) \gets P_\rmnew(\theta)$ where $P_\rmnew(\theta) = P\pn{\theta \mvert a \mapsto r_\true}$.
+\end{enumerate}
+Note that when $P(\theta)$ has high entropy, the chosen action $a$ may be far from optimal, but the information gained by probing action $a$ will improve the belief $\theta$.
+This amounts to ``exploration.''
+When $P(\theta)$ has high entropy and is concentrated on a region of belief space that closely matches the true distributions $P_\true$, exploration will be less likely to occur, but the chosen actions $a$ will tend to receive high rewards.
+This amounts to ``exploitation.''
+
+Typically, when Thompson sampling is implemented, the search over contexts $\theta \in \Theta$ is limited by the choice of representation.
+In traditional programming environments, $\theta$ often consists of a few numerical parameters for a family of distributions of a fixed functional form.
+With work, a mixture of a few functional forms is possible; but without probabilistic programming machinery, implementing a rich context space $\Theta$ would be an unworkably large technical burden.
+In a probabilstic programing platform, however, the representation of heterogeneously structured or infinite-dimensional context spaces is quite natural.
+Any computable model of the conditional distributions $\br{P(r|a)}_{a \in \Acal}$ can be represented as a procedure-valued random variable $(\lambda (a) \ldots)$.
+Thus, for computational Thompson sampling, the most general context space $\hat\Theta$ is the space of program texts.
+Any other context space $\Theta$ will be a subset of $\hat\Theta$.
+
+\subsection{Thompson sampling in Venture}
+Because Venture supports sampling and inference on procedure-valued random variables (and the generative models which produce those procedures), Venture can capture arbitrary context spaces as described above.
+To demonstrate, we have implemented Thompson sampling in Venture in which the contexts $\theta$ are Gaussian processes over the action space $\Acal = \R$.
+That is, $\theta = (\mu, K)$, where the mean $\mu$ is a computable function $\Acal \to \R$ and the covariance $K$ is a computable (symmetric, positive-semidefinite) function $\Acal \times \Acal \to \R$.
+This represents a Gaussian process $\br{R_a}_{a \in \Acal}$, where $R_a$ represents the reward for action $a$.
+% where for any finite subset $\br{a_i}_{i=1}^{n} \subset \Acal$, the marginal distribution on $\pn{R_{a_i}}$ is Gaussian with mean $\pn{\mu(a_i)}_{i=1}^{n}$ and covariance matrix $\begin{pmatrix} K(a_i,a_j) \end{pmatrix}_{1 \leq i,j \leq n}$.
+Computationally, we represent a context as $\theta = (\sigma, \ell, \abf_\past, \rbf_\past)$, where
+\begin{itemize}
+  \item $\sigma$ and $\ell$ are hyperparameters for a smoothing kernel $K_\prior(a,a') = \sigma^2 \exp\pn{-\frac{(a-a')^2}{2\ell^2}}$
+  \item $\abf_\past = \pn{a_i}_{i=1}^{n}$ are the previously probed actions
+  \item $\rbf_\past = \pn{r_i}_{i=1}^{n}$ are the corresponding rewards
+\end{itemize}
+To simplify the treatment, we take prior mean $\mu_\prior \equiv 0$.  The mean and covariance for $\theta$ are then gotten by the usual computational procedure:
+\begin{align*}
+  \mu(\abf)
+  &= \mu\pn{\abf \mvert \abf_\past, \rbf_\past} \\
+  &= K_\prior(\abf, \abf_\past)
+     \,K_\prior(\abf_\past, \abf_\past)^{-1}
+     \,\rbf_\past \\
+  K(\abf, \abf')
+  &= K\pn{\abf, \abf' \mvert \abf_\past, \rbf_\past} \\
+  &= K_\prior(\abf, \abf)
+     - K_\prior(\abf, \abf_\past)
+       \,K_\prior(\abf_\past, \abf_\past)^{-1}
+       \,K_\prior(\abf_\past, \abf).
+\end{align*}
+Note that even in this simple example, the context space $\Theta$ is not a finite-dimensional parametric family, since the vectors $\abf_\past$ and $\rbf_\past$ grow as more samples are taken.
+$\Theta$ is, however, quite easily representable as a computational procedure together with parameters and past samples, as we do in the representation $\theta = (\sigma, \ell, \abf_\past, \rbf_\past)$.
+
+\subsection{Implementation with \gpmem}
+As a demonstration, we use Thompson sampling to optimize an unknown function $V(x)$ (the value function) using \gpmem.
+(\textbf{TODO} we should not assume $V$ is deterministic, it would be easy enough to make it random.)
+We assume $V$ is made available to Venture as a black-box.
+The code for optimizing $V$ is given in Listing \ref{alg:bayesopt}.
+For step \ref{itm:Thompson-conditioning} of Thompson sampling, the Bayesian update, we not only condition on the new data (the chosen action $a$ and the received reward $r$), but also perform inference on the hyperparameters $\sigma, \ell$ using a Metropolis--Hastings sampler.
+These two inference steps take 1 line of code: 0 lines to condition on the new data (as this is done automatically by \gpmem), and 1 line to call Venture's built-in \texttt{MH} operator.
+The results are shown in Figure \ref{fig:bayesopt-sequence}.
+We can see from the figure that, roughly speaking, each successive probe point $a$ is chosen either because the current model $V_\emu$ thinks it will have a high reward, or because the value of $V_\emu(a)$ has high uncertainty.
+In the latter case, probing at $a$ decreases this uncertainty and, due to the smoothing kernel, also decreases the uncertainty at points near $a$.
+We thus see that our Thompson sampler simultaneously learns the value function and optimizes it.
+
+
+
+
 
 \begin{lstlisting}[frame=single,caption={
   Code for Bayesian optimization using \gpmem.
-  The procedure \texttt{f\_compute} computes \texttt{f} directly, thus improving the GP model \texttt{f\_emu}.
-  (\texttt{f\_emu\_pointwise} is simply a shortcut for sampling the GP model at a single point; \texttt{f\_emu} is more general, allowing joint samples to be taken at any set of points.)
-  In the loop, \texttt{f\_compute} is called to compute the value of \texttt{f} at a new argument.
-  The new argument, \texttt{(mc\_argmax f\_emu\_pointwise mc\_sampler)}, is a Monte Carlo estimate of the maximum pointwise sample of \texttt{f\_emu} (itself a stochastic quantity), with the Monte Carlo samples being drawn in this case uniformly between $-20$ and $20$.
-  After each new call to \texttt{f\_compute}, the Metropolis--Hastings algorithm is used to perform inference on the hyperparameters of the covariance function in the GP model in light of the new conditioning data.
-  Once enough calls to \texttt{f\_compute} have been made (in our case we stopped at 15 calls), we can inspect the full list of probed $(x,y)$ pairs with \texttt{extract\_stats}.
-  The answer to our maximization problem is simply the maximum $y$; but our algorithm also learns more potentially useful information.
+  %The procedure \texttt{V\_compute} probes \texttt{V} directly, thus improving the GP model \texttt{V\_emu}.
+  %(\texttt{V\_emu\_pointwise} is simply a shortcut for sampling the GP model at a single point; \texttt{V\_emu} is more general, allowing joint samples to be taken at any set of points.)
+  In the loop, \texttt{V\_compute} is called to probe the value of \texttt{V} at a new argument.
+  The new argument, \texttt{(mc\_argmax V\_emu\_pointwise mc\_sampler)}, is a Monte Carlo estimate of the maximum pointwise sample of \texttt{V\_emu} (itself a stochastic quantity), with the Monte Carlo samples being drawn in this case uniformly between $-20$ and $20$.
+  After each new call to \texttt{V\_compute}, the Metropolis--Hastings algorithm is used to perform inference on the hyperparameters of the covariance function in the GP model in light of the new conditioning data.
+  Once enough calls to \texttt{V\_compute} have been made (in our case we stopped at 15 calls), we can inspect the full list of probed $(a,r)$ pairs with \texttt{extract\_stats}.
+  The answer to our maximization problem is simply the maximum $r$; but our algorithm also learns more potentially useful information.
 },mathescape,label=alg:bayesopt]
-[ASSUME hypers ...]
-[ASSUME se (make-squared-exponential hypers)]
-[ASSUME (list f_compute f_emu) (gpmem f se)]
-[ASSUME f_emu_pointwise (lambda (x) (first (f_emu (array x))))]
+[ASSUME sigma (sigma-prior)]
+[ASSUME l (l-prior)]
+[ASSUME K (make-squared-exponential sigma l)]
+[ASSUME (list V_compute V_emu) (gpmem V K)]
+[ASSUME V_emu_pointwise (lambda (a) (first (V_emu (array a))))]
 [ASSUME mc_sampler (uniform_sampler -20 20)]
 
 for i=1 to 15:
-  [PREDICT (f_compute (mc_argmax f_emu_pointwise mc_sampler))]
+  [PREDICT (V_compute (mc_argmax V_emu_pointwise mc_sampler))]
   [INFER (MH 'hypers one 50)
 
-[INFER (extract_stats f_emu)]
+[INFER (extract_stats V_emu)]
 \end{lstlisting}
 %We sample a probe from the posterior
 %\begin{equation}
