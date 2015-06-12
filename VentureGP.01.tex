@@ -706,13 +706,15 @@ for i=1 to 15:
 
 \begin{figure}
 \centering
-    \includegraphics[width=0.9\textwidth]{figs/BayesOpta.png}
-    \caption{Bayesian Optimization.
-      Each successive probe point $x$ is the (stochastic) maximum of a GP-based emulator conditioned on the values of the previously probed points.
-      In the figure, each probe point $x$ is marked with an $\times$, and a vertical green bar is drawn showing the mean $\pm$ one standard deviation of the ``leave-one-out'' distribution---the distribution that would arise from the same covariance function if all marked points {\em except} $x$ had been probed.
-      Note that there are many probe points near the true maximum, and the uncertainty is quite low.
-      Also note that probed points far away from the true maximum tend to be points at which the uncertainty is high.}
-    \label{fig:structureCo2}
+    \includegraphics[height=0.8\textheight]{figs/BayesOpt_gpmem_sequence_small.png}
+    \caption{
+      Dynamics of Thompson sampling in Venture.
+      Probe points are marked with an $\times$.
+      The blue curve is the true function $V$, and the red region is a blending of 100 samples of the curve generated (jointly) by a GP-based emulator $V_\emu$.
+      Each successive probe point $a$ is the (stochastic) maximum of $V_\emu$, sampled pointwise and conditioned on the values of the previously probed points.
+      Note that probes tend to happen at points either where the value of $V_\emu$ is high, or where $V_\emu$ has high uncertainty.
+      }
+    \label{fig:bayesopt-sequence}
 \end{figure}
 
 
