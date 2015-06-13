@@ -699,11 +699,13 @@ for i=1 to 15:
 
 \begin{figure}
 \centering
-    \includegraphics[height=0.8\textheight]{figs/BayesOpt_gpmem_sequence_small.png}
+    \includegraphics[height=0.8\textheight]{figs/BayesOpt_gpmem_sequence.png}
     \caption{
       Dynamics of Thompson sampling in Venture.
-      Probe points are marked with an $\times$.
       The blue curve is the true function $V$, and the red region is a blending of 100 samples of the curve generated (jointly) by a GP-based emulator $V_\emu$.
+      The left and right columns show the state of $V_\emu$ before and after hyperparameter inference is run on the new data, respectively.
+      (We can see, for example, that after the seventh probe point, the Metropolis--Hastings sampler chose a ``crazy'' set of hyperparameters, which was corrected at the next inference step.)
+      In the right column, the next chosen probe point is circled in green.
       Each successive probe point $a$ is the (stochastic) maximum of $V_\emu$, sampled pointwise and conditioned on the values of the previously probed points.
       Note that probes tend to happen at points either where the value of $V_\emu$ is high, or where $V_\emu$ has high uncertainty.
       }
