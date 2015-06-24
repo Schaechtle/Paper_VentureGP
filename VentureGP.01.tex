@@ -38,18 +38,29 @@
 \newcommand{\rmnew}{{\textrm{new}}}
 \newcommand{\past}{{\textrm{past}}}
 \newcommand{\prior}{{\textrm{prior}}}
+\newcommand{\noisy}{{\textrm{noisy}}}
+\newcommand{\noise}{{\textrm{noise}}}
 
 \newcommand{\Acal}{\mathcal{A}}
 \newcommand{\R}{\mathbb{R}}
 
 \newcommand{\abf}{\mathbf{a}}
+\newcommand{\fbf}{\mathbf{f}}
 \newcommand{\rbf}{\mathbf{r}}
+\newcommand{\wbf}{\mathbf{w}}
+\newcommand{\xbf}{\mathbf{x}}
+\newcommand{\ybf}{\mathbf{y}}
+\newcommand{\Kbf}{\mathbf{K}}
+\newcommand{\Ibf}{\mathbf{I}}
 
 \newcommand{\pn}[1]{\left( #1 \right)}
 \newcommand{\bkt}[1]{\left[ #1 \right]}
 \newcommand{\br}[1]{\left\{ #1 \right\}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
 \newcommand{\Ebkt}[2][]{\mathbb{E}_{#1}\bkt{#2}}
 \newcommand{\mvert}{\ \middle\vert\ }
+
+\DeclareMathOperator*{\Cov}{Cov}
 
 % The following is a modified version of what's available on Wikibooks,
 % http://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
@@ -154,57 +165,79 @@ Venture implements an MH transition operator for probabilistic execution traces.
 
 
 \subsection{Gaussian Processes}
-In the following, we will introduce GP related theory and notations. We will exclusively work on two variable regression problems. Let the data be real-valued scalars  $\{x_i,y_i\}_{i=1}^n$ (complete data will be denoted by column vectors $\mathbf{x}$, $\mathbf{y}$). GPs present a non-parametric way to express prior knowledge on the space of possible functions  $f$ that we assume to have generated the data.  $f$ is assumed latent and the GP prior is given by a multivariate Gaussian $f(\mathbf{x})\sim \mathcal{GP}(m(\mathbf{x}),k(x_i,x_i'))$, where $m(\mathbf{x})$ is a function of the mean of all functions that map to $y_i$ at $x_i$ and $k(x_i,x_i')$ is a kernel or covariance function that summarizes the covariance of all functions that map to $y_i$ at $x_i$. We can absorb the mean function into the covariance function so without loss of generality we can set the mean to zero. The marginal likelihood can be expressed as:
+We now introduce GP related theory and notations.
+We work exclusively work with two-variable regression problems.
+Let the data be pairs of real-valued scalars $\{(x_i,y_i)\}_{i=1}^n$ (complete data will be denoted by column vectors $\mathbf{x}$, $\mathbf{y}$).
+In regression, one tries to learn a functional relationship $y_i = f(x_i)$, where the function $f$ is to be learned.
+GPs present a non-parametric way to express prior knowledge on the space of possible functions $f$.
+Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
+For any finite set of inputs $\xbf$, the marginal prior on $f(\xbf)$ is the multivariate Gaussian
+\[
+f(\xbf) \sim \mathcal{GP}(m(\xbf), k(\xbf,\xbf)),
+\]
+where $m(\xbf) = \Ebkt[f]{f(\xbf)}$ is the mean function and $k(\xbf,\xbf') = \Cov_f\pn{f(\xbf), f(\xbf')}$ is the covariance function, a.k.a.\ kernel.\footnote{
+  Note that $m(\xbf) = \pn{m(x_i)}_{i=1}^{n}$ and $k(\xbf,\xbf') = \begin{pmatrix} k(x_i,x'_{i'}) \end{pmatrix}^{1 \leq i \leq n}_{1 \leq i' \leq n'}$, where $n'$ is the number of entries in $\xbf'$.
+}
+In all examples below, our prior mean function $m$ is identically zero; this is the most common choice.
+The marginal likelihood can be expressed as:
 \begin{equation}
 \label{eq:marg}
-p(\mathbf{y}|\mathbf{x}) = \int p(\mathbf{y}|\mathbf{f,x})\, p(\mathbf{f}|\mathbf{x}) \, d\mathbf{f} 
+p\pn{f(\xbf) = \ybf \mvert \xbf} = \int p\pn{f(\xbf) = \ybf \mvert f, \xbf}\, p(f|\xbf) \, df
 \end{equation}
-where the prior is Gaussian $\mathbf{f}|\mathbf{x} \sim \mathcal{N}\big(0,k(\mathbf{x},\mathbf{x}')\big)$. We can sample a vector of unseen data from the predictive posterior with
+where here $p(f|\xbf) = p(f) \sim \mathcal{GP}(m,k)$ since we assume no dependence of $f$ on $\xbf$.
+We can sample a vector of unseen data $\ybf^* = f(\xbf^*)$ from the predictive posterior with
 \begin{equation}
 \label{eq:gpsampler}
-\mathbf{y}^* \sim \mathcal{N}(\bm{\mu},\bm{\Sigma}) 
+\ybf^* \sim \mathcal{N}(\bm{\mu},\bm{\Sigma}),
 \end{equation}
-for a zero mean prior GP with a posterior mean of:
+a multivariate normal with mean vector
 \begin{equation}
 \label{eq:conditonalGaussianMean}
-\bm{\mu} = \mathbf{K}(\mathbf{x},\mathbf{x}^*)\,\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1}\,\mathbf{y}
+\bm{\mu} = k(\xbf,\xbf^*)\, k(\xbf^*,\xbf^*)^{-1}\, \ybf
 \end{equation}
-and covariance
+and covariance matrix
 \begin{equation}
 \label{eq:conditonalGaussianCovariance}
-\bm{\Sigma} =  \mathbf{K}(\mathbf{x},\mathbf{x}) - \mathbf{K}(\mathbf{x},\mathbf{x}^*)\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1} \mathbf{K}(\mathbf{x}^*,\mathbf{x}).
+\bm{\Sigma} =  k(\xbf,\xbf) - k(\xbf,\xbf^*)k(\xbf^*,\xbf^*)^{-1} k(\xbf^*,\xbf).
 \end{equation}
-$\mathbf{K}$ is a covariance function. The log-likelihood is defined as:
+
+Often one assumes the values $\ybf$ are noisily measured, that is, one only sees the values of $\ybf_\noisy = \ybf + \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$.
+In that case, the log-likelihood is
 \begin{equation}
-\log P(\mathbf{y} \mid \mathbf{X})  = -\frac{1}{2}\mathbf{y}^\top (\mathbf{K} + \sigma^2\mathbf{I})^{-1}\mathbf{y} -  \frac{1}{2}\log |\mathbf{K} + \sigma^2I| -  \frac{n}{2}\log 2 \pi
+\log p\pn{\ybf_\noisy \mvert \xbf} =
+-\frac12 \ybf^\top (\bm{\Sigma}
++ \sigma_\noise^2 \Ibf)^{-1} \ybf
+- \frac12\log \abs{\bm{\Sigma} + \sigma_\noise^2 \Ibf}
+- \frac{n}{2}\log 2\pi
 \end{equation}
-with $n$ being the number of data-points and sigma the independent observation noise.
-Both log-likelihood and predictive posterior can be computed efficiently in a Venture SP with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} resulting in a computational complexity of $\mathcal{O}(n^3)$ in the number of data-points.
+where $n$ is the number of data points.
+Both log-likelihood and predictive posterior can be computed efficiently in a Venture SP with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} resulting in a computational complexity of $\mathcal{O}(n^3)$ in the number of data points.
 
 
 
-The covariance function covers general high-level properties of the observed data such as linearity, periodicity and smoothness. The most widely used type of covariance function is the squared exponential covariance function:
+The covariance function governs high-level properties of the observed data such as linearity, periodicity and smoothness.
+The most widely used form of covariance function is the squared exponential:
 \begin{equation}
-k(x,x^\prime) = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})
+  k(x,x^\prime) = \sigma^2 \exp\pn{-\frac{(x-x^\prime)^2}{2\ell^2}},
 \end{equation}
-where $\sigma$ and $\ell$ are hyper-parameters. $\sigma$ is a scaling factor and $\ell$ is the typical length-scale.
-Smaller variations can be achieved by adapting these hyper-parameters. 
+where $\sigma$ and $\ell$ are hyperparameters: $\sigma$ is a scaling factor and $\ell$ is the typical length-scale.
 
-
-Larger variations are achieved by changing the type of the covariance function structure. 
+Adjusting hyperparameters results in a new covariance function with the same qualitative human-interpretation; more drastically different covariance functions are achieved by changing the structure of the covariance function.
 %A different type could be a linear covariance function:
 %\begin{equation}
 % k(x,x^\prime) = \sigma^2 (x-\ell) (x^\prime-\ell). 
 %\end{equation}
-Note that covariance function structures are compositional. We can add covariance functions if we want to model globally valid structures
+Note that covariance function structures are compositional: adding or multiplying two valid covariance functions results in another valid covariance function.
+We suggest ({\bf TODO} cite or point to later in paper) that adding covariance structures $k_1,k_2$ together,
 \begin{equation}
-k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime)
+k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime),
 \end{equation}
- and we can multiply covariance functions if the data is best explained by local structure 
+corresponds to combining global structures, while multilpying covariance functions,
 \begin{equation}
-k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime);
+k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime),
 \end{equation}
-both, $k_3$ and $k_4$ are valid covariance function structures.
+corresponds to combining local structures.
+Note that both $k_3$ and $k_4$ are valid covariance function structures.
 
 
 
