@@ -112,9 +112,7 @@ We evaluate the contribution on problems posed by the GP community using real wo
 The paper is structured as follows, we will first provide some background on memoization. We will explain programming in Venture and provide a brief introduction to GPs. We introduce \gpmem\ and its use in probabilistic programming and Bayesian modeling. Finally, we will show how we can apply \gpmem\ on problems of causally structured hierarchical priors for hyper-parameter inference, structure discovery for Gaussian Processes and Bayesian Optimization including experiments with real world and synthetic data.
 \section{Background}
 \subsection{Memoization}
-Memoization is the idea of computing the value of a function given an input once and then store it. If the function is called again at the same input, we return the stored value without evaluating the function body again. Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a program for determinstic programs it does for stochastic ones. This implies that one can stochastically decide on each function evaluation whether to use a stored value or a new function evaluation. Here, memoization induces random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the probabilistic program: we interpret a specific mapping from function input to function output as a single possible world~\citep{mcallester2008random}.
-
-
+Memoization is the idea of computing the value of a function given an input once and then store it. If the function is called again at the same input, we return the stored value without evaluating the function body again. Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a program for determinstic programs it does for stochastic ones. This implies that one can stochastically decide on each function evaluation whether to use a stored value or a new function evaluation. Here, memoization induces random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the probabilistic program: we interpret a specific mapping from function input to function output as a single possible world~\citep{mcallester2008random}. This formulation lends it self to commputation with GPs, as we will learn below.
 %Here, the theoretically infinite infinite-dimensional generalization of the Dirichlet Distribution i distribution Generative processes considering  have been introduced for the discrete case where models infinitely valued process is treated computationally as finite. 
 
 
@@ -190,6 +188,9 @@ k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime)
 k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime);
 \end{equation}
 both, $k_3$ and $k_4$ are valid covariance function structures.
+
+
+
 \section{Venture GPs}
 Given a stochastic process that implements the GP algebra above we can implement a GP sampler (\ref{eq:gpsampler}) to perform GP inference in a few lines of code. We can express simple GP smoothing with fixed hyper-parameters or a prior on hyper-parameters and perform MH on it while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
 \begin{minipage}{\linewidth}
@@ -290,14 +291,14 @@ Assuming the covariance structure is an additive comprised of a smoothing and a 
 [ASSUME sigma (uniform 0 5 )]            $\in$ {hyper-parameters} % Fig. '\ref{fig:inference}'
 % above: structured prior, Fig. '\ref{fig:NealpriorStruct}'
 
-$\smash{k_1(x,x^\prime) := \theta^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
-$\smash{k_2(x,x^\prime) := \sigma^2 \delta_{x,x^\prime}}$
+$\smash{k_{SE}(x,x^\prime) := \theta^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
+$\smash{k_{WN}(x,x^\prime) := \sigma^2 \delta_{x,x^\prime}}$
 
-[ASSUME k$_1$ VentureFunction($k_1,\theta,\ell$) ]
-[ASSUME k$_2$ VentureFunction($k_2,\sigma$) ]
+[ASSUME k$_{SE}$ VentureFunction($k_{SE},\theta,\ell$) ]
+[ASSUME k$_{WN}$ VentureFunction($k_{WN},\sigma$) ]
 
-[ASSUME SE make-se (apply-function k$_1$ l sf) ]
-[ASSUME WN make-se (apply-function k$_1$ sigma) ]
+[ASSUME SE make-se (apply-function k$_{SE}$ l sf) ]
+[ASSUME WN make-se (apply-function k$_{WN}$ sigma) ]
 
 [ASSUME (list f_compute f_emu) (gpmem f_restr (function-plus SE WN) )]
 [SAMPLE (f_emu (array 1 2 3))]  % prior, Fig. '\ref{fig:NealBO}'
@@ -345,7 +346,7 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
                 \caption{Inferred}
                 \label{fig:NealAI}
         \end{subfigure}
-        \caption{(a) depicts the hierarchical structure of the hyper-parameter as constructed in the work by Neal as a Bayesian Network. (b)-(d) shows a Venture GP on Neal's example. We see that prior renders functions all over the place (a). After \gpmem\ observes a some data-points an arbitrary smooth trend with a high level of noise is sampled. After running inference on the hierarchical system of hyper-parameters we see that the posterior reflects the actual curve well. Outliers are treated as such and do not confound the GP.}\label{fig:neal}
+        \caption{(a) depicts the hierarchical structure of the hyper-parameter as constructed in the work by Neal as a Bayesian Network. (b)-(d) shows \gpmem\ on Neal's example. We see that prior renders functions all over the place (a). After \gpmem\ observes a some data-points an arbitrary smooth trend with a high level of noise is sampled. After running inference on the hierarchical system of hyper-parameters we see that the posterior reflects the actual curve well. Outliers are treated as such and do not confound the GP.}\label{fig:neal}
 \end{figure}
 We illustrate the hyper-parameter by showing the shift of the distribution on the noise parameter $\sigma$ (Fig. \ref{fig:inference}). We see that \gpmem\ learns the posterior distribution well, the posterior even exhibits a bimodal histogram when sampling $\sigma$ 100 times reflecting the two modes of data generation, that is normal noise and outliers\footnote{For this pedagogical example we have increased the probability for outliers in the data generation slightly from 0.05 to 0.2}. 
 
@@ -378,42 +379,15 @@ Furthermore, the example in Section \ref{sec:structurelearning} below recovers t
 
 
 \subsection{Structure Learning}\label{sec:structurelearning}
-The space of possible kernel composition is infinite. Combining inference over this space with the problem of finding a good parameterization that could potentially explain the observed data best poses a hard problem. The natural language interpretation of the meaning of a kernel and it's composition renders this a problem of symbolic computation. Duvenaud and colleagues note that sum of kernels can be interpreted as logical OR operations and kernel multiplication as logical AND~\citeyearpar{duvenaud2013structure}. This is due to the kernel rendering two points similar if $k_1$ OR $k_2$ outputs a high value in the case of a sum. Respectively, multiplication of two kernel results in high values only if $k_1$ AND $k_2$ have high values (see Fig. \ref{fig:composite} for examples how to interpret global vs. local aspects and its symbolic analog respectively). 
-
-In the following, we will refer to covariance functions that are not composite as base covariance functions. Note that this form of composition can be easily expressed in Venture, for example if one wishes to add a linear and a periodic kernel:
-
-\begin{minipage}{\linewidth}
-\scriptsize
-\begin{lstlisting}[frame=single,caption=LIN $\times$ PER,mathescape]
-[ASSUME l (gamma 1 3)]
-[ASSUME sf (gamma 1 2)]
-[ASSUME a (gamma 2 2)]
-
-$\smash{k_{LIN}(x,x^\prime) := \sigma_1^2 (x - \ell) (x^\prime - \ell)}$
-$\smash{k_{PER}(x,x^\prime) := \sigma_2^2 \exp(-\frac{2 \sin^2(\pi(x-x^\prime)/p}{\ell^2})}$
-
-[ASSUME f$_{LIN}$ VentureFunction($k_{LIN},\sigma_1$) ]
-[ASSUME f$_{PER}$ VentureFunction($k_{PER},\sigma_2,\ell,p$) ]
-[ASSUME LIN (make-LIN (apply-function f$_{LIN}$ a)) ]
-[ASSUME PER (make-PER (apply-function f$_{PER}$ l sf)) ]
-[ASSUME (make-gp 0 (function-times LIN PER)) ]
-\end{lstlisting}
-
-\end{minipage}
-
-
-
+The space of possible kernel composition is infinite. Combining inference over this space with the problem of finding a good parameterization that could potentially explain the observed data best poses a hard problem. The natural language interpretation of the meaning of a kernel and it's composition renders this a problem of symbolic computation. Duvenaud and colleagues note that a sum of kernels can be interpreted as logical OR operations and kernel multiplication as logical AND~\citeyearpar{duvenaud2013structure}. This is due to the kernel rendering two points similar if $k_1$ OR $k_2$ outputs a high value in the case of a sum. Respectively, multiplication of two kernels results in high values only if $k_1$ AND $k_2$ have high values (see Fig. \ref{fig:composite} examplifies how to interpret global vs. local aspects and its symbolic analog respectively). 
+In the following, we will refer to covariance functions that are not composite as base covariance functions.
 
 \begin{figure}
 \centering
-    \input{figs/composition2.tikz}
-    \put(-367,78){\scriptsize LIN }
-    \put(-367,19){\scriptsize LIN + PER}
-    \put(-183,78){\scriptsize PER }
-    \put(-183,19){\scriptsize LIN $\times$ PER}
-    \caption{Composition of covariance functions (blue, left) and samples from the distribution of curves they can produce (red, right).}\label{fig:composite}
-
+\input{figs/parseTree.tex}
+\caption{Composition of covariance function parsed using the example SE $\times$ LIN $+$ PER $\times$ LIN $+$  RQ $\times$ LIN}\label{fig:composite}
 \end{figure}
+
 
 Knowledge about the composite nature of covariance functions is not new, however, until recently, the choice and the composition of covariance functions were done ad-hoc. The Automated Statistician Project came up with an approximate search over the possible space of kernel structures~\citep{duvenaud2013structure,lloyd2014automatic}. However, a fully Bayesian treatment of this was not done before.
 The case where the covariance structure is not given is even more interesting. Our probabilistic programming based MCMC framework approximates the following intractable integrals of the expectation for the prediction:
@@ -450,17 +424,8 @@ where $P(n)$ is a prior on the number of base kernels used which can sample from
 
 
 
-Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. Certain covariance functions can differ in terms of the hyper-parameterization but can be absorbed into a single covariance function with a different parameterization. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify expressions using the following grammar:
-\begin{minipage}{\linewidth}
+Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. Certain covariance functions can differ in terms of the hyper-parameterization but can be absorbed into a single covariance function with a different parameterization. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify. Rules for this simplification can be found in appendix B.
 
-\begin{lstlisting}[frame=single,label=alg:simplify,caption=Grammar to simplify expressions,mathescape]
-SE $\times$ SE                  $\rightarrow$ SE 
-{SE,PER,C,WN} $\times$ WN       $\rightarrow$ WN
-LIN $+$ LIN                $\rightarrow$ LIN
-{SE,PER,C,WN,LIN} $\times$ C    $\rightarrow$  {SE,PER,C,WN,LIN} 
-\end{lstlisting}
-
-\end{minipage}
 
 For reproducing results from the Automated Statistician Project in a Bayesian fashion we first define a prior on the hypothesis space. Note that, as in the implementation of the Automated Statistician, we upper-bound the complexity of the space of covariance functions we want to explore. We also put vague priors on hyper-parameters.
 
@@ -499,7 +464,7 @@ for i=1 to n:
 
 \end{minipage}
 
-We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set. We will elaborate the result using a sample from the posterior (Fig. \ref{fig:tutorial}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set~\citep{} and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels.
+We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}. We will elaborate the result using a sample from the posterior (Fig. \ref{fig:tutorial}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels.
 
 
 \begin{figure}
@@ -537,7 +502,7 @@ We defined the space of covariance structures in a way allowing us to reproduce 
 
 We further investigated the quality of our stochastic processes by running a leave one out cross-validation to gain confidence on the posterior. This resulted in 545 independent runs of the Markov chain that produced a coherent posterior: our Bayesian interpretation of GP structure and GPs produced a posterior of structures that is in line with previous results on this data set (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structureCo2}).
 
-We ran similar evaluation on the airline data set~\citep{} resulting in a similar structure to what was previously reporte (Fig. \ref{fig:structureAir}, residuals and log-score along the Markov chain see Fig. \ref{fig:reslog}).
+We ran similar evaluation on the airline data set resulting in a similar structure to what was previously reporte (Fig. \ref{fig:structureAir}, residuals and log-score along the Markov chain see Fig. \ref{fig:reslog}).
 
 We found the final sample of multiple runs to be most informative. This kind of Markov Chain seems to produce samples that are highly auto-correlated.
 
@@ -632,6 +597,33 @@ for i=1 to 15:
 \section{Conclusion}
 We have shown Venture GPs. We have introduced novel stochastic processes for a probabilistic programming language. We showed how flexible non-parametric models can be treated in Venture in only a few lines of code. We evaluated our contribution on a range of hard problems for state-of-the-art Bayesian non-parametrics. Venture GPs showed competitive performance in all of them. 
 
+\section*{Appendix}
+\subsection*{A Covariance Functions}
+SE and WN are defined in the text above, for completeness we will introduce the covariance:
+\begin{equation}
+k_{LIN}(x,x^\prime) = \theta (x x^\prime) 
+\end{equation}
+\begin{equation}
+k_{PER}(x,x^\prime) = \theta \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg) 
+\end{equation}
+\begin{equation}
+k_{RQ}(x,x^\prime) =   \theta \bigg(1 + \frac{(x - x^\prime)^2}{2 \alpha \ell^2} \bigg)^{-\alpha}
+\end{equation}
+
+\subsection*{B Covariance Simplification}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[frame=single,label=alg:simplify,caption=Grammar to simplify expressions,mathescape]
+SE $\times$ SE                  $\rightarrow$ SE 
+{SE,PER,C,WN} $\times$ WN       $\rightarrow$ WN
+LIN $+$ LIN                $\rightarrow$ LIN
+{SE,PER,C,WN,LIN} $\times$ C    $\rightarrow$  {SE,PER,C,WN,LIN} 
+\end{lstlisting}
+
+\end{minipage}
+\begin{equation}
+ \theta (x x^\prime) = \theta_1 (x x^\prime) + \theta_2 (x x^\prime) 
+\end{equation}
 
 \newpage
 \bibliography{May2015}
