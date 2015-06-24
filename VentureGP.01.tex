@@ -140,7 +140,12 @@ We evaluate the contribution on problems posed by the GP community using real wo
 The paper is structured as follows, we will first provide some background on memoization. We will explain programming in Venture and provide a brief introduction to GPs. We introduce \gpmem\ and its use in probabilistic programming and Bayesian modeling. Finally, we will show how we can apply \gpmem\ on problems of causally structured hierarchical priors for hyper-parameter inference, structure discovery for Gaussian Processes and Bayesian Optimization including experiments with real world and synthetic data.
 \section{Background}
 \subsection{Memoization}
-Memoization is the idea of computing the value of a function given an input once and then store it. If the function is called again at the same input, we return the stored value without evaluating the function body again. Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a program for determinstic programs it does for stochastic ones. This implies that one can stochastically decide on each function evaluation whether to use a stored value or a new function evaluation. Here, memoization induces random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the probabilistic program: we interpret a specific mapping from function input to function output as a single possible world~\citep{mcallester2008random}. This formulation lends it self to commputation with GPs, as we will learn below.
+Memoization is the practice of storing previously computed values of a function so that future calls with the same inputs can be evaluated by lookup rather than recomputation.
+Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a determinstic program, it does change that of a stochastic program.
+In fact, there is an infinite range of possible caching policies (specifications of when to use a stored value and when to recompute), each potentially having a different semantics.
+Any particular caching policy can be understood by random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the stochastic program: each possible world corresponds to a mapping from function input sequence to function output sequence~\citep{mcallester2008random}.
+In Venture, these possible worlds are first-class objects, known as {\em traces}~\citep{mansinghka2014venture}.
+
 %Here, the theoretically infinite infinite-dimensional generalization of the Dirichlet Distribution i distribution Generative processes considering  have been introduced for the discrete case where models infinitely valued process is treated computationally as finite. 
 
 
@@ -148,17 +153,43 @@ Memoization is the idea of computing the value of a function given an input once
 
 
 \subsection{Venture}
-Venture is a compositional language for custom inference strategies that comes with a Scheme- and Java-Script-like front-end syntax. Its implementation is based on on three concepts. (i) stochastic procedure interfaces that specify and encapsulate random variables, analogously to conditional probability tables in a Bayesian network; (ii) probabilistic execution traces that represent execution histories and capture conditional dependencies; and (iii) scaffolds that partition execution histories and factor global inference problems into sub-problems. These building blocks provide a powerful way to represent probability distributions; some of which cannot be expressed with density functions. For the purpose of this work the most important Venture directives that operate on these building blocks to understand are ASSUME, OBSERVE, SAMPLE and INFER. ASSUME induces a hypothesis space for (probabilistic) models including random variables by binding the result of an expression to a symbol. SAMPLE simulates a model expression and returns a value. OBSERVE adds constraints to model expressions. INFER instructions incorporate observations and cause Venture to find a hypothesis that is probable given the data. 
+Venture is a compositional language for custom inference strategies that comes with a Scheme-like and a JavaScript-like front-end syntaxes.
+Its implementation is based on on three concepts:
+  (i) \emph{stochastic procedures} that specify and encapsulate random variables, analogously to conditional probability tables in a Bayesian network;
+  (ii) \emph{execution traces} that represent (partial) execution histories and track the conditional dependencies of the random variables occurring therein; and
+  (iii) \emph{scaffolds} that partition execution histories and factor global inference problems into sub-problems.
+These building blocks provide a powerful and concise way to represent probability distributions, including distributions with a dynamically determined and unbounded set of random variables.
+In this paper we will use only the four basic Venture directives: ASSUME, OBSERVE, SAMPLE and INFER.
+\begin{itemize}
+  \item ASSUME induces a hypothesis space for (probabilistic) models including random variables by binding the result of a supplied expression to a supplied symbol.
+  \item Whereas in Scheme an expression is evaluated within an environment, in Venture an expression is evaluated within a (partial) trace of the model program.
+    Thus, the value of an expression within a model program is a random variable, whose randomness comes from the distribution on possible execution traces of the program.
+    The SAMPLE directive samples the value of the supplied expression within the current model program.
+  \item OBSERVE constrains the supplied expression to have the supplied value.
+    In other words, all samples taken after an OBSERVE are conditioned on the observed data.
+  \item INFER uses the supplied inference program to mutate the execution trace.
+    For a correct inference program, this will result approximate sampling from the true posterior on execution traces, conditioned on the model and constraints introduced by ASSUME and OBSERVE.
+    The posterior on any random variable can then be approximately sampled by calling SAMPLE to extract values from the trace.
+\end{itemize}
 
-INFER is most commonly done by deploying the Metropolis-Hastings algorithm (MH)~\citep{metropolis1953equation}.  Many algorithms used in the MCMC world can be interpreted as special cases of MH~\citep{andrieu2003introduction}. We can outline the MH algorithm as follows. For $T$ steps we sample $x^*$ from a proposal distribution $q$:
+INFER is commonly done using the Metropolis--Hastings algorithm (MH)~\citep{metropolis1953equation}.
+Many of the most popular MCMC algorithms can be interpreted as special cases of MH~\citep{andrieu2003introduction}.
+We can outline the MH algorithm as follows.
+The following two-step process is repeated as long as desired (say, for $T$ steps):
+First we sample $x^*$ from a proposal distribution $q$:
 \begin{equation}
- x^* \sim q(x^* \mid x^{(t)})
+ x^* \sim q(x^* \mid x^{t});
 \end{equation}
-which we accept ($x^{t+1} \leftarrow x ^*$) with ratio:
+then we accept this proposal ($x^{t+1} \leftarrow x ^*$) with probability
 \begin{equation}
-\alpha = min \bigg\{1,\frac{p(x^*) q(x^{t}\mid x^*)}{p(x^{(t)}) q(x^* \mid x^{t})} \bigg\}  
+  \alpha = \min \br{
+    1,
+    \frac{p(x^*) q(x^{t}\mid x^*)}{p(x^{t}) q(x^* \mid x^{t})}};
 \end{equation}
-Venture implements an MH transition operator for probabilistic execution traces.
+if the proposal is not accepted then we take $x^{t+1} \gets x^t$.
+
+Venture includes a built-in generic MH inference program which performs the above steps on any specified set of random variables in the model program.
+In that inference program, probabilistic execution traces play the role of $x$ above.
 
 
 
@@ -166,7 +197,7 @@ Venture implements an MH transition operator for probabilistic execution traces.
 
 \subsection{Gaussian Processes}
 We now introduce GP related theory and notations.
-We work exclusively work with two-variable regression problems.
+We work exclusively with two-variable regression problems.
 Let the data be pairs of real-valued scalars $\{(x_i,y_i)\}_{i=1}^n$ (complete data will be denoted by column vectors $\mathbf{x}$, $\mathbf{y}$).
 In regression, one tries to learn a functional relationship $y_i = f(x_i)$, where the function $f$ is to be learned.
 GPs present a non-parametric way to express prior knowledge on the space of possible functions $f$.
