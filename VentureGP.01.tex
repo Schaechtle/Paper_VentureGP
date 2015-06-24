@@ -273,7 +273,14 @@ Note that both $k_3$ and $k_4$ are valid covariance function structures.
 
 
 \section{Venture GPs}
-Given a stochastic process that implements the GP algebra above we can implement a GP sampler (\ref{eq:gpsampler}) to perform GP inference in a few lines of code. We can express simple GP smoothing with fixed hyper-parameters or a prior on hyper-parameters and perform MH on it while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
+The Venture procedure \texttt{make-gp} takes as input a mean function and a covariance function, and outputs a procedure for sampling from a Gaussian process.
+In effect, each call to this procedure samples from \eqref{eq:gpsampler} conditioned on the return values of all previous samples.
+\texttt{make-gp} allows us to perform GP inference in Venture with only a few lines of code.
+We can concisely express a wide variety of GPs: simple smoothing with fixed hyper-parameters, or a prior on hyper-parameters, or a custom covariance function.
+Inference on hyper-parameters can be performed using Venture's built-in MH operator or a custom inference strategy.
+
+Venture code to create and sample from a GP with a smoothing kernel and hyperparameters is shown in Listing \ref{alg:gpNeal}.
+Throughout the paper, we will use the Scheme-like front-end syntax.
 \begin{minipage}{\linewidth}
 \footnotesize
 \belowcaptionskip=-10pt
@@ -284,11 +291,11 @@ Given a stochastic process that implements the GP algebra above we can implement
 $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 
 [ASSUME f VentureFunction($k,\sigma,\ell$) ]
-[ASSUME SE make-se (apply-function f l sf) ]
-[ASSUME (make-gp 0 SE) ]
+[ASSUME SE (apply-function make-se f l sf) ]
+[ASSUME GP (make-gp zero SE) ]
 
 [SAMPLE GP (array 1 2 3)] % Prior
-[OBSERVE GP D]
+[OBSERVE GP (array x[1] ... x[n]) (array y[1] ... y[n])] % Data
 [SAMPLE GP (array 1 2 3)] 
 [INFER  (MH {hyper-parameters} one 100) ]
 [SAMPLE GP (array 1 2 3)] % Posterior
@@ -296,13 +303,25 @@ $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 \end{lstlisting}
 \end{minipage}
 
-The first two lines depict the hyper-parameters. We tag both of them to belong to the set \{hyper-parameters\}. Every member of this set belongs to the same inference scope. This scope controls the application of the inference procedure used. In this paper, we use MH throughout. Each scope is further subdivided into blocks that allow to do block-proposals. In the following we omit the block notation for readability, since we always choose the block of a certain scope at random.
+The first two lines declare the hyper-parameters.
+We tag both of them to belong to the ``scope'' \texttt{\{hyper-parameters\}}.
+These tags are supplied to the inference program (in this case, MH) to specify on which random variables inference should be done.
+In this paper, we use MH inference throughout.
+Scopes may be further subdivided into blocks, on which block proposals can be made.
+In this paper we do not use block proposals; MH inference is done on one variable at a time.
 
-The ASSUME directives describe the assumptions we make for the GP model, we assume the hyper-parameters l and sf (corresponding to $\ell,\sigma$) to be 1 and 2. The squared exponential covariance function can be defined outside the Venture code with foreign conventional programming languages, e.g. Python. In that way, the user can define custom covariance functions without being restricted to the most common ones. We then integrate the foreign function into Venture as VentureFunction. In the next line this function is associated with the hyper-parameters. Finally, we assume a Gaussian Process SP with a zero mean and the previously assumed squared exponential covariance function.
+The ASSUME directives describe the GP model: \texttt{sf} and \texttt{l} (corresponding to $\sigma$ and $\ell$) are drawn from independent $\Gamma(1,3)$ distributions.
+The squared exponential covariance function can be defined outside the Venture code in a conventional programming language (e.g. Python) and imported as a foreign SP.
+In that way, the user can define custom covariance functions using his or her language and libraries of choice, without having to port existing code into Venture's modelling language.
+In the above, the factory function \texttt{f}, which produces a squared exponential function with the supplied hyperparameters, is imported from Python (we have omitted the Python code).
+In the next line \texttt{f} is used to produce a covariance function \texttt{SE}, whose (random) hyperparameters are \texttt{l} and \texttt{sf}.
+Finally, we declare \texttt{GP} to be a Gaussian process with mean zero and covariance function \texttt{SE}.
 
 
 
 
+
+{\color{red} I don't know what these two paragraphs mean --Ben}
 
 In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte}. 
 
