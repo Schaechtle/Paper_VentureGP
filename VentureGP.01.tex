@@ -290,15 +290,15 @@ Throughout the paper, we will use the Scheme-like front-end syntax.
 
 $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 
-[ASSUME f VentureFunction($k,\sigma,\ell$) ]
-[ASSUME SE (apply-function make-se f l sf) ]
+[ASSUME make-se VentureFunction($k,\sigma,\ell$) ]
+[ASSUME SE (apply-function make-se l sf) ]
 [ASSUME GP (make-gp zero SE) ]
 
-[SAMPLE GP (array 1 2 3)] % Prior
+[SAMPLE (GP (array 1 2 3))]    % Sample the prior at points (1, 2, 3)
 [OBSERVE GP (array x[1] ... x[n]) (array y[1] ... y[n])] % Data
-[SAMPLE GP (array 1 2 3)] 
-[INFER  (MH {hyper-parameters} one 100) ]
-[SAMPLE GP (array 1 2 3)] % Posterior
+[SAMPLE (GP (array 1 2 3))]    % Conditioned on data only
+[INFER  (MH {hyper-parameters} one 100)]   % Infer hyperparameters
+[SAMPLE (GP (array 1 2 3))]    % Approximate posterior
 
 \end{lstlisting}
 \end{minipage}
@@ -313,8 +313,8 @@ In this paper we do not use block proposals; MH inference is done on one variabl
 The ASSUME directives describe the GP model: \texttt{sf} and \texttt{l} (corresponding to $\sigma$ and $\ell$) are drawn from independent $\Gamma(1,3)$ distributions.
 The squared exponential covariance function can be defined outside the Venture code in a conventional programming language (e.g. Python) and imported as a foreign SP.
 In that way, the user can define custom covariance functions using his or her language and libraries of choice, without having to port existing code into Venture's modelling language.
-In the above, the factory function \texttt{f}, which produces a squared exponential function with the supplied hyperparameters, is imported from Python (we have omitted the Python code).
-In the next line \texttt{f} is used to produce a covariance function \texttt{SE}, whose (random) hyperparameters are \texttt{l} and \texttt{sf}.
+In the above, the factory function \texttt{make-se}, which produces a squared exponential function with the supplied hyperparameters, is imported from Python (we have omitted the Python code).
+In the next line \texttt{make-se} is used to produce a covariance function \texttt{SE}, whose (random) hyperparameters are \texttt{l} and \texttt{sf}.
 Finally, we declare \texttt{GP} to be a Gaussian process with mean zero and covariance function \texttt{SE}.
 
 
