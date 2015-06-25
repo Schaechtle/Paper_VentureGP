@@ -38,18 +38,29 @@
 \newcommand{\rmnew}{{\textrm{new}}}
 \newcommand{\past}{{\textrm{past}}}
 \newcommand{\prior}{{\textrm{prior}}}
+\newcommand{\noisy}{{\textrm{noisy}}}
+\newcommand{\noise}{{\textrm{noise}}}
 
 \newcommand{\Acal}{\mathcal{A}}
 \newcommand{\R}{\mathbb{R}}
 
 \newcommand{\abf}{\mathbf{a}}
+\newcommand{\fbf}{\mathbf{f}}
 \newcommand{\rbf}{\mathbf{r}}
+\newcommand{\wbf}{\mathbf{w}}
+\newcommand{\xbf}{\mathbf{x}}
+\newcommand{\ybf}{\mathbf{y}}
+\newcommand{\Kbf}{\mathbf{K}}
+\newcommand{\Ibf}{\mathbf{I}}
 
 \newcommand{\pn}[1]{\left( #1 \right)}
 \newcommand{\bkt}[1]{\left[ #1 \right]}
 \newcommand{\br}[1]{\left\{ #1 \right\}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
 \newcommand{\Ebkt}[2][]{\mathbb{E}_{#1}\bkt{#2}}
 \newcommand{\mvert}{\ \middle\vert\ }
+
+\DeclareMathOperator*{\Cov}{Cov}
 
 % The following is a modified version of what's available on Wikibooks,
 % http://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
@@ -129,7 +140,12 @@ We evaluate the contribution on problems posed by the GP community using real wo
 The paper is structured as follows, we will first provide some background on memoization. We will explain programming in Venture and provide a brief introduction to GPs. We introduce \gpmem\ and its use in probabilistic programming and Bayesian modeling. Finally, we will show how we can apply \gpmem\ on problems of causally structured hierarchical priors for hyper-parameter inference, structure discovery for Gaussian Processes and Bayesian Optimization including experiments with real world and synthetic data.
 \section{Background}
 \subsection{Memoization}
-Memoization is the idea of computing the value of a function given an input once and then store it. If the function is called again at the same input, we return the stored value without evaluating the function body again. Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a program for determinstic programs it does for stochastic ones. This implies that one can stochastically decide on each function evaluation whether to use a stored value or a new function evaluation. Here, memoization induces random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the probabilistic program: we interpret a specific mapping from function input to function output as a single possible world~\citep{mcallester2008random}. This formulation lends it self to commputation with GPs, as we will learn below.
+Memoization is the practice of storing previously computed values of a function so that future calls with the same inputs can be evaluated by lookup rather than recomputation.
+Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a determinstic program, it does change that of a stochastic program.
+In fact, there is an infinite range of possible caching policies (specifications of when to use a stored value and when to recompute), each potentially having a different semantics.
+Any particular caching policy can be understood by random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the stochastic program: each possible world corresponds to a mapping from function input sequence to function output sequence~\citep{mcallester2008random}.
+In Venture, these possible worlds are first-class objects, known as {\em traces}~\citep{mansinghka2014venture}.
+
 %Here, the theoretically infinite infinite-dimensional generalization of the Dirichlet Distribution i distribution Generative processes considering  have been introduced for the discrete case where models infinitely valued process is treated computationally as finite. 
 
 
@@ -137,79 +153,134 @@ Memoization is the idea of computing the value of a function given an input once
 
 
 \subsection{Venture}
-Venture is a compositional language for custom inference strategies that comes with a Scheme- and Java-Script-like front-end syntax. Its implementation is based on on three concepts. (i) stochastic procedure interfaces that specify and encapsulate random variables, analogously to conditional probability tables in a Bayesian network; (ii) probabilistic execution traces that represent execution histories and capture conditional dependencies; and (iii) scaffolds that partition execution histories and factor global inference problems into sub-problems. These building blocks provide a powerful way to represent probability distributions; some of which cannot be expressed with density functions. For the purpose of this work the most important Venture directives that operate on these building blocks to understand are ASSUME, OBSERVE, SAMPLE and INFER. ASSUME induces a hypothesis space for (probabilistic) models including random variables by binding the result of an expression to a symbol. SAMPLE simulates a model expression and returns a value. OBSERVE adds constraints to model expressions. INFER instructions incorporate observations and cause Venture to find a hypothesis that is probable given the data. 
+Venture is a compositional language for custom inference strategies that comes with a Scheme-like and a JavaScript-like front-end syntaxes.
+Its implementation is based on on three concepts:
+  (i) \emph{stochastic procedures} that specify and encapsulate random variables, analogously to conditional probability tables in a Bayesian network;
+  (ii) \emph{execution traces} that represent (partial) execution histories and track the conditional dependencies of the random variables occurring therein; and
+  (iii) \emph{scaffolds} that partition execution histories and factor global inference problems into sub-problems.
+These building blocks provide a powerful and concise way to represent probability distributions, including distributions with a dynamically determined and unbounded set of random variables.
+In this paper we will use only the four basic Venture directives: ASSUME, OBSERVE, SAMPLE and INFER.
+\begin{itemize}
+  \item ASSUME induces a hypothesis space for (probabilistic) models including random variables by binding the result of a supplied expression to a supplied symbol.
+  \item Whereas in Scheme an expression is evaluated within an environment, in Venture an expression is evaluated within a (partial) trace of the model program.
+    Thus, the value of an expression within a model program is a random variable, whose randomness comes from the distribution on possible execution traces of the program.
+    The SAMPLE directive samples the value of the supplied expression within the current model program.
+  \item OBSERVE constrains the supplied expression to have the supplied value.
+    In other words, all samples taken after an OBSERVE are conditioned on the observed data.
+  \item INFER uses the supplied inference program to mutate the execution trace.
+    For a correct inference program, this will result approximate sampling from the true posterior on execution traces, conditioned on the model and constraints introduced by ASSUME and OBSERVE.
+    The posterior on any random variable can then be approximately sampled by calling SAMPLE to extract values from the trace.
+\end{itemize}
 
-INFER is most commonly done by deploying the Metropolis-Hastings algorithm (MH)~\citep{metropolis1953equation}.  Many algorithms used in the MCMC world can be interpreted as special cases of MH~\citep{andrieu2003introduction}. We can outline the MH algorithm as follows. For $T$ steps we sample $x^*$ from a proposal distribution $q$:
+INFER is commonly done using the Metropolis--Hastings algorithm (MH)~\citep{metropolis1953equation}.
+Many of the most popular MCMC algorithms can be interpreted as special cases of MH~\citep{andrieu2003introduction}.
+We can outline the MH algorithm as follows.
+The following two-step process is repeated as long as desired (say, for $T$ steps):
+First we sample $x^*$ from a proposal distribution $q$:
 \begin{equation}
- x^* \sim q(x^* \mid x^{(t)})
+ x^* \sim q(x^* \mid x^{t});
 \end{equation}
-which we accept ($x^{t+1} \leftarrow x ^*$) with ratio:
+then we accept this proposal ($x^{t+1} \leftarrow x ^*$) with probability
 \begin{equation}
-\alpha = min \bigg\{1,\frac{p(x^*) q(x^{t}\mid x^*)}{p(x^{(t)}) q(x^* \mid x^{t})} \bigg\}  
+  \alpha = \min \br{
+    1,
+    \frac{p(x^*) q(x^{t}\mid x^*)}{p(x^{t}) q(x^* \mid x^{t})}};
 \end{equation}
-Venture implements an MH transition operator for probabilistic execution traces.
+if the proposal is not accepted then we take $x^{t+1} \gets x^t$.
+
+Venture includes a built-in generic MH inference program which performs the above steps on any specified set of random variables in the model program.
+In that inference program, probabilistic execution traces play the role of $x$ above.
 
 
 
 
 
 \subsection{Gaussian Processes}
-In the following, we will introduce GP related theory and notations. We will exclusively work on two variable regression problems. Let the data be real-valued scalars  $\{x_i,y_i\}_{i=1}^n$ (complete data will be denoted by column vectors $\mathbf{x}$, $\mathbf{y}$). GPs present a non-parametric way to express prior knowledge on the space of possible functions  $f$ that we assume to have generated the data.  $f$ is assumed latent and the GP prior is given by a multivariate Gaussian $f(\mathbf{x})\sim \mathcal{GP}(m(\mathbf{x}),k(x_i,x_i'))$, where $m(\mathbf{x})$ is a function of the mean of all functions that map to $y_i$ at $x_i$ and $k(x_i,x_i')$ is a kernel or covariance function that summarizes the covariance of all functions that map to $y_i$ at $x_i$. We can absorb the mean function into the covariance function so without loss of generality we can set the mean to zero. The marginal likelihood can be expressed as:
+We now introduce GP related theory and notations.
+We work exclusively with two-variable regression problems.
+Let the data be pairs of real-valued scalars $\{(x_i,y_i)\}_{i=1}^n$ (complete data will be denoted by column vectors $\mathbf{x}$, $\mathbf{y}$).
+In regression, one tries to learn a functional relationship $y_i = f(x_i)$, where the function $f$ is to be learned.
+GPs present a non-parametric way to express prior knowledge on the space of possible functions $f$.
+Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
+For any finite set of inputs $\xbf$, the marginal prior on $f(\xbf)$ is the multivariate Gaussian
+\[
+f(\xbf) \sim \mathcal{GP}(m(\xbf), k(\xbf,\xbf)),
+\]
+where $m(\xbf) = \Ebkt[f]{f(\xbf)}$ is the mean function and $k(\xbf,\xbf') = \Cov_f\pn{f(\xbf), f(\xbf')}$ is the covariance function, a.k.a.\ kernel.\footnote{
+  Note that $m(\xbf) = \pn{m(x_i)}_{i=1}^{n}$ and $k(\xbf,\xbf') = \begin{pmatrix} k(x_i,x'_{i'}) \end{pmatrix}^{1 \leq i \leq n}_{1 \leq i' \leq n'}$, where $n'$ is the number of entries in $\xbf'$.
+}
+In all examples below, our prior mean function $m$ is identically zero; this is the most common choice.
+The marginal likelihood can be expressed as:
 \begin{equation}
 \label{eq:marg}
-p(\mathbf{y}|\mathbf{x}) = \int p(\mathbf{y}|\mathbf{f,x})\, p(\mathbf{f}|\mathbf{x}) \, d\mathbf{f} 
+p\pn{f(\xbf) = \ybf \mvert \xbf} = \int p\pn{f(\xbf) = \ybf \mvert f, \xbf}\, p(f|\xbf) \, df
 \end{equation}
-where the prior is Gaussian $\mathbf{f}|\mathbf{x} \sim \mathcal{N}\big(0,k(\mathbf{x},\mathbf{x}')\big)$. We can sample a vector of unseen data from the predictive posterior with
+where here $p(f|\xbf) = p(f) \sim \mathcal{GP}(m,k)$ since we assume no dependence of $f$ on $\xbf$.
+We can sample a vector of unseen data $\ybf^* = f(\xbf^*)$ from the predictive posterior with
 \begin{equation}
 \label{eq:gpsampler}
-\mathbf{y}^* \sim \mathcal{N}(\bm{\mu},\bm{\Sigma}) 
+\ybf^* \sim \mathcal{N}(\bm{\mu},\bm{\Sigma}),
 \end{equation}
-for a zero mean prior GP with a posterior mean of:
+a multivariate normal with mean vector
 \begin{equation}
 \label{eq:conditonalGaussianMean}
-\bm{\mu} = \mathbf{K}(\mathbf{x},\mathbf{x}^*)\,\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1}\,\mathbf{y}
+\bm{\mu} = k(\xbf,\xbf^*)\, k(\xbf^*,\xbf^*)^{-1}\, \ybf
 \end{equation}
-and covariance
+and covariance matrix
 \begin{equation}
 \label{eq:conditonalGaussianCovariance}
-\bm{\Sigma} =  \mathbf{K}(\mathbf{x},\mathbf{x}) - \mathbf{K}(\mathbf{x},\mathbf{x}^*)\mathbf{K}(\mathbf{x}^*,\mathbf{x}^*)^{-1} \mathbf{K}(\mathbf{x}^*,\mathbf{x}).
+\bm{\Sigma} =  k(\xbf,\xbf) - k(\xbf,\xbf^*)k(\xbf^*,\xbf^*)^{-1} k(\xbf^*,\xbf).
 \end{equation}
-$\mathbf{K}$ is a covariance function. The log-likelihood is defined as:
+
+Often one assumes the values $\ybf$ are noisily measured, that is, one only sees the values of $\ybf_\noisy = \ybf + \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$.
+In that case, the log-likelihood is
 \begin{equation}
-\log P(\mathbf{y} \mid \mathbf{X})  = -\frac{1}{2}\mathbf{y}^\top (\mathbf{K} + \sigma^2\mathbf{I})^{-1}\mathbf{y} -  \frac{1}{2}\log |\mathbf{K} + \sigma^2I| -  \frac{n}{2}\log 2 \pi
+\log p\pn{\ybf_\noisy \mvert \xbf} =
+-\frac12 \ybf^\top (\bm{\Sigma}
++ \sigma_\noise^2 \Ibf)^{-1} \ybf
+- \frac12\log \abs{\bm{\Sigma} + \sigma_\noise^2 \Ibf}
+- \frac{n}{2}\log 2\pi
 \end{equation}
-with $n$ being the number of data-points and sigma the independent observation noise.
-Both log-likelihood and predictive posterior can be computed efficiently in a Venture SP with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} resulting in a computational complexity of $\mathcal{O}(n^3)$ in the number of data-points.
+where $n$ is the number of data points.
+Both log-likelihood and predictive posterior can be computed efficiently in a Venture SP with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} resulting in a computational complexity of $\mathcal{O}(n^3)$ in the number of data points.
 
 
 
-The covariance function covers general high-level properties of the observed data such as linearity, periodicity and smoothness. The most widely used type of covariance function is the squared exponential covariance function:
+The covariance function governs high-level properties of the observed data such as linearity, periodicity and smoothness.
+The most widely used form of covariance function is the squared exponential:
 \begin{equation}
-k(x,x^\prime) = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})
+  k(x,x^\prime) = \sigma^2 \exp\pn{-\frac{(x-x^\prime)^2}{2\ell^2}},
 \end{equation}
-where $\sigma$ and $\ell$ are hyper-parameters. $\sigma$ is a scaling factor and $\ell$ is the typical length-scale.
-Smaller variations can be achieved by adapting these hyper-parameters. 
+where $\sigma$ and $\ell$ are hyperparameters: $\sigma$ is a scaling factor and $\ell$ is the typical length-scale.
 
-
-Larger variations are achieved by changing the type of the covariance function structure. 
+Adjusting hyperparameters results in a new covariance function with the same qualitative human-interpretation; more drastically different covariance functions are achieved by changing the structure of the covariance function.
 %A different type could be a linear covariance function:
 %\begin{equation}
 % k(x,x^\prime) = \sigma^2 (x-\ell) (x^\prime-\ell). 
 %\end{equation}
-Note that covariance function structures are compositional. We can add covariance functions if we want to model globally valid structures
+Note that covariance function structures are compositional: adding or multiplying two valid covariance functions results in another valid covariance function.
+We suggest ({\bf TODO} cite or point to later in paper) that adding covariance structures $k_1,k_2$ together,
 \begin{equation}
-k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime)
+k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime),
 \end{equation}
- and we can multiply covariance functions if the data is best explained by local structure 
+corresponds to combining global structures, while multilpying covariance functions,
 \begin{equation}
-k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime);
+k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime),
 \end{equation}
-both, $k_3$ and $k_4$ are valid covariance function structures.
+corresponds to combining local structures.
+Note that both $k_3$ and $k_4$ are valid covariance function structures.
 
 
 
 \section{Venture GPs}
-Given a stochastic process that implements the GP algebra above we can implement a GP sampler (\ref{eq:gpsampler}) to perform GP inference in a few lines of code. We can express simple GP smoothing with fixed hyper-parameters or a prior on hyper-parameters and perform MH on it while allowing users to custom design covariance functions. Throughout the paper, we will use the Scheme-like front-end syntax. 
+The Venture procedure \texttt{make-gp} takes as input a mean function and a covariance function, and outputs a procedure for sampling from a Gaussian process.
+In effect, each call to this procedure samples from \eqref{eq:gpsampler} conditioned on the return values of all previous samples.
+\texttt{make-gp} allows us to perform GP inference in Venture with only a few lines of code.
+We can concisely express a wide variety of GPs: simple smoothing with fixed hyper-parameters, or a prior on hyper-parameters, or a custom covariance function.
+Inference on hyper-parameters can be performed using Venture's built-in MH operator or a custom inference strategy.
+
+Venture code to create and sample from a GP with a smoothing kernel and hyperparameters is shown in Listing \ref{alg:gpNeal}.
+Throughout the paper, we will use the Scheme-like front-end syntax.
 \begin{minipage}{\linewidth}
 \footnotesize
 \belowcaptionskip=-10pt
@@ -220,11 +291,11 @@ Given a stochastic process that implements the GP algebra above we can implement
 $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 
 [ASSUME f VentureFunction($k,\sigma,\ell$) ]
-[ASSUME SE make-se (apply-function f l sf) ]
-[ASSUME (make-gp 0 SE) ]
+[ASSUME SE (apply-function make-se f l sf) ]
+[ASSUME GP (make-gp zero SE) ]
 
 [SAMPLE GP (array 1 2 3)] % Prior
-[OBSERVE GP D]
+[OBSERVE GP (array x[1] ... x[n]) (array y[1] ... y[n])] % Data
 [SAMPLE GP (array 1 2 3)] 
 [INFER  (MH {hyper-parameters} one 100) ]
 [SAMPLE GP (array 1 2 3)] % Posterior
@@ -232,18 +303,33 @@ $\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
 \end{lstlisting}
 \end{minipage}
 
-The first two lines depict the hyper-parameters. We tag both of them to belong to the set \{hyper-parameters\}. Every member of this set belongs to the same inference scope. This scope controls the application of the inference procedure used. In this paper, we use MH throughout. Each scope is further subdivided into blocks that allow to do block-proposals. In the following we omit the block notation for readability, since we always choose the block of a certain scope at random.
+The first two lines declare the hyper-parameters.
+We tag both of them to belong to the ``scope'' \texttt{\{hyper-parameters\}}.
+These tags are supplied to the inference program (in this case, MH) to specify on which random variables inference should be done.
+In this paper, we use MH inference throughout.
+Scopes may be further subdivided into blocks, on which block proposals can be made.
+In this paper we do not use block proposals; MH inference is done on one variable at a time.
 
-The ASSUME directives describe the assumptions we make for the GP model, we assume the hyper-parameters l and sf (corresponding to $\ell,\sigma$) to be 1 and 2. The squared exponential covariance function can be defined outside the Venture code with foreign conventional programming languages, e.g. Python. In that way, the user can define custom covariance functions without being restricted to the most common ones. We then integrate the foreign function into Venture as VentureFunction. In the next line this function is associated with the hyper-parameters. Finally, we assume a Gaussian Process SP with a zero mean and the previously assumed squared exponential covariance function.
+The ASSUME directives describe the GP model: \texttt{sf} and \texttt{l} (corresponding to $\sigma$ and $\ell$) are drawn from independent $\Gamma(1,3)$ distributions.
+The squared exponential covariance function can be defined outside the Venture code in a conventional programming language (e.g. Python) and imported as a foreign SP.
+In that way, the user can define custom covariance functions using his or her language and libraries of choice, without having to port existing code into Venture's modelling language.
+In the above, the factory function \texttt{f}, which produces a squared exponential function with the supplied hyperparameters, is imported from Python (we have omitted the Python code).
+In the next line \texttt{f} is used to produce a covariance function \texttt{SE}, whose (random) hyperparameters are \texttt{l} and \texttt{sf}.
+Finally, we declare \texttt{GP} to be a Gaussian process with mean zero and covariance function \texttt{SE}.
 
 
 
 
+
+{\color{red} I don't know what these two paragraphs mean --Ben}
 
 In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte}. 
 
 We have already implemented this in listing \ref{alg:gpNeal}. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
 The program gives rise to a Bayesian representation of GPs, which we will explore in the following.
+
+\subsection{Gaussian process memoization: \gpmem}
+{\bf TODO} write
 
 \subsection{A Bayesian interpretation}
 
