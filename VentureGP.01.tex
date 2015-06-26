@@ -204,11 +204,13 @@ GPs present a non-parametric way to express prior knowledge on the space of poss
 Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
 For any finite set of inputs $\xbf$, the marginal prior on $f(\xbf)$ is the multivariate Gaussian
 \[
-f(\xbf) \sim \mathcal{GP}(m(\xbf), k(\xbf,\xbf)),
+f(\xbf) \sim \mathcal{N}(m(\xbf), k(\xbf,\xbf)),
 \]
 where $m(\xbf) = \Ebkt[f]{f(\xbf)}$ is the mean function and $k(\xbf,\xbf') = \Cov_f\pn{f(\xbf), f(\xbf')}$ is the covariance function, a.k.a.\ kernel.\footnote{
   Note that $m(\xbf) = \pn{m(x_i)}_{i=1}^{n}$ and $k(\xbf,\xbf') = \begin{pmatrix} k(x_i,x'_{i'}) \end{pmatrix}^{1 \leq i \leq n}_{1 \leq i' \leq n'}$, where $n'$ is the number of entries in $\xbf'$.
 }
+Together $m$ and $k$ characterize the distribution of $f$; we write
+\[ f \sim \mathcal{GP}(m,k). \]
 In all examples below, our prior mean function $m$ is identically zero; this is the most common choice.
 The marginal likelihood can be expressed as:
 \begin{equation}
