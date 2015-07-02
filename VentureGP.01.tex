@@ -641,6 +641,17 @@ We found the final sample of multiple runs to be most informative. This kind of 
         \caption{2000 steps along the Markov Chain.}\label{fig:reslog}
 \end{figure}
 
+Given two additive components $\mathbf{K} = \mathbf{K_a} + \mathbf{K_b}$, one can compute the margninal of a global component of a composite kernel structure~\citep{benavoli2015gaussian} with a gaussian posterior $\mathcal{N}(f_a \mid \hat{\mu}_a,\hat{\mathbf{K}}_a)$  where:
+
+\begin{equation}
+\label{eq:marginalComponentMean}
+\hat{\bm\mu}_a   = \mathbf{K_a}(\xbf,\xbf^*)\, \mathbf{K}(\xbf^*,\xbf^*)^{-1}\, \ybf
+\end{equation}
+and covariance matrix
+\begin{equation}
+\label{eq:marginalComponentCovariance}
+\hat{\mathbf{K}}_a =   \mathbf{K_a}(\xbf,\xbf) -  \mathbf{K_a}(\xbf,\xbf^*)\mathbf{K}(\xbf^*,\xbf^*)^{-1} \mathbf{K_a}(\xbf^*,\xbf).
+\end{equation}
 
 \FloatBarrier
 \section{Bayesian Optimization}\label{sec:bayesopt}
