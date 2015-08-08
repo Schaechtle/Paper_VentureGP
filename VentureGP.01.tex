@@ -747,7 +747,7 @@ The results are shown in Figure \ref{fig:bayesopt-sequence}.
 We can see from the figure that, roughly speaking, each successive probe point $a$ is chosen either because the current model $V_\emu$ thinks it will have a high reward, or because the value of $V_\emu(a)$ has high uncertainty.
 In the latter case, probing at $a$ decreases this uncertainty and, due to the smoothing kernel, also decreases the uncertainty at points near $a$.
 We thus see that our Thompson sampler simultaneously learns the value function and optimizes it.
-\begin{comment}
+
 \begin{minipage}{\linewidth}
 \small
 \belowcaptionskip=-10pt
@@ -809,7 +809,7 @@ infer repeat(15, do(pass,
       }
     \label{fig:bayesopt-sequence}
 \end{figure}
-\end{comment}
+
 
 
 %We consider a true and  unknown reward function $r(x)$ that we estimate with a GP prior $\mathcal{GP}(0,K(\mathbf{x},\mathbf{x}))$. We denote past observations with $\mathcal{D} = \{(x;
