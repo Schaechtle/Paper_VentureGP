@@ -1,4 +1,7 @@
 \documentclass{article} % For LaTeX2e
+\usepackage{listings}
+\usepackage[svgnames,dvipsnames]{xcolor} % Specify colors by their 'svgnames', for a full list of all colors available see here: http://www.latextemplates.com/svgnames-colors
+\usepackage{etoolbox}
 \usepackage{nips15submit_e,times}
 \usepackage{hyperref}
 \usepackage{url}
@@ -8,14 +11,15 @@
 \usepackage{bm}
 \usepackage{amsmath,amssymb}
 \usepackage{natbib}
-\usepackage{listings}
+
 \usepackage[framemethod=TikZ]{mdframed}% http://ctan.org/pkg/mdframed
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
-\usepackage{etoolbox}
+
 \usepackage{fancyvrb}
 \usepackage{placeins}
+
 \usetikzlibrary{bayesnet}
 \newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
 
@@ -68,34 +72,28 @@
   \definecolor{mygray}{rgb}{0.5,0.5,0.5}
   \definecolor{mymauve}{rgb}{0.58,0,0.82}
 
-  \lstset{ %
-    backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
-    basicstyle=\ttfamily,        % the size and style of the fonts that are used for the code
-    breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
-    breaklines=true,                 % sets automatic line breaking
-    captionpos=b,                    % sets the caption-position to bottom
-    commentstyle=\color{mygreen},    % comment style
-    deletekeywords={...},            % if you want to delete keywords from the given language
-    escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
-    extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
-    frame=single,                    % adds a frame around the code
-    keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
-    keywordstyle=\color{black},       % keyword style
-    language=Octave,                 % the language of the code
-    morekeywords={*,...},            % if you want to add more keywords to the set
-    numbers=left,                    % where to put the line-numbers; possible values are (none, left, right)
-    numbersep=5pt,                   % how far the line-numbers are from the code
-    numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
-    rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
-    showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
-    showstringspaces=false,          % underline spaces within strings only
-    showtabs=false,                  % show tabs within strings adding particular underscores
-    stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
-    stringstyle=\color{black},     % string literal style
-    tabsize=2,                       % sets default tabsize to 2 spaces
-    title=\lstname                   % show the filename of files included with \lstinputlisting; also try caption instead of title
-}
-
+  \lstset{
+    language=LISP,
+    comment=[l]{//},
+    keywordstyle=\color{black},
+    commentstyle=\color{mygreen},
+    keywordstyle=[2]\color{RawSienna},
+    keywords=[2]{assume,predict,infer,observe,define},
+    keywordstyle=[3]\color{black},
+    keywords=[3]{then,else,proc,tag,gamma,uniform_continuous,log,make_squaredexp,make_whitenoise,gpmem,mapv,first,repeat,do,mh,one,add_funcs,make_se,lambda,lookup,argmax_of_array,linspace,run,array,pass,mc_argmax,uniform_structure,subset,lte,if,flip,mult_funcs,for,to,get_neal_blackbox,get_neal_data_xs,get_data_xs,size,get_bayesopt_blackbox},
+    basicstyle=\LSTfont,
+    literate=%
+    *{0}{{{\color{DarkBlue}0}}}1
+    {1}{{{\color{DarkBlue}1}}}1
+    {2}{{{\color{DarkBlue}2}}}1
+    {3}{{{\color{DarkBlue}3}}}1
+    {4}{{{\color{DarkBlue}4}}}1
+    {5}{{{\color{DarkBlue}5}}}1
+    {6}{{{\color{DarkBlue}6}}}1
+    {7}{{{\color{DarkBlue}7}}}1
+    {8}{{{\color{DarkBlue}8}}}1
+    {9}{{{\color{DarkBlue}9}}}1
+  }
 \title{Probabilistic Programming with Gaussian Process Memoization}
 
 
@@ -121,7 +119,7 @@
 \maketitle
 
 \begin{abstract}
-This paper describes the {\em Gaussian process memoizer}, a probabilistic programming technique that uses Gaussian processes to provides a statistical alternative to memorization. Memoizing a target procedure results in a “self-caching” wrapper that remembers previously computed values. Gaussian process memoization additionally produces a statistical emulator based on a Gaussian process whose predictions automatically improve whenever a new value of the target procedure becomes available. This paper also introduces  an efficient implementation, named {\tt gpmem}, that can use kernels given by a broad class of probabilistic programs. The flexibility of {\tt gpmem} is illustrated via three applications: (i) GP regression with hierarchical hyper-parameter learning, (ii) Bayesian structure learning via compositional kernels generated by a probabilistic grammar, and (iii) a bandit formulation of Bayesian optimization with automatic inference and action selection. All applications share a single 50-line Python library and require fewer than 20 lines of probabilistic code each.
+This paper describes the {\em Gaussian process memoizer}, a probabilistic programming technique that uses Gaussian processes to provide a statistical alternative to memorization. Memoizing a target procedure results in a “self-caching” wrapper that remembers previously computed values. Gaussian process memoization additionally produces a statistical emulator based on a Gaussian process whose predictions automatically improve whenever a new value of the target procedure becomes available. This paper also introduces  an efficient implementation, named {\tt gpmem}, that can use kernels given by a broad class of probabilistic programs. The flexibility of {\tt gpmem} is illustrated via three applications: (i) GP regression with hierarchical hyper-parameter learning, (ii) Bayesian structure learning via compositional kernels generated by a probabilistic grammar, and (iii) a bandit formulation of Bayesian optimization with automatic inference and action selection. All applications share a single 50-line Python library and require fewer than 20 lines of probabilistic code each.
 \end{abstract}
 
 \section{Introduction}
@@ -226,12 +224,12 @@ We can sample a vector of unseen data $\ybf^* = f(\xbf^*)$ from the predictive p
 a multivariate normal with mean vector
 \begin{equation}
 \label{eq:conditonalGaussianMean}
-\bm{\mu} = k(\xbf,\xbf^*)\, k(\xbf^*,\xbf^*)^{-1}\, \ybf
+\bm{\mu} = k(\xbf^*,\xbf)\, k(\xbf,\xbf)^{-1}\, \ybf
 \end{equation}
 and covariance matrix
 \begin{equation}
 \label{eq:conditonalGaussianCovariance}
-\bm{\Sigma} =  k(\xbf,\xbf) - k(\xbf,\xbf^*)k(\xbf^*,\xbf^*)^{-1} k(\xbf^*,\xbf).
+\bm{\Sigma} =  k(\xbf^*,\xbf^*) - k(\xbf^*,\xbf)k(\xbf,\xbf)^{-1} k(\xbf,\xbf^*).
 \end{equation}
 
 Often one assumes the values $\ybf$ are noisily measured, that is, one only sees the values of $\ybf_\noisy = \ybf + \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$.
@@ -265,7 +263,7 @@ We suggest ({\bf TODO} cite or point to later in paper) that adding covariance s
 \begin{equation}
 k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime),
 \end{equation}
-corresponds to combining global structures, while multilpying covariance functions,
+corresponds to combining global structures, while multiplying covariance functions,
 \begin{equation}
 k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime),
 \end{equation}
@@ -282,31 +280,32 @@ We can concisely express a wide variety of GPs: simple smoothing with fixed hype
 Inference on hyper-parameters can be performed using Venture's built-in MH operator or a custom inference strategy.
 
 Venture code to create and sample from a GP with a smoothing kernel and hyperparameters is shown in Listing \ref{alg:gpNeal}.
-Throughout the paper, we will use the Scheme-like front-end syntax.
 \begin{minipage}{\linewidth}
-\footnotesize
+\small
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,caption=Bayesian GP Smoothing,mathescape,label=alg:gpNeal]
-[ASSUME l  (gamma 1 3)] $\in$ {hyper-parameters} 
-[ASSUME sf (gamma 1 3)] $\in$ {hyper-parameters}
+\begin{lstlisting}[frame=single,mathescape,label=alg:gpNeal,basicstyle=\selectfont\ttfamily]
+// HYPER-PARAMETERS
+assume log_sf = tag('hyper, log(gamma(1,1))))
+assume log_l = tag('hyper, log(gamma(1,1))))
 
-$\smash{k(x,x^\prime) := \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
+// COVARIANCE FUNCTION
+assume se = make_squaredexp(log_sf, log_l)
 
-[ASSUME make-se VentureFunction($k,\sigma,\ell$) ]
-[ASSUME SE (apply-function make-se l sf) ]
-[ASSUME GP (make-gp zero SE) ]
+// MAKE GAUSSIAN PROCESS
+assume gp = make_gp( 0, se)
 
-[SAMPLE (GP (array 1 2 3))]    % Sample the prior at points (1, 2, 3)
-[OBSERVE GP (array x[1] ... x[n]) (array y[1] ... y[n])] % Data
-[SAMPLE (GP (array 1 2 3))]    % Conditioned on data only
-[INFER  (MH {hyper-parameters} one 100)]   % Infer hyperparameters
-[SAMPLE (GP (array 1 2 3))]    % Approximate posterior
+// INCORPORATE OBSERVATIONS
+observe gp(array x[1],...x[n])= array(y[1],...,y[n])
+
+// INFER HYPER-PARAMETERS
+infer mh('hyper, one, 1)))
 
 \end{lstlisting}
 \end{minipage}
 
+
 The first two lines declare the hyper-parameters.
-We tag both of them to belong to the ``scope'' \texttt{\{hyper-parameters\}}.
+We tag both of them to belong to the ``scope'' \texttt{'hyper}.
 These tags are supplied to the inference program (in this case, MH) to specify on which random variables inference should be done.
 In this paper, we use MH inference throughout.
 Scopes may be further subdivided into blocks, on which block proposals can be made.
@@ -385,37 +384,37 @@ and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
 \end{equation}
 Assuming the covariance structure is an additive comprised of a smoothing and a white noise kernel, one can represent this kind of model using \gpmem\ with only a few lines of code:
 \begin{minipage}{\linewidth}
-\footnotesize
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,caption=Hierarchical  GP Smoothing,mathescape,label=alg:gphierarch,escapechar=']
-[ASSUME alpha (mem (lambda (i)  (gamma  1 3 )))] $\in$ {hyper-parameters-$\Gamma$} 
-[ASSUME beta  (mem (lambda (i)  (gamma  1 3 )))] $\in$ {hyper-parameters-$\Gamma$} 
+\begin{lstlisting}[frame=single,mathescape,label=alg:gphierarch,basicstyle=\selectfont\ttfamily]
+/// SETTING UP THE MODEL
+assume alpha_sf = tag('hyperhyper, gamma(7, 1))
+assume beta_sf = tag('hyperhyper, gamma(7, 1))
+assume alpha_l = tag('hyperhyper, gamma(7, 1))
+assume beta_l = tag('hyperhyper, gamma(7, 1))
 
-[ASSUME l  (gamma (alpha 1) (beta 1))]   $\in$ {hyper-parameters} 
-[ASSUME sf (gamma (alpha 2) (beta 2))]   $\in$ {hyper-parameters}
-[ASSUME sigma (uniform 0 5 )]            $\in$ {hyper-parameters} % Fig. '\ref{fig:inference}'
-% above: structured prior, Fig. '\ref{fig:NealpriorStruct}'
+// Parameters of the covariance function
+assume log_sf = tag('hyper, log(gamma(alpha_sf, beta_sf))))
+assume log_l = tag('hyper, log(gamma(alpha_l, beta_l))))
+assume log_sigma = tag('hyper, log(uniform_continuous(0, 2))) 
 
-$\smash{k_{SE}(x,x^\prime) := \theta^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})}$
-$\smash{k_{WN}(x,x^\prime) := \sigma^2 \delta_{x,x^\prime}}$
+// The covariance function
+assume se = make_squaredexp(log_sf, log_l)
+assume wn = make_whitenoise(log_sigma)
+assume composite_covariance = add_funcs(se, wn)
 
-[ASSUME k$_{SE}$ VentureFunction($k_{SE},\theta,\ell$) ]
-[ASSUME k$_{WN}$ VentureFunction($k_{WN},\sigma$) ]
+/// PERFORMING INFERENCE
+// Create a prober and emulator using gpmem
+assume f_restr = get_neal_blackbox()
+assume (f_compute, f_emu) = gpmem(f_restr, composite_covariance)
 
-[ASSUME SE make-se (apply-function k$_{SE}$ l sf) ]
-[ASSUME WN make-se (apply-function k$_{WN}$ sigma) ]
+// Probe all data points
+predict mapv(f_compute, get_neal_data_xs())
 
-[ASSUME (list f_compute f_emu) (gpmem f_restr (function-plus SE WN) )]
-[SAMPLE (f_emu (array 1 2 3))]  % prior, Fig. '\ref{fig:NealBO}'
+// Infer hypers and hyperhypers
+infer repeat(100, do(
+    mh('hyperhyper, one, 2),
+    mh('hyper, one, 1)))
 
-for i=1 to n:
-  [PREDICT (f_compute x[i])] % observing with a look-up function
-[SAMPLE (f_emu (array 1 2 3))]  % after observation, Fig. '\ref{fig:NealAO}'
-  
-[INFER (REPEAT 100 
-	(DO (MH {hyper-parameters} one 2)
-	    (MH {hyper-parameters-$\Gamma$} one 2) ))]
-[SAMPLE (f_emu (array 1 2 3))]  % posterior , Fig. '\ref{fig:NealAI}'
 \end{lstlisting}
 \end{minipage}
 
@@ -458,15 +457,15 @@ We illustrate the hyper-parameter by showing the shift of the distribution on th
 \begin{figure}
         \centering
         \begin{subfigure}[b]{0.5\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/neal_unif_sigma_before_desktop_50_5.png}
-                \caption{$\sigma$ Before}
+                \includegraphics[height=6.5cm]{figs/neal_contour_l_vs_sigma_s__marginal_before.png}
+                \caption{Before}
                 \label{fig:before}
         \end{subfigure}%
         ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
           %(or a blank line to force the subfigure onto a new line)
         \begin{subfigure}[b]{0.5\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/neal_unif_sigma_after_ulliDesktop_n503.png}
-                \caption{$\sigma$  After}
+                \includegraphics[height=6.5cm]{figs/neal_contour_l_vs_sigma_s__marginal_after.png}
+                \caption{After}
                 \label{fig:after))}
         \end{subfigure}
         \caption{Hyper-parameter inference on the parameter of the noise kernel. We show a 100 samples drawn from the distribution on $\sigma$. One can clearly recognise the shift from the uniform prior $\mathcal{U}(0,5)$ to a double peak distribution around the two modes - normal and outlier.}\label{fig:inference}
@@ -534,44 +533,47 @@ Many equivalent covariance structures can be sampled due to covariance function 
 
 For reproducing results from the Automated Statistician Project in a Bayesian fashion we first define a prior on the hypothesis space. Note that, as in the implementation of the Automated Statistician, we upper-bound the complexity of the space of covariance functions we want to explore. We also put vague priors on hyper-parameters.
 
-
 \begin{minipage}{\linewidth}
 \small
-\begin{lstlisting}[frame=single,label=alg:structureVent,caption=Venture Code for Bayesian GP Structure Learning,mathescape]
-[ASSUME base_kernels (list K$_1$,K$_2$,$\cdots$,K$_n$)] % defined as above
-[ASSUME p$_n$ (uniform_structure n)]        % prior on the number of kernels
-[ASSUME S$_{\emph{K}}$ (subset  base_kernels p$_n$)]    % sampling a subset of size n
-[ASSUME composition (lambda (l)          % kernel composition
-                     (if (lte ( size l) 1)
-                         (first l)
-                          (if (flip)
-                              (func_plus (first l) (cov_compo (rest l)))
-                              (func_times (first l) (cov_compo (rest l)))
-                          )
-                     )
-              )
+\belowcaptionskip=-10pt
+\begin{lstlisting}[frame=single,mathescape,label=alg:structureVent,basicstyle=\selectfont\ttfamily]
+// GRAMMAR FOR KERNEL STRUCTURE
+assume base_kernels = list(se, wn, lin, per, rq) // defined as above
 
-[ASSUME K (composition  S$_{\emph{K}}$)]
+// prior on the number of kernels
+assume p_number_k = tag('number_kernels, uniform_structure(n))
+assume s = tag('choice_subset, subset(base_kernels, p_number_k))
 
-[ASSUME (list f_compute f_emu) (gpmem f_restr K )]
+assume cov_compo = proc(l) {
+  // kernel composition
+  if (size(l) <= 1)
+  then { first(l) }
+  else { if (flip()) then { add_funcs(first(l), cov_compo(rest(l))) }
+                     else { mult_funcs(first(l), cov_compo(rest(l))) }
+       }
+  }
+                          
+assume K = tag('composit, cov_compo(s))
 
-for i=1 to n:
-  [PREDICT (f_compute x[i])] % observing with a look-up function
+assume (f_compute f_emu) = gpmem(f_restr, K)
+predict mapv(f_compute(get_data_xs)) // probe all data points
 
-[INFER  (REPEAT 2000 (DO 
-                        (MH p$_n$ one 1) 
-                        (MH S$_{\emph{K}}$ one 1) 
-                        (MH K$^*$ one 1) 
-                        (MH {hyper-parameters} one 10)) ]
-
-
+// PERFORMING INFERENCE  
+infer  repeat(2000, do(
+                        mh('number_kernel, one, 1),
+                        mh('choice_subset, one, 1),
+                        mh('composit, one, 1),
+                        mh('hyper, one, 10)))
 \end{lstlisting}
 
 \end{minipage}
 
+
+
+
 We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}. We will elaborate the result using a sample from the posterior (Fig. \ref{fig:tutorial}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels.
 
-
+\begin{comment}
 \begin{figure}
         \centering
         \begin{subfigure}[b]{\textwidth} \centering
@@ -603,14 +605,24 @@ We defined the space of covariance structures in a way allowing us to reproduce 
         \put(-175,33){\Large $\times$} 
         \caption{a) We see the predictive posterior as a result 1000 nested MH steps on the airline data set. b) depicts a decomposition of this posterior for the structures sampled by Venture. RQ is the rational quadratic covariance function. The first line shows the global trend and denotes the rest of the structure that is shown above. In the second line, the see the periodic component on the right hand side. The left hand side denotes short term deviations both multiplied by a smoothing kernel. The third and fourth lines denote how we reach the second line: both periodic and rational quadratic covariance functions are multiplied by a linear covariance function with slope zero.}\label{fig:tutorial}
 \end{figure}
+\end{comment}
 
-
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{\textwidth} \centering
+                \includegraphics[width=\textwidth]{figs/airline_struct_1.pdf}\caption{}
+        \end{subfigure}\\
+	\begin{subfigure}[b]{\textwidth} \centering
+                \includegraphics[width=0.9\textwidth]{figs/airline_struct_2.pdf}\caption{}
+        \end{subfigure}%
+        \caption{(a) most frequent sample drawn from the posterior on structure. We have found two global components. First, A smooth trend (LINxSE) with a non-linear increasing slope. Second, a periodic component with increasing variation and noise. (b) second most frequent sample drawn from the posterior on structure. We found one global component. It is comprised of local changes that are periodic and with changing variation.}\label{fig:posterior_twosamples}
+\end{figure}
 We further investigated the quality of our stochastic processes by running a leave one out cross-validation to gain confidence on the posterior. This resulted in 545 independent runs of the Markov chain that produced a coherent posterior: our Bayesian interpretation of GP structure and GPs produced a posterior of structures that is in line with previous results on this data set (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structureCo2}).
 
 We ran similar evaluation on the airline data set resulting in a similar structure to what was previously reporte (Fig. \ref{fig:structureAir}, residuals and log-score along the Markov chain see Fig. \ref{fig:reslog}).
 
 We found the final sample of multiple runs to be most informative. This kind of Markov Chain seems to produce samples that are highly auto-correlated.
-
+\begin{comment}
 \begin{figure}
 \centering
     \includegraphics[width=\textwidth]{figs/structureCo2b.png}
@@ -640,6 +652,7 @@ We found the final sample of multiple runs to be most informative. This kind of 
         \end{subfigure}
         \caption{2000 steps along the Markov Chain.}\label{fig:reslog}
 \end{figure}
+\end{comment}
 
 Given two additive components $\mathbf{K} = \mathbf{K_a} + \mathbf{K_b}$, one can compute the margninal of a global component of a composite kernel structure~\citep{benavoli2015gaussian} with a gaussian posterior $\mathcal{N}(f_a \mid \hat{\mu}_a,\hat{\mathbf{K}}_a)$  where:
 
@@ -737,6 +750,9 @@ We can see from the figure that, roughly speaking, each successive probe point $
 In the latter case, probing at $a$ decreases this uncertainty and, due to the smoothing kernel, also decreases the uncertainty at points near $a$.
 We thus see that our Thompson sampler simultaneously learns the value function and optimizes it.
 
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
 \begin{lstlisting}[float,frame=single,caption={
   Code for Bayesian optimization using \gpmem.
   %The procedure \texttt{V\_compute} probes \texttt{V} directly, thus improving the GP model \texttt{V\_emu}.
@@ -747,20 +763,40 @@ We thus see that our Thompson sampler simultaneously learns the value function a
   Once enough calls to \texttt{V\_compute} have been made (in our case we stopped at 15 calls), we can inspect the full list of probed $(a,r)$ pairs with \texttt{extract\_stats}.
   The answer to our maximization problem is simply the pair having the highest $r$; but our algorithm also learns more potentially useful information.
 },mathescape,label=alg:bayesopt]
-[ASSUME sigma (sigma-prior)]
-[ASSUME l (l-prior)]
-[ASSUME K (make-squared-exponential sigma l)]
-[ASSUME (list V_compute V_emu) (gpmem V K)]
-[ASSUME V_emu_pointwise (lambda (a) (first (V_emu (array a))))]
-[ASSUME mc_sampler (uniform_sampler -20 20)]
+assume log_sf = tag('hyper, log(uniform_continuous(0, 10)))
+assume log_l = tag('hyper, log(uniform_continuous(0, 10)))
+assume se = make_squaredexp(log_sf, log_l)
+assume blackbox_f = get_bayesopt_blackbox()
+assume (f_compute, f_emu) = gpmem(blackbox_f, se)
 
-for i=1 to 15:
-  [PREDICT (V_compute (mc_argmax V_emu_pointwise mc_sampler))]
-  [INFER (MH 'hypers one 50)
+define get_uniform_candidate = proc(prev_xs) {
+  uniform_continuous(-20, 20)
+}
 
-[INFER (extract_stats V_emu)]
+define mc_argmax = proc(func, prev_xs) {
+  // Monte Carlo estimator for the argmax of func.
+  run(do(
+    candidate_xs <- mapv(proc(i) {get_uniform_candidate(prev_xs)},
+                         linspace(0, 19, 20)),
+    candidate_ys <- mapv(func, candidate_xs),
+    lookup(candidate_xs, argmax_of_array(candidate_ys))))
+}
+
+define emulator_point_sample = proc(x) {
+  run(sample(lookup(
+    f_emu(array(x)),
+    0)))
+}
+
+infer repeat(15, do(pass,
+     // Phase 2: Call f_compute on the next probe point
+     predict f_compute(
+                 mc_argmax(emulator_point_sample, '_)),
+     // Phase 1: Hyperparameter inference
+     mh('hyper, one, 50)))
 \end{lstlisting}
-
+\end{minipage}
+      
 \begin{figure}
 \centering
     \includegraphics[height=0.8\textheight]{figs/BayesOpt_gpmem_sequence.png}
@@ -798,20 +834,35 @@ k_{RQ}(x,x^\prime) =   \theta \bigg(1 + \frac{(x - x^\prime)^2}{2 \alpha \ell^2}
 \end{equation}
 
 \subsection*{B Covariance Simplification}
-
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[frame=single,label=alg:simplify,caption=Grammar to simplify expressions,mathescape]
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[frame=single,mathescape,label=alg:simplify,basicstyle=\selectfont\ttfamily]
+
 SE $\times$ SE                  $\rightarrow$ SE 
 {SE,PER,C,WN} $\times$ WN       $\rightarrow$ WN
 LIN $+$ LIN                $\rightarrow$ LIN
 {SE,PER,C,WN,LIN} $\times$ C    $\rightarrow$  {SE,PER,C,WN,LIN} 
 \end{lstlisting}
-
 \end{minipage}
+Rule 1 is derived as follows:
 \begin{equation}
- \theta (x x^\prime) = \theta_1 (x x^\prime) + \theta_2 (x x^\prime) 
+\begin{aligned}
+\sigma_c^2 \exp(-\frac{(x-x^\prime)^2}{2\ell_c^2})  &=  \sigma_a^2 \exp(-\frac{(x-x^\prime)^2}{2\ell_a^2}) \times  \sigma_b^2 \exp(-\frac{(x-x^\prime)^2}{2\ell_b^2}) \\
+&= \sigma_c^2 \exp(-\frac{(x-x^\prime)^2}{2\ell_a^2}) \times   \exp(-\frac{(x-x^\prime)^2}{2\ell_b^2}) \\
+&= \sigma_c^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_a^2} -\frac{(x-x^\prime)^2}{2\ell_b^2}\bigg) \\
+&= \sigma_c^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_c^2}\bigg) \\
+\end{aligned}
 \end{equation}
-
+Rule 3 is derived as follows:
+\begin{equation}
+ \theta_c (x \times x^\prime) = \theta_a (x \times x^\prime) + \theta_b (x \times x^\prime) 
+\end{equation}
+For stationary kernels that only depend on the lag vector between $x$ and $x^\prime$ it holds that multiplying such a kernel with a WN kernel we get another WN kernel. Take for example the SE kernel:
+\begin{equation}
+ \sigma_a^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_c^2}\bigg) \times  \sigma_b \delta_{x,x^\prime} =  \sigma_a \sigma_b \delta_{x,x^\prime}
+\end{equation}
+Multiplying any kernel with a constant obviously changes only the scale parameter of a kernel.
 \newpage
 \bibliography{May2015}
 \bibliographystyle{apalike}
