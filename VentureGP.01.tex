@@ -174,7 +174,7 @@ In this paper we will use only the four basic Venture directives: ASSUME, OBSERV
 INFER is commonly done using the Metropolis--Hastings algorithm (MH)~\citep{metropolis1953equation}.
 Many of the most popular MCMC algorithms can be interpreted as special cases of MH~\citep{andrieu2003introduction}.
 We can outline the MH algorithm as follows.
-The following two-step process is repeated as long as desired (say, for $T$ steps):
+The following two-step process is repeated as long as desired (say, for $T$ iterations):
 First we sample $x^*$ from a proposal distribution $q$:
 \begin{equation}
  x^* \sim q(x^* \mid x^{t});
@@ -188,7 +188,7 @@ then we accept this proposal ($x^{t+1} \leftarrow x ^*$) with probability
 if the proposal is not accepted then we take $x^{t+1} \gets x^t$.
 
 Venture includes a built-in generic MH inference program which performs the above steps on any specified set of random variables in the model program.
-In that inference program, probabilistic execution traces play the role of $x$ above.
+In that inference program, partial execution traces play the role of $x$ above.
 
 
 
@@ -203,11 +203,13 @@ GPs present a non-parametric way to express prior knowledge on the space of poss
 Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
 For any finite set of inputs $\xbf$, the marginal prior on $f(\xbf)$ is the multivariate Gaussian
 \[
-f(\xbf) \sim \mathcal{GP}(m(\xbf), k(\xbf,\xbf)),
+f(\xbf) \sim \mathcal{N}(m(\xbf), k(\xbf,\xbf)),
 \]
 where $m(\xbf) = \Ebkt[f]{f(\xbf)}$ is the mean function and $k(\xbf,\xbf') = \Cov_f\pn{f(\xbf), f(\xbf')}$ is the covariance function, a.k.a.\ kernel.\footnote{
   Note that $m(\xbf) = \pn{m(x_i)}_{i=1}^{n}$ and $k(\xbf,\xbf') = \begin{pmatrix} k(x_i,x'_{i'}) \end{pmatrix}^{1 \leq i \leq n}_{1 \leq i' \leq n'}$, where $n'$ is the number of entries in $\xbf'$.
 }
+Together $m$ and $k$ characterize the distribution of $f$; we write
+\[ f \sim \mathcal{GP}(m,k). \]
 In all examples below, our prior mean function $m$ is identically zero; this is the most common choice.
 The marginal likelihood can be expressed as:
 \begin{equation}
@@ -313,8 +315,8 @@ In this paper we do not use block proposals; MH inference is done on one variabl
 The ASSUME directives describe the GP model: \texttt{sf} and \texttt{l} (corresponding to $\sigma$ and $\ell$) are drawn from independent $\Gamma(1,3)$ distributions.
 The squared exponential covariance function can be defined outside the Venture code in a conventional programming language (e.g. Python) and imported as a foreign SP.
 In that way, the user can define custom covariance functions using his or her language and libraries of choice, without having to port existing code into Venture's modelling language.
-In the above, the factory function \texttt{f}, which produces a squared exponential function with the supplied hyperparameters, is imported from Python (we have omitted the Python code).
-In the next line \texttt{f} is used to produce a covariance function \texttt{SE}, whose (random) hyperparameters are \texttt{l} and \texttt{sf}.
+In the above, the factory function \texttt{make-se}, which produces a squared exponential function with the supplied hyperparameters, is imported from Python (we have omitted the Python code).
+In the next line \texttt{make-se} is used to produce a covariance function \texttt{SE}, whose (random) hyperparameters are \texttt{l} and \texttt{sf}.
 Finally, we declare \texttt{GP} to be a Gaussian process with mean zero and covariance function \texttt{SE}.
 
 
