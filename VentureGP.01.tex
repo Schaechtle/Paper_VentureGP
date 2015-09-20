@@ -139,7 +139,8 @@ The paper is structured as follows, we will first provide some background on mem
 \section{Background}
 \subsection{Memoization}
 Memoization is the practice of storing previously computed values of a function so that future calls with the same inputs can be evaluated by lookup rather than recomputation.
-Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a determinstic program, it does change that of a stochastic program.
+Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a determinstic program, it does change that of a stochastic program. The authors provide an intuitive example: let $f$ be a function that flips a coin and return ``head'' or ``tails''. The probability that two calls of $f$ are equivalent is 0.5. However, if the function call is memoized, it is 1.
+
 In fact, there is an infinite range of possible caching policies (specifications of when to use a stored value and when to recompute), each potentially having a different semantics.
 Any particular caching policy can be understood by random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the stochastic program: each possible world corresponds to a mapping from function input sequence to function output sequence~\citep{mcallester2008random}.
 In Venture, these possible worlds are first-class objects, known as {\em traces}~\citep{mansinghka2014venture}.
@@ -751,7 +752,7 @@ We thus see that our Thompson sampler simultaneously learns the value function a
 \begin{minipage}{\linewidth}
 \small
 \belowcaptionskip=-10pt
-\begin{lstlisting}[float,frame=single,caption={
+\begin{lstlisting}[frame=single,caption={
   Code for Bayesian optimization using \gpmem.
   %The procedure \texttt{V\_compute} probes \texttt{V} directly, thus improving the GP model \texttt{V\_emu}.
   %(\texttt{V\_emu\_pointwise} is simply a shortcut for sampling the GP model at a single point; \texttt{V\_emu} is more general, allowing joint samples to be taken at any set of points.)
@@ -759,8 +760,7 @@ We thus see that our Thompson sampler simultaneously learns the value function a
   The new argument, \texttt{(mc\_argmax V\_emu\_pointwise mc\_sampler)}, is a Monte Carlo estimate of the maximum pointwise sample of \texttt{V\_emu} (itself a stochastic quantity), with the Monte Carlo samples being drawn in this case uniformly between $-20$ and $20$.
   After each new call to \texttt{V\_compute}, the Metropolis--Hastings algorithm is used to perform inference on the hyperparameters of the covariance function in the GP model in light of the new conditioning data.
   Once enough calls to \texttt{V\_compute} have been made (in our case we stopped at 15 calls), we can inspect the full list of probed $(a,r)$ pairs with \texttt{extract\_stats}.
-  The answer to our maximization problem is simply the pair having the highest $r$; but our algorithm also learns more potentially useful information.
-},mathescape,label=alg:bayesopt]
+  The answer to our maximization problem is simply the pair having the highest $r$; but our algorithm also learns more potentially useful information.},mathescape,label=alg:bayesopt]
 assume log_sf = tag('hyper, log(uniform_continuous(0, 10)))
 assume log_l = tag('hyper, log(uniform_continuous(0, 10)))
 assume se = make_squaredexp(log_sf, log_l)
