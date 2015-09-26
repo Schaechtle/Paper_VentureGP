@@ -1,0 +1,12 @@
+Memoization is the practice of storing previously computed values of a function so that future calls with the same inputs can be evaluated by lookup rather than recomputation.
+Research on the Church language~\citep{goodman2008church} pointed out that although memoization does not change the semantics of a determinstic program, it does change that of a stochastic program. The authors provide an intuitive example: let $f$ be a function that flips a coin and return ``head'' or ``tails''. The probability that two calls of $f$ are equivalent is 0.5. However, if the function call is memoized, it is 1.
+
+In fact, there is an infinite range of possible caching policies (specifications of when to use a stored valuMemoization.texe and when to recompute), each potentially having a different semantics.
+Any particular caching policy can be understood by random world semantics~\citep{poole1993probabilistic,sato1995statistical} over the stochastic program: each possible world corresponds to a mapping from function input sequence to function output sequence~\citep{mcallester2008random}.
+In Venture, these possible worlds are first-class objects, known as {\em traces}~\citep{mansinghka2014venture}.
+
+%Here, the theoretically infinite infinite-dimensional generalization of the Dirichlet Distribution i distribution Generative processes considering  have been introduced for the discrete case where models infinitely valued process is treated computationally as finite. 
+
+
+%cases where latent values are treated infinite 
+

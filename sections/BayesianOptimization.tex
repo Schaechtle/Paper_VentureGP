@@ -1,0 +1,11 @@
+\label{sec:bayesopt}
+Bayesian optimization casts the problem of finding the global maximum of an unknown function as a hierarchical decision problem~\citep{ghahramani2015probabilistic}.
+Evaluating the actual function may be very expensive, either in computation time or in some other resource.
+For one example, when searching for the best configuration for the learning algorithm of a large convolutional neural network, a large amount of computational work is required to evaluate a candidate configuration, and the space of possible configurations is high-dimensional.
+Another common example, alluded to in Section \ref{sec:gpmem-broader}, is data acquisition: for machine learning problems in which a large body of data is available, it is often desirable to choose the right queries to produce a data set on which learning will be most effective.
+In continuous settings, many Bayesian optimization methods employ GPs~\citep[e.g.][]{snoek2012practical}.
+
+We have implemented a version of Thompson sampling using GPs in Venture.
+Thompson sampling~\cite{thompson1933likelihood} is a widely-used Bayesian framework for solving exploration-exploitation problems.
+Our implementation has two notable features: (i) the ability to search over a broader space of contexts than the parametric families that are typically used, and (ii) the parsimony of the resulting probabilistic program.
+

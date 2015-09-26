@@ -1,0 +1,29 @@
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[frame=single,mathescape,label=alg:simplify,basicstyle=\selectfont\ttfamily]
+
+SE $\times$ SE                  $\rightarrow$ SE 
+{SE,PER,C,WN} $\times$ WN       $\rightarrow$ WN
+LIN $+$ LIN                $\rightarrow$ LIN
+{SE,PER,C,WN,LIN} $\times$ C    $\rightarrow$  {SE,PER,C,WN,LIN} 
+\end{lstlisting}
+\end{minipage}
+Rule 1 is derived as follows:
+\begin{equation}
+\begin{aligned}
+\sigma_c^2 \exp(-\frac{(x-x^\prime)^2}{2\ell_c^2})  &=  \sigma_a^2 \exp(-\frac{(x-x^\prime)^2}{2\ell_a^2}) \times  \sigma_b^2 \exp(-\frac{(x-x^\prime)^2}{2\ell_b^2}) \\
+&= \sigma_c^2 \exp(-\frac{(x-x^\prime)^2}{2\ell_a^2}) \times   \exp(-\frac{(x-x^\prime)^2}{2\ell_b^2}) \\
+&= \sigma_c^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_a^2} -\frac{(x-x^\prime)^2}{2\ell_b^2}\bigg) \\
+&= \sigma_c^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_c^2}\bigg) \\
+\end{aligned}
+\end{equation}
+Rule 3 is derived as follows:
+\begin{equation}
+ \theta_c (x \times x^\prime) = \theta_a (x \times x^\prime) + \theta_b (x \times x^\prime) 
+\end{equation}
+For stationary kernels that only depend on the lag vector between $x$ and $x^\prime$ it holds that multiplying such a kernel with a WN kernel we get another WN kernel. Take for example the SE kernel:
+\begin{equation}
+ \sigma_a^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_c^2}\bigg) \times  \sigma_b \delta_{x,x^\prime} =  \sigma_a \sigma_b \delta_{x,x^\prime}
+\end{equation}
+Multiplying any kernel with a constant obviously changes only the scale parameter of a kernel.

@@ -1,0 +1,29 @@
+We now lay out the setup of Thompson sampling for Markov decision processes (MDPs).
+An agent is to take a sequence of actions $a_1, a_2, \ldots$ from a (possibly infinite) set of possible actions $\Acal$.
+After each action, a reward $r \in \R$ is received, according to an unknown conditional distribution $P_\true(r|a)$.
+The agent's goal is to maximize the total reward received for all actions.
+In Thompson sampling, the Bayesian agent accomplishes this by placing a prior distribution $P(\theta)$ on the possible ``contexts'' $\theta \in \Theta$.
+Here a context is a believed model of the conditional distributions $\{P(r|a)\}_{a \in \Acal}$, or at least, a believed statistic of these conditional distributions which is sufficient for deciding an action $a$.
+One example of such a sufficient statistic is the conditional mean $V(a|\theta) = \Ebkt{r|a,\theta}$, which can be thought of as a value function.
+Thompson sampling thus has the following steps, repeated as long as desired:
+\begin{enumerate}
+  \item Sample a context $\theta \sim P(\theta)$.
+  \item Choose an action $a \in \Acal$ which (approximately) maximizes $V(a|\theta) = \Ebkt{r|a,\theta}$.
+  \item\label{itm:Thompson-conditioning}
+    Let $r_\true$ be the reward received for action $a$.
+    Update the believed distribution on $\theta$, i.e., $P(\theta) \gets P_\rmnew(\theta)$ where $P_\rmnew(\theta) = P\pn{\theta \mvert a \mapsto r_\true}$.
+\end{enumerate}
+Note that when $\Ebkt{r|a,\theta}$ (under the sampled value of $\theta$ for some points $a$) is far from the true value $\Ebkt[P_\true]{r|a}$, the chosen action $a$ may be far from optimal, but the information gained by probing action $a$ will improve the belief $\theta$.
+This amounts to ``exploration.''
+When $\Ebkt{r|a,\theta}$ is close to the true value except at points $a$ for which $\Ebkt{r|a,\theta}$ is low, exploration will be less likely to occur, but the chosen actions $a$ will tend to receive high rewards.
+This amounts to ``exploitation.''
+Roughly speaking, exploration will happen until the context $\theta$ is reasonably sure that the unexplored actions are probably not optimal, at which time the sampler will exploit by choosing actions in regions it knows to have high value.
+
+Typically, when Thompson sampling is implemented, the search over contexts $\theta \in \Theta$ is limited by the choice of representation.
+In traditional programming environments, $\theta$ often consists of a few numerical parameters for a family of distributions of a fixed functional form.
+With work, a mixture of a few functional forms is possible; but without probabilistic programming machinery, implementing a rich context space $\Theta$ would be an unworkably large technical burden.
+In a probabilstic programing language, however, the representation of heterogeneously structured or infinite-dimensional context spaces is quite natural.
+Any computable model of the conditional distributions $\br{P(r|a)}_{a \in \Acal}$ can be represented as a stochastic procedure $(\lambda (a) \ldots)$.
+Thus, for computational Thompson sampling, the most general context space $\widehat\Theta$ is the space of program texts.
+Any other context space $\Theta$ has a natural embedding as a subset of $\widehat\Theta$.
+

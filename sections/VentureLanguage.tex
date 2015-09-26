@@ -1,0 +1,40 @@
+Venture is a compositional language for custom inference strategies that comes with a Scheme-like and a JavaScript-like front-end syntaxes.
+Its implementation is based on on three concepts:
+  (i) \emph{stochastic procedures} that specify and encapsulate random variables, analogously to conditional probability tables in a Bayesian network;
+  (ii) \emph{execution traces} that represent (partial) execution histories and track the conditional dependencies of the random variables occurring therein; and
+  (iii) \emph{scaffolds} that partition execution histories and factor global inference problems into sub-problems.
+These building blocks provide a powerful and concise way to represent probability distributions, including distributions with a dynamically determined and unbounded set of random variables.
+In this \paperOrChapter we will use only the four basic Venture directives: ASSUME, OBSERVE, SAMPLE and INFER.
+\begin{itemize}
+  \item ASSUME induces a hypothesis space for (probabilistic) models including random variables by binding the result of a supplied expression to a supplied symbol.
+  \item Whereas in Scheme an expression is evaluated within an environment, in Venture an expression is evaluated within a (partial) trace of the model program.
+    Thus, the value of an expression within a model program is a random variable, whose randomness comes from the distribution on possible execution traces of the program.
+    The SAMPLE directive samples the value of the supplied expression within the current model program.
+  \item OBSERVE constrains the supplied expression to have the supplied value.
+    In other words, all samples taken after an OBSERVE are conditioned on the observed data.
+  \item INFER uses the supplied inference program to mutate the execution trace.
+    For a correct inference program, this will result approximate sampling from the true posterior on execution traces, conditioned on the model and constraints introduced by ASSUME and OBSERVE.
+    The posterior on any random variable can then be approximately sampled by calling SAMPLE to extract values from the trace.
+\end{itemize}
+
+INFER is commonly done using the Metropolis--Hastings algorithm (MH)~\citep{metropolis1953equation}.
+Many of the most popular MCMC algorithms can be interpreted as special cases of MH~\citep{andrieu2003introduction}.
+We can outline the MH algorithm as follows.
+The following two-step process is repeated as long as desired (say, for $T$ iterations):
+First we sample $x^*$ from a proposal distribution $q$:
+\begin{equation}
+ x^* \sim q(x^* \mid x^{t});
+\end{equation}
+then we accept this proposal ($x^{t+1} \leftarrow x ^*$) with probability
+\begin{equation}
+  \alpha = \min \br{
+    1,
+    \frac{p(x^*) q(x^{t}\mid x^*)}{p(x^{t}) q(x^* \mid x^{t})}};
+\end{equation}
+if the proposal is not accepted then we take $x^{t+1} \gets x^t$.
+
+Venture includes a built-in generic MH inference program which performs the above steps on any specified set of random variables in the model program.
+In that inference program, partial execution traces play the role of $x$ above.
+
+
+

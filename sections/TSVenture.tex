@@ -1,0 +1,30 @@
+
+Because Venture supports sampling and inference on (stochastic-)procedure-valued random variables (and the generative models which produce those procedures), Venture can capture arbitrary context spaces as described above.
+To demonstrate, we have implemented Thompson sampling in Venture in which the contexts $\theta$ are Gaussian processes over the action space $\Acal = \R$.
+That is, $\theta = (\mu, K)$, where the mean $\mu$ is a computable function $\Acal \to \R$ and the covariance $K$ is a computable (symmetric, positive-semidefinite) function $\Acal \times \Acal \to \R$.
+This represents a Gaussian process $\br{R_a}_{a \in \Acal}$, where $R_a$ represents the reward for action $a$.
+% where for any finite subset $\br{a_i}_{i=1}^{n} \subset \Acal$, the marginal distribution on $\pn{R_{a_i}}$ is Gaussian with mean $\pn{\mu(a_i)}_{i=1}^{n}$ and covariance matrix $\begin{pmatrix} K(a_i,a_j) \end{pmatrix}_{1 \leq i,j \leq n}$.
+Computationally, we represent a context not as a pair of infinite lookup tables for $\mu$ and $K$, but as a finite data structure $\theta = (K_\prior, \sigma, \ell, \abf_\past, \rbf_\past)$, where
+\begin{itemize}
+  \item $K_\prior = K_{\prior,\sigma,\ell}$ is a procedure, with parameters $\sigma,\ell$, to be used as the prior covariance function: $K_\prior(a,a') = \sigma^2 \exp\pn{-\frac{(a-a')^2}{2\ell^2}}$
+  \item $\sigma$ and $\ell$ are (hyper)parameters for $K_\prior$
+  \item $\abf_\past = \pn{a_i}_{i=1}^{n}$ are the previously probed actions
+  \item $\rbf_\past = \pn{r_i}_{i=1}^{n}$ are the corresponding rewards
+\end{itemize}
+To simplify the treatment, we take prior mean $\mu_\prior \equiv 0$.  The mean and covariance for $\theta$ are then gotten by the usual conditioning formula:
+\begin{align*}
+  \mu(\abf)
+  &= \mu\pn{\abf \mvert \abf_\past, \rbf_\past} \\
+  &= K_\prior(\abf, \abf_\past)
+     \,K_\prior(\abf_\past, \abf_\past)^{-1}
+     \,\rbf_\past \\
+  K(\abf, \abf)
+  &= K\pn{\abf, \abf \mvert \abf_\past, \rbf_\past} \\
+  &= K_\prior(\abf, \abf)
+     - K_\prior(\abf, \abf_\past)
+       \,K_\prior(\abf_\past, \abf_\past)^{-1}
+       \,K_\prior(\abf_\past, \abf).
+\end{align*}
+Note that even in this simple example, the context space $\Theta$ is not a finite-dimensional parametric family, since the vectors $\abf_\past$ and $\rbf_\past$ grow as more samples are taken.
+$\Theta$ is, however, quite easily representable as a computational procedure together with parameters and past samples, as we do in the representation $\theta = (K_\prior, \sigma, \ell, \abf_\past, \rbf_\past)$.
+
