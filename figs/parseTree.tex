@@ -2,24 +2,23 @@
 \usetikzlibrary{arrows}
 
 
-
 \begin{tikzpicture}[->,>=stealth',level/.style={sibling distance = 5cm/#1,
   level distance = 4.5cm}] 
-\node [arn_n, align=left] {
+\node [   align=left] {
                    \includegraphics[width=.33\textwidth]{figs/gpSamples/main.png}
 \\
 SE $\times$ LIN $+$ PER $\times$ LIN $+$  RQ $\times$ LIN}
-      child{ node [arn_r, align=center]{\includegraphics[width=.33\textwidth]{figs/gpSamples/selin.png}\\ SE $\times$ LIN} 
-	      child{ node [arn_n, align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/se.png}\\ SE}}
-	      child{ node [arn_n, align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/lin.png}\\ LIN }}                            
+      child{ node [  align=center]{\includegraphics[width=.33\textwidth]{figs/gpSamples/selin.png}\\ SE $\times$ LIN} 
+	      child{ node [   align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/se.png}\\ SE}}
+	      child{ node [   align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/lin.png}\\ LIN }}                            
       }
-        child{ node [arn_r, align=center]{\includegraphics[width=.33\textwidth]{figs/gpSamples/perlin.png}\\ PER $\times$ LIN} 
-            child{ node [arn_n, align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/per.png}\\ PER}} 
-            child{ node [arn_n, align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/lin2.png}\\ LIN}}
+        child{ node [  align=center]{\includegraphics[width=.33\textwidth]{figs/gpSamples/perlin.png}\\ PER $\times$ LIN} 
+            child{ node [   align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/per.png}\\ PER}} 
+            child{ node [   align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/lin2.png}\\ LIN}}
 		}
-      child{ node [arn_r, align=center]{\includegraphics[width=.33\textwidth]{figs/gpSamples/rqlin.png}\\ RQ $\times$ LIN} 
-            child{ node [arn_n, align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/rq.png}\\ RQ}}
-            child{ node [arn_n, align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/lin.png}\\ LIN}}
+      child{ node [  align=center]{\includegraphics[width=.33\textwidth]{figs/gpSamples/rqlin.png}\\ RQ $\times$ LIN} 
+            child{ node [   align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/rq.png}\\ RQ}}
+            child{ node [   align=center] {\includegraphics[width=.2\textwidth]{figs/gpSamples/lin.png}\\ LIN}}
 		}
 ; 
 \end{tikzpicture}
