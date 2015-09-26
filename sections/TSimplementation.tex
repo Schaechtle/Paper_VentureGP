@@ -22,8 +22,8 @@ We thus see that our Thompson sampler simultaneously learns the value function a
   After each new call to \texttt{V\_compute}, the Metropolis--Hastings algorithm is used to perform inference on the hyperparameters of the covariance function in the GP model in light of the new conditioning data.
   Once enough calls to \texttt{V\_compute} have been made (in our case we stopped at 15 calls), we can inspect the full list of probed $(a,r)$ pairs with \texttt{extract\_stats}.
   The answer to our maximization problem is simply the pair having the highest $r$; but our algorithm also learns more potentially useful information.},mathescape,label=alg:bayesopt]
-assume sf = tag('hyper, uniform_continuous(0, 10))
-assume l = tag('hyper, uniform_continuous(0, 10))
+assume sf = tag(quote(hyper), 0, uniform_continuous(0, 10))
+assume l = tag(quote(hyper), 1, uniform_continuous(0, 10))
 assume se = make_squaredexp(sf, l)
 assume blackbox_f = get_bayesopt_blackbox()
 assume (f_compute, f_emu) = gpmem(blackbox_f, se)
@@ -52,7 +52,7 @@ infer repeat(15, do(pass,
      predict f_compute(
                  mc_argmax(emulator_point_sample, '_)),
      // Phase 1: Hyperparameter inference
-     mh('hyper, one, 50)))
+     mh(quote(hyper), one, 50)))
 \end{lstlisting}
 \end{minipage}
       

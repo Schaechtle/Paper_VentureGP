@@ -56,8 +56,8 @@ For reproducing results from the Automated Statistician Project in a Bayesian fa
 assume base_kernels = list(se, wn, lin, per, rq) // defined as above
 
 // prior on the number of kernels
-assume p_number_k = tag('number_kernels, uniform_structure(n))
-assume s = tag('choice_subset, subset(base_kernels, p_number_k))
+assume p_number_k = tag(quote(number_kernels), 0, uniform_structure(n))
+assume s = tag(quote(choice_subset), 0, subset(base_kernels, p_number_k))
 
 assume cov_compo = proc(l) {
   // kernel composition
@@ -68,17 +68,17 @@ assume cov_compo = proc(l) {
        }
   }
                           
-assume K = tag('composit, cov_compo(s))
+assume K = tag(quote(composit), 0, cov_compo(s))
 
 assume (f_compute f_emu) = gpmem(f_restr, K)
 predict mapv(f_compute(get_data_xs)) // probe all data points
 
 // PERFORMING INFERENCE  
 infer  repeat(2000, do(
-                        mh('number_kernel, one, 1),
-                        mh('choice_subset, one, 1),
-                        mh('composit, one, 1),
-                        mh('hyper, one, 10)))
+                        mh(quote(number_kernel), one, 1),
+                        mh(quote(choice_subset), one, 1),
+                        mh(quote(composit), one, 1),
+                        mh(quote(hyper), one, 10)))
 \end{lstlisting}
 
 \end{minipage}
