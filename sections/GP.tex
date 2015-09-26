@@ -62,8 +62,9 @@ Adjusting hyperparameters results in a new covariance function with the same qua
 %\begin{equation}
 % k(x,x^\prime) = \sigma^2 (x-\ell) (x^\prime-\ell). 
 %\end{equation}
-Note that covariance function structures are compositional: adding or multiplying two valid covariance functions results in another valid covariance function.
-We suggest ({\bf TODO} cite or point to later in \paperOrChapter) that adding covariance structures $k_1,k_2$ together,
+Note that covariance function structures are compositional: adding or multiplying two valid covariance functions results in another valid covariance function. 
+
+It has been suggested that adding covariance structures $k_1,k_2$ together,
 \begin{equation}
 k_3(x,x^\prime) = k_1(x,x^\prime) + k_2(x,x^\prime),
 \end{equation}
@@ -71,7 +72,7 @@ corresponds to combining global structures, while multiplying covariance functio
 \begin{equation}
 k_4(x,x^\prime) = k_1(x,x^\prime) \times k_2(x,x^\prime),
 \end{equation}
-corresponds to combining local structures.
+corresponds to combining local structures~\citep{duvenaud2013structure}.
 Note that both $k_3$ and $k_4$ are valid covariance function structures.
 
 
