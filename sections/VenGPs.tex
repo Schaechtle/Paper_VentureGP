@@ -48,9 +48,4 @@ Finally, we declare \texttt{GP} to be a Gaussian process with mean zero and cova
 
 
 
-{\color{red} I don't know what these two paragraphs mean --Ben}
 
-In the case where hyper-parameters are unknown they can be found deterministically by optimizing the marginal likelihood using a gradient based optimizer. Non-deterministic, Bayesian representations of this case are also known~\citep{neal1997monte}. 
-
-We have already implemented this in listing \ref{alg:gpNeal}. We draw the hyper-parameters from a $\Gamma$-prior for a Bayesian treatment of hyper-parameters. This is simple using the build in stochastic procedure that simulates drawing samples from a gamma distribution.
-The program gives rise to a Bayesian representation of GPs, which we will explore in the following.
