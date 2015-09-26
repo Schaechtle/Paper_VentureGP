@@ -21,6 +21,17 @@
 \usepackage{placeins}
 
 \usetikzlibrary{bayesnet}
+
+\tikzset{
+  %% See
+  %% http://tex.stackexchange.com/questions/224993/nodes-put-one-on-top-of-the-other
+  treenode/.style = {align=center, inner sep=0pt, text centered,
+    font=\sffamily},
+  arn_n/.style = {treenode, circle, white, font=\sffamily\bfseries, draw=black,
+    fill=black, text width=1.5em},% arbre rouge noir, noeud noir
+  arn_r/.style = {treenode, circle, red, draw=red, 
+    text width=1.5em, very thick},% arbre rouge noir, noeud rouge
+}
 \newcommand{\argmax}[1]{\underset{#1}{\operatorname{arg}\,\operatorname{max}}\;}
 
 
@@ -83,7 +94,11 @@
     keywords=[2]{assume,predict,infer,observe,define},
     keywordstyle=[3]\color{black},
     keywords=[3]{then,else,proc,tag,gamma,uniform_continuous,log,make_squaredexp,make_whitenoise,gpmem,mapv,first,repeat,do,mh,one,add_funcs,make_se,lambda,lookup,argmax_of_array,linspace,run,array,pass,mc_argmax,uniform_structure,subset,lte,if,flip,mult_funcs,for,to,get_neal_blackbox,get_neal_data_xs,get_data_xs,size,get_bayesopt_blackbox},
+<<<<<<< HEAD
     %basicstyle=\LSTfont,
+=======
+    basicstyle=\tt,
+>>>>>>> 270d77ad00c5976dcd016b0e1a8a9dc0f072e86e
     literate=%
     *{0}{{{\color{DarkBlue}0}}}1
     {1}{{{\color{DarkBlue}1}}}1
