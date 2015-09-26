@@ -11,11 +11,11 @@ Venture code to create and sample from a GP with a smoothing kernel and hyperpar
 \belowcaptionskip=-10pt
 \begin{lstlisting}[frame=single,mathescape,label=alg:gpNeal,basicstyle=\selectfont\ttfamily]
 // HYPER-PARAMETERS
-assume log_sf = tag('hyper, log(gamma(1,1))))
-assume log_l = tag('hyper, log(gamma(1,1))))
+assume sf = tag('hyper, gamma(1,1)))
+assume l = tag('hyper, gamma(1,1)))
 
 // COVARIANCE FUNCTION
-assume se = make_squaredexp(log_sf, log_l)
+assume se = make_squaredexp(sf, l)
 
 // MAKE GAUSSIAN PROCESS
 assume gp = make_gp( 0, se)

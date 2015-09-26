@@ -23,13 +23,13 @@ assume alpha_l = tag('hyperhyper, gamma(7, 1))
 assume beta_l = tag('hyperhyper, gamma(7, 1))
 
 // Parameters of the covariance function
-assume log_sf = tag('hyper, log(gamma(alpha_sf, beta_sf))))
-assume log_l = tag('hyper, log(gamma(alpha_l, beta_l))))
-assume log_sigma = tag('hyper, log(uniform_continuous(0, 2))) 
+assume sf = tag('hyper, gamma(alpha_sf, beta_sf)))
+assume l = tag('hyper, gamma(alpha_l, beta_l)))
+assume sigma = tag('hyper, uniform_continuous(0, 2)) 
 
 // The covariance function
-assume se = make_squaredexp(log_sf, log_l)
-assume wn = make_whitenoise(log_sigma)
+assume se = make_squaredexp(sf, l)
+assume wn = make_whitenoise(sigma)
 assume composite_covariance = add_funcs(se, wn)
 
 /// PERFORMING INFERENCE
