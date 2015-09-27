@@ -10,10 +10,10 @@ Venture code to create and sample from a GP with a smoothing kernel and hyperpar
 \begin{minipage}{\linewidth}
 \small
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,mathescape,label=alg:gpNeal,basicstyle=\selectfont\ttfamily]
+\begin{lstlisting}[frame=single,mathescape,label=alg:gpNeal,basicstyle=\selectfont\ttfamily,numbers=none]
 // HYPER-PARAMETERS
-assume sf = tag(quote(hyper),0, gamma(1,1)))
-assume l = tag(quote(hyper),1, gamma(1,1)))
+assume sf = tag(quote(hyper), 0, gamma(1,1)))
+assume l = tag(quote(hyper), 1, gamma(1,1)))
 
 // COVARIANCE FUNCTION
 assume se = make_squaredexp(sf, l)
