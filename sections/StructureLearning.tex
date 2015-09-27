@@ -1,4 +1,4 @@
-The space of possible kernel composition is infinite. Combining inference over this space with the problem of finding a good parameterization that could potentially explain the observed data best poses a hard problem. The natural language interpretation of the meaning of a kernel and it's composition renders this a problem of symbolic computation. Duvenaud and colleagues note that a sum of kernels can be interpreted as logical OR operations and kernel multiplication as logical AND~\citeyearpar{duvenaud2013structure}. This is due to the kernel rendering two points similar if $k_1$ OR $k_2$ outputs a high value in the case of a sum. Respectively, multiplication of two kernels results in high values only if $k_1$ AND $k_2$ have high values (see Fig. \ref{fig:composite} examplifies how to interpret global vs. local aspects and its symbolic analog respectively). 
+The space of possible kernel composition is infinite. Combining inference over this space with the problem of finding a good parameterization that could potentially explain the observed data best poses a hard problem. The natural language interpretation of the meaning of a kernel and its composition renders this a problem of symbolic computation. Duvenaud and colleagues note that a sum of kernels can be interpreted as logical OR operations and kernel multiplication as logical AND~\citeyearpar{duvenaud2013structure}. This is due to the kernel rendering two points similar if $k_1$ OR $k_2$ outputs a high value in the case of a sum. Respectively, multiplication of two kernels results in high values only if $k_1$ AND $k_2$ have high values (see Fig. \ref{fig:composite} examplifies how to interpret global vs. local aspects and its symbolic analog respectively). 
 In the following, we will refer to covariance functions that are not composite as base covariance functions.
 
 \begin{figure}
@@ -86,7 +86,7 @@ infer  repeat(2000, do(
 
 
 
-We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}. We will elaborate the result using a sample from the posterior (Fig. \ref{fig:tutorial}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels.
+We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}. The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels. We see that that the most probable alternatives for a structural description both recover the data dynamics (Fig. \ref{fig:posterior_twosamples} for the airline data set).
 
 \begin{comment}
 \begin{figure}
@@ -134,11 +134,8 @@ We defined the space of covariance structures in a way allowing us to reproduce 
         \end{subfigure}%
         \caption{(a) most frequent sample drawn from the posterior on structure. We have found two global components. First, A smooth trend (LINxSE) with a non-linear increasing slope. Second, a periodic component with increasing variation and noise. (b) second most frequent sample drawn from the posterior on structure. We found one global component. It is comprised of local changes that are periodic and with changing variation.}\label{fig:posterior_twosamples}
 \end{figure}
-We further investigated the quality of our stochastic processes by running a leave one out cross-validation to gain confidence on the posterior. This resulted in 545 independent runs of the Markov chain that produced a coherent posterior: our Bayesian interpretation of GP structure and GPs produced a posterior of structures that is in line with previous results on this data set (~\citealp*{duvenaud2013structure}; see Fig. \ref{fig:structureCo2}).
+We further investigated the quality of our stochastic processes by running a leave one out cross-validation computing residuals to gain confidence on the posterior.
 
-We ran similar evaluation on the airline data set resulting in a similar structure to what was previously reporte (Fig. \ref{fig:structureAir}, residuals and log-score along the Markov chain see Fig. \ref{fig:reslog}).
-
-We found the final sample of multiple runs to be most informative. This kind of Markov Chain seems to produce samples that are highly auto-correlated.
 \begin{comment}
 \begin{figure}
 \centering
@@ -169,7 +166,7 @@ We found the final sample of multiple runs to be most informative. This kind of 
         \end{subfigure}
         \caption{2000 steps along the Markov Chain.}\label{fig:reslog}
 \end{figure}
-\end{comment}
+
 
 Given two additive components $\mathbf{K} = \mathbf{K_a} + \mathbf{K_b}$, one can compute the margninal of a global component of a composite kernel structure~\citep{benavoli2015gaussian} with a gaussian posterior $\mathcal{N}(f_a \mid \hat{\mu}_a,\hat{\mathbf{K}}_a)$  where:
 
@@ -182,3 +179,4 @@ and covariance matrix
 \label{eq:marginalComponentCovariance}
 \hat{\mathbf{K}}_a =   \mathbf{K_a}(\xbf,\xbf) -  \mathbf{K_a}(\xbf,\xbf^*)\mathbf{K}(\xbf^*,\xbf^*)^{-1} \mathbf{K_a}(\xbf^*,\xbf).
 \end{equation}
+\end{comment}
