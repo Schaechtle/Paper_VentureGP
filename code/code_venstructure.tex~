@@ -1,0 +1,34 @@
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[frame=single,mathescape,label=alg:structureVent,basicstyle=\selectfont\ttfamily,numbers=none]
+// GRAMMAR FOR KERNEL STRUCTURE
+assume base_kernels = list(se, wn, lin, per, rq) // defined as above
+
+// prior on the number of kernels
+assume p_number_k = tag(quote(number_kernels), 0, uniform_structure(n))
+assume s = tag(quote(choice_subset), 0, subset(base_kernels, p_number_k))
+
+assume cov_compo = proc(l) {
+  // kernel composition
+  if (size(l) <= 1)
+  then { first(l) }
+  else { if (flip()) then { add_funcs(first(l), cov_compo(rest(l))) }
+                     else { mult_funcs(first(l), cov_compo(rest(l))) }
+       }
+  }
+                          
+assume K = tag(quote(composit), 0, cov_compo(s))
+
+assume (f_compute f_emu) = gpmem(f_restr, K)
+predict mapv(f_compute(get_data_xs)) // probe all data points
+
+// PERFORMING INFERENCE  
+infer  repeat(2000, do(
+                        mh(quote(number_kernel), one, 1),
+                        mh(quote(choice_subset), one, 1),
+                        mh(quote(composit), one, 1),
+                        mh(quote(hyper), one, 10)))
+\end{lstlisting}
+
+\end{minipage}

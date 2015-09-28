@@ -1,0 +1,34 @@
+\begin{minipage}{\linewidth}
+\belowcaptionskip=-10pt
+\begin{lstlisting}[frame=single,mathescape,label=alg:gphierarch,basicstyle=\selectfont\ttfamily,numbers=none]
+/// SETTING UP THE MODEL
+assume alpha_sf = tag(quote(hyperhyper), 0, gamma(7, 1))
+assume beta_sf = tag(quote(hyperhyper), 1, gamma(7, 1))
+assume alpha_l = tag(quote(hyperhyper), 2, gamma(7, 1))
+assume beta_l = tag(quote(hyperhyper), 3, gamma(7, 1))
+
+// Parameters of the covariance function
+assume sf = tag(quote(hyper), 0, gamma(alpha_sf, beta_sf)))
+assume l = tag(quote(hyper), 1, gamma(alpha_l, beta_l)))
+assume sigma = tag(quote(hyper), 2, uniform_continuous(0, 2)) 
+
+// The covariance function
+assume se = make_squaredexp(sf, l)
+assume wn = make_whitenoise(sigma)
+assume composite_covariance = add_funcs(se, wn)
+
+/// PERFORMING INFERENCE
+// Create a prober and emulator using gpmem
+assume f_restr = get_neal_blackbox()
+assume (f_compute, f_emu) = gpmem(f_restr, composite_covariance)
+
+// Probe all data points
+predict mapv(f_compute, get_neal_data_xs())
+
+// Infer hypers and hyperhypers
+infer repeat(100, do(
+    mh(quote(hyperhyper), one, 2),
+    mh(quote(hyper), one, 1)))
+
+\end{lstlisting}
+\end{minipage}

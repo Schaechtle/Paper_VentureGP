@@ -1,0 +1,21 @@
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[frame=single,mathescape,label=alg:gpNeal,basicstyle=\selectfont\ttfamily,numbers=none]
+// HYPER-PARAMETERS
+assume sf = tag(quote(hyper), 0, gamma(1,1)))
+assume l = tag(quote(hyper), 1, gamma(1,1)))
+
+// COVARIANCE FUNCTION
+assume se = make_squaredexp(sf, l)
+
+// MAKE GAUSSIAN PROCESS
+assume gp = make_gp( 0, se)
+
+// INCORPORATE OBSERVATIONS
+observe gp(array x[1],...x[n])= array(y[1],...,y[n])
+
+// INFER HYPER-PARAMETERS
+infer mh(quote(hyper), one, 1)))
+\end{lstlisting}
+\end{minipage}
