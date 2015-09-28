@@ -28,7 +28,8 @@ infer  repeat(2000, do(
                         mh(quote(number_kernels), one, 1),
                         mh(quote(choice_subset), one, 1),
                         mh(quote(composit), one, 1),
-                        mh(quote(hyper), one, 10)))
+                        for kernel $\in \mathbf{K}$ 
+			  mh(quote(hyper$_{kernel}$), one, 10)))
 \end{lstlisting}
 
 \end{minipage}
