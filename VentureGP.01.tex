@@ -128,15 +128,16 @@ This paper describes the {\em Gaussian process memoizer}, a probabilistic progra
 \section{Introduction}
 \input{sections/VenGPIntroduction.tex}
 
-\section{Background}
+
 \subsection{Memoization}
 \input{sections/Memoization.tex}
 \subsection{Venture}
 \input{sections/VentureLanguage.tex}
-\subsection{Gaussian Processes}
+
+\section{Gaussian Processes Memoization}
 \input{sections/GP.tex}
 
-\section{Venture GPs}
+\subsection{Venture GPs}
 \input{sections/VenGPs.tex}
 
 
@@ -151,24 +152,26 @@ This paper describes the {\em Gaussian process memoizer}, a probabilistic progra
 
 \subsubsection{Data modelling as a special case of \gpmem}
 \input{sections/data_modelling.tex}
-\subsubsection{The efficacy of learning hyperparameters}
+\section{Example Applications}
+\subsubsection{Hyperparameter estimation with structured hyper-prior}
 \input{sections/hyperparameters.tex}
 \subsubsection{Broader applicability of \gpmem}\label{sec:gpmem-broader}
 \input{sections/applicability.tex}
-\subsection{Structure Learning}\label{sec:structurelearning}
+\subsection{Discovering symbolic models for time series}\label{sec:structurelearning}
 \input{sections/StructureLearning.tex}
 
 \FloatBarrier
-\section{Bayesian Optimization}
+\subsection{Bayesian optimization via Thompson sampling}
 \input{sections/BayesianOptimization.tex}
-\subsection{Thompson sampling framework}
+\subsubsection{Thompson sampling framework}
 \input{sections/TSframework.tex}
-\subsection{Thompson sampling in Venture}
+\subsubsection{Thompson sampling in Venture}
 \input{sections/TSVenture.tex}
-\subsection{Implementation with \gpmem}
+\subsubsection{Implementation with \gpmem}
 \input{sections/TSimplementation.tex}
-\section{Conclusion}
+\section{Discussion}
 \input{sections/Conclusion.tex}
+\subsection{Contributions}
 
 \section*{Appendix}
 \subsection*{A Covariance Functions}
