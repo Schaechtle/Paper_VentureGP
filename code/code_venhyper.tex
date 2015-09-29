@@ -16,12 +16,12 @@ assume sigma = tag(quote(hyper), 2, uniform_continuous(0, 2))
 // The covariance function
 assume se = make_squaredexp(sf, l)
 assume wn = make_whitenoise(sigma)
-assume composite_covariance = add_funcs(se, wn)
+assume covariance = add_funcs(se, wn)
 
 /// PERFORMING INFERENCE
 // Create a prober and emulator using gpmem
 assume f_restr = get_neal_blackbox()
-assume (f_compute, f_emu) = gpmem(f_restr, composite_covariance)
+assume (f_compute, f_emu) = gpmem(f_restr, covariance)
 
 // Probe all data points
 predict mapv(f_compute, get_neal_data_xs())

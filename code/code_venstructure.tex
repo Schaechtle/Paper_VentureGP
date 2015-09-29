@@ -4,18 +4,19 @@
 \belowcaptionskip=-10pt
 \begin{lstlisting}[mathescape,label=alg:structureVent,basicstyle=\selectfont\ttfamily,numbers=none]
 // GRAMMAR FOR KERNEL STRUCTURE
-assume base_kernels = list(se, wn, lin, per, rq) // defined as above
+assume base_kernels = list(se, wn, lin, per, rq) // as above
 
 // prior on the number of kernels
-assume p_number_k = tag(quote(number_kernels), 0, uniform_structure(n))
-assume s = tag(quote(choice_subset), 0, subset(base_kernels, p_number_k))
+assume p_number_k = tag(quote(pnk), 0, uniform_structure(n))
+assume s = tag(quote(choice), 0, subset(base_kernels, p_number_k))
 
 assume cov_compo = proc(l) {
   // kernel composition
   if (size(l) <= 1)
   then { first(l) }
-  else { if (flip()) then { add_funcs(first(l), cov_compo(rest(l))) }
-                     else { mult_funcs(first(l), cov_compo(rest(l))) }
+  else { if (flip()) 
+		  then { add_funcs(first(l), cov_compo(rest(l))) }
+                  else { mult_funcs(first(l), cov_compo(rest(l))) }
        }
   }
                           
@@ -26,8 +27,8 @@ predict mapv(f_compute(get_data_xs)) // probe all data points
 
 // PERFORMING INFERENCE  
 infer  repeat(2000, do(
-                        mh(quote(number_kernels), one, 1),
-                        mh(quote(choice_subset), one, 1),
+                        mh(quote(pnk), one, 1),
+                        mh(quote(choice), one, 1),
                         mh(quote(composit), one, 1),
                         for kernel $\in \mathbf{K}$ 
 			  mh(quote(hyper$_{kernel}$), one, 10)))
