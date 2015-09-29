@@ -1,7 +1,8 @@
+\begin{mdframed}
 \begin{minipage}{\linewidth}
 \small
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,mathescape,label=alg:structureVent,basicstyle=\selectfont\ttfamily,numbers=none]
+\begin{lstlisting}[mathescape,label=alg:structureVent,basicstyle=\selectfont\ttfamily,numbers=none]
 // GRAMMAR FOR KERNEL STRUCTURE
 assume base_kernels = list(se, wn, lin, per, rq) // defined as above
 
@@ -31,5 +32,5 @@ infer  repeat(2000, do(
                         for kernel $\in \mathbf{K}$ 
 			  mh(quote(hyper$_{kernel}$), one, 10)))
 \end{lstlisting}
-
 \end{minipage}
+\end{mdframed}

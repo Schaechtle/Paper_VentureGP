@@ -1,7 +1,8 @@
+\begin{mdframed}
 \begin{minipage}{\linewidth}
 \small
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,mathescape,label=alg:gpNeal,basicstyle=\selectfont\ttfamily,numbers=none]
+\begin{lstlisting}[mathescape,label=alg:gpNeal,basicstyle=\selectfont\ttfamily,numbers=none]
 // HYPER-PARAMETERS
 assume sf = tag(quote(hyper), 0, gamma(1,1)))
 assume l = tag(quote(hyper), 1, gamma(1,1)))
@@ -19,3 +20,4 @@ observe gp(array x[1],...x[n])= array(y[1],...,y[n])
 infer mh(quote(hyper), one, 1)))
 \end{lstlisting}
 \end{minipage}
+\end{mdframed}

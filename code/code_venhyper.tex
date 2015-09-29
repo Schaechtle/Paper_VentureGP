@@ -1,6 +1,7 @@
+\begin{mdframed}
 \begin{minipage}{\linewidth}
 \belowcaptionskip=-10pt
-\begin{lstlisting}[frame=single,mathescape,label=alg:gphierarch,basicstyle=\selectfont\ttfamily,numbers=none]
+\begin{lstlisting}[mathescape,label=alg:gphierarch,basicstyle=\selectfont\ttfamily,numbers=none]
 /// SETTING UP THE MODEL
 assume alpha_sf = tag(quote(hyperhyper), 0, gamma(7, 1))
 assume beta_sf = tag(quote(hyperhyper), 1, gamma(7, 1))
@@ -32,3 +33,5 @@ infer repeat(100, do(
 
 \end{lstlisting}
 \end{minipage}
+ 
+\end{mdframed}
