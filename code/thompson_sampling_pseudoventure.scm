@@ -1,0 +1,7 @@
+(assume theta (tag 'theta (prior_on_semicontexts)))
+(assume_list (r_probe r_emulate)
+             (mem&em do_action theta))
+(let loop ((a (argmax r_emulate)))
+  (r_probe a)
+  (inference_on 'theta)
+  (loop (argmax r_emulate)))

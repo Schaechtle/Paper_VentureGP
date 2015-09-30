@@ -1,0 +1,28 @@
+\label{sec:interactivity}
+The output $Y$ of a generative model can be thought of as the projection of a
+random variable $J$ to just the non-latent parts.  That is,
+\[ Y: \omega \in \Omega \xmapsto{J} (x,y) \xmapsto{\text{proj}} y, \]
+where $\Omega$ is the sample space; $x$ is referred to as the ``latent'' data
+for this sample.  If our generative model $J$ is computable, and is embodied by
+the model program \texttt{J}, then as we mentioned in Section
+\ref{sec:pp-background}, without loss of generality we can take $\Omega$ to
+simply be the set of all possible executions of \texttt{J}, as is done in
+Venture.
+
+Just as a generative model $J$ can be extended by making additional random
+choices $J' \sim P(J'|J)$ conditioned on the value of $J$, an execution trace
+can be extended by executing more model directives.  Consequently, the state of
+a model program can be inspected interactively, without making a commitment as
+to whether there is more model code to be executed later.  In Venture, the
+current trace can be extended using the \texttt{predict} directive (or
+\texttt{assume}, which does the same thing and then assigns the resulting value
+to a named variable; see \cite{VentureRefMan} and \cite{Venture} for a detailed
+treatment of all the Venture directives).  The hypothetical result of evaluating
+an expression \texttt{e} inside the model can be queried effectlessly using
+\texttt{sample}, which is equivalent to \texttt{predict} followed by
+\texttt{forget}: an evaluation of \texttt{e} is added to the current trace and
+then immediately deleted, and the value is returned.  \texttt{predict} and
+\texttt{sample} are not interchangeable; that is to say, the meaning of a
+program (and the distribution of its possible traces) can depend on which
+evaluations are added to the trace and which are forgotten.  We will see this
+below in Section \ref{sec:gps-in-pps}.

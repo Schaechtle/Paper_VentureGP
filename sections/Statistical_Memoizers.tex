@@ -1,0 +1,98 @@
+\subsection{Statistical Memoizers}
+We now introduce a language construct for probabilistic programming called a
+\emph{statistical memoizer}.  In addition to providing an elegant linguistic
+framework for function learning--related tasks such as Bayesian optimization,
+the statistical memoizer highlights shortcomings of the notations currently used
+in statistics, and how language constructs from programming allow the expression
+of models which would be cumbersome (prohibitively so, in some cases) to express
+in statistics notation.
+
+Suppose we have a function $\ftt$ which can be evaluated, but as in Section
+\ref{sec:bayesopt-intro}, we wish to learn about the behavior of $\ftt$ using as
+few evaluations as possible.  The statistical memoizer, which here we give the
+name $\mm$, was motivated by this purpose.  It produces two outputs:
+\[ \ftt \xrightarrow{\mm} (\ftt_\probe, \ftt_\emu). \]
+The function $\ftt_\probe$ calls $\ftt$ and stores the output in a memo
+table, just as traditional memoization does.  The function $\ftt_\emu$ is
+an online statistical emulator which uses the memo table as its training
+data.  A fully Bayesian emulator, modelling the true function $\ftt$ as a
+random function $f \sim P(f)$, would satisfy
+\[
+\texttt{(}\ftt_\emu\ \xtt_1\ \ldots\ \xtt_k\texttt{)}
+\sim
+P\pn{
+  f(\xtt_1), \ldots, f(\xtt_k)
+  \mvert
+  \text{$f(\xtt) = \texttt{(f x)}$ for each $\xtt$ in memo table}
+}.
+\]
+Non-Bayesian emulators are possible as well, but here we will focus on the
+Bayesian case.  Different implementations of the statistical memoizer can have
+different prior distributions $P(f)$; our main example is a Gaussian process
+prior (implemented as \texttt{gpmem} below).  Note that we require the ability
+to sample $\ftt_\emu$ jointly at multiple inputs because the values of
+$f(\xtt_1),\ldots,f(\xtt_k)$ will in general be dependent.
+
+To illustrate the linguistic power of $\mm$, consider a simple model program
+that uses $\mm$, procedure abstraction, and a loop:
+
+\begin{lstlisting}[frame=single,escapechar=\#,numbers=left,numbersep=5pt,numberstyle=\tiny\color{gray}]
+(define (choose_next_point em)
+  (gridsearch_argmax em))
+(define (extract_answer em)
+  ;; Here (stats em) is the memo table {(x_i, y_i)}.
+  ;; Take the (x,y) pair with the largest y.
+  (first (max (stats em) second)))
+(assume theta (tag 'params #{\it $\langle$parameters for the statistical emulator$\rangle$}#))
+
+(assume_list (f_probe f_emu) (mem&em f theta))
+(let loop ((count 15))
+  (if (= count 0)
+    (extract_answer f_emu)
+    (begin
+      (f_probe (choose_next_point f_emu)) #\label{ln:mem&em-penultimate}#
+      (loop (- count 1)))))
+\end{lstlisting}
+This program is written in a Venture-flavored pseudocode language that we call
+``pseudo-Venture.''  Most of the code we present, including Figure
+\ref{fig:slide3-definitions} and Listings \ref{lst:gp-uniform},
+\ref{lst:quad-bayesopt}, and \ref{lst:drift}, will be in pseudo-Venture in order
+to simplify the presentation.  The runnable Venture code is essentially the
+same, except for some rough edges of syntax and other inessential complications;
+see Appendix \ref{app:attachments} for more information.
+
+An equivalent model in typical statistics notation, written in a way that
+attempts to be as linguistically faithful as possible, is
+\begin{align*}
+  \s{0}f &\sim P(f) \\
+  \s{t}\xtt &= \argmax_x \s{t}f(x) \\
+  \s{t+1}f &\sim P\pn{\s{t}f \mvert \s{t}f(\s{t}\xtt) = \texttt(\ftt\ \s{t}\xtt\texttt)}.
+\end{align*}
+We highlight two points:
+\begin{enumerate}
+  \item The linguistic constructs for abstraction are not present in
+    statistics notation.  The equation $\s{t}\xtt = \argmax_x \s{t}f(x)$
+    has to be inlined in statistics notation: while something like
+    \[ \s{t}\xtt \sim F(\s{t}P) \]
+    (where $\s{t}P$ is a probability measure, and $F$ here plays the role of
+    \texttt{choose\_next\_point}) is mathematically coherent, it is not what
+    statisticians would ordinarily write.  This lack of abstraction then makes
+    modularity, or the easy digestion of large but finely decomposable models,
+    more difficult in statistics notation.
+
+  \item Adding a single line to the program, such as
+    \begin{lstlisting}
+    (infer (mh 'params one 50))
+    \end{lstlisting}
+    after line \ref{ln:mem&em-penultimate} to infer the parameters of the
+    emulator\footnote{
+      The definition of these parameters depends on the particular
+      implementation of $\mm$, and could for example be the hyperparameters
+      of the covariance function of a GP.
+    }, would require a significant refactoring and elaboration of the statistics
+    notation.  One basic reason is that probabilistic programs are written
+    procedurally, whereas statistical notation is declarative; reasoning
+    declaratively about the dynamics of a fundamentally procedural inference
+    algorithm is often unwieldy due to the absence of programming constructs
+    such as loops and mutable state.
+\end{enumerate}

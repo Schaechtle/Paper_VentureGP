@@ -1,0 +1,174 @@
+A \emph{probabilistic programming language} is a language for defining
+probabilistic generative models and inference on those models.  For us, a
+\emph{model program} means an executable description of a generative model.  An
+\emph{inference program} is an executable description of an inference algorithm,
+which may also make use of randomness.  In this paper, our examples will use the
+Venture probabilistic programming language~\cite{Venture}, but the concepts
+illustrated apply to probabilistic programming in general.  Notably, in Venture,
+the sample space for all random variables occurring in a model is the set of all
+possible execution traces of the model program (see \cite[\S4]{Venture} and
+Section \ref{sec:interactivity}).  In fact, we take this as a definition: for a
+probabilistic program written in Venture, we define the \emph{model program} to
+consist of all instructions (synonymously, \emph{directives}) which enter the
+execution trace, and the \emph{inference program} to consist of all directives,
+including untraced directives which manipulate the existing trace.
+
+The range of models describable as probabilistic programs is very broad,
+containing graphical models (including plate notation) as a special case.
+There is a precise sense in which any computable generative model can be
+expressed as a probabilistic program~\cite{AckermanCondProb}.  The power of the
+modelling language comes not from executability of models---in other words,
+not from the ability to perform \emph{forward-sampling}---but from the rich
+additional layers of description which allow automatic reasoning (such as
+automatic dependency tracking) and semi-automatic reasoning (such as
+exploratory inference programming) about models.
+
+The range of inference algorithms describable as probabilistic programs is also
+very broad.  General-purpose versions of rejection sampling, Gibbs sampling,
+Metropolis--Hastings, mean-field, and slice sampling are built into Venture as
+primitives~\cite{Venture}.  Custom inference algorithms can be written as
+programs that manipulate traces: below we implement Thompson sampling as a
+custom inference program.
+
+Listing \ref{lst:pp-first} shows a simple probabilistic program containing only
+modelling instructions:
+
+\lstinputlisting[frame=single,label=lst:pp-first,caption={
+  A simple probabilistic program (written in Venture) containing only modelling
+  instructions.
+}]{code/pp_first_example.scm}
+This program reads as follows: It is raining (R) with probability $0.3$.
+If it is raining, then the sprinkler (S) is never on; if it is not raining,
+then the sprinkler is on with probability $0.8$.  The probability that the
+grass is wet (G) depends on both whether it is raining and whether the
+sprinkler is on, according to the table
+\begin{center}
+  \begin{tabular}{|c|c|c|}
+    \multicolumn{1}{c}{} & \multicolumn{1}{c}{R} & \multicolumn{1}{c}{$\neg\text{R}$} \\\cline{2-3}
+    \multicolumn{1}{c|}{S} & 0.99 & 0.6 \\\cline{2-3}
+    \multicolumn{1}{c|}{$\neg\text{S}$} & 0.95 & 0.1 \\\cline{2-3}
+  \end{tabular}
+\end{center}
+Finally, the humidity is a continuous random variable whose parameters depend on
+whether it is raining: $\Ncal(95, 2)$ (normal with mean $95$ and variance $2$)
+if it is raining, and $\Ncal(50, 20)$ if it is not raining.
+
+The program in Listing \ref{lst:pp-first} induces the following directed
+graphical model:
+\begin{center}
+\begin{asy}
+size(0,5cm);
+pair R = (-3,3),
+     S = (3,3),
+     G = (3,-3),
+     H = (-3,-3);
+real radlength = 0.9;
+guide circ = circle((0,0), radlength);
+
+label("R", R);
+label("S", S);
+label("G", G);
+label("H", H);
+
+draw(shift(R) * circ);
+draw(shift(S) * circ);
+draw(shift(G) * circ);
+draw(shift(H) * circ);
+
+pair rad(real theta) { return radlength * exp(I*theta*pi/180); }
+draw((R+rad(0))--(S+rad(180)), Arrow);
+draw((R+rad(-45))--(G+rad(135)), Arrow);
+draw((S+rad(-90))--(G+rad(90)), Arrow);
+draw((R+rad(-90))--(H+rad(90)), Arrow);
+
+label("Categorical CPD", R+rad(180), W);
+label("Categorical CPD", S+rad(0), E);
+label("Gaussian CPD", H+rad(180), W);
+label("Categorical CPD", G+rad(0), E);
+
+shipout(bbox(0.5cm));
+\end{asy}
+\end{center}
+
+Not all model programs can be described by a graphical model: due to
+branching and recursion, the set of random variables may vary from
+execution to execution, as may the dependency structure of even a fixed set
+of variables.  In fact, the class of computable distributions that can be
+described by a graphical model is precisely the class of models that can be
+written as a probabilistic program with fixed control flow.  Note that the
+program in Listing \ref{lst:pp-first}, while it does not have fixed control
+flow as written, has a finite number of possible control paths and thus can
+be rewritten with fixed control flow by table lookup into an enumeration of
+all possible paths.  There are other cases in which the class of models
+expressible in an existing framework can be seen as those arising from a
+restricted class of probabilistic programs; one such case is plate notation
+in graphical models, which corresponds to probabilistic programs with fixed
+control flow which employ memoization via \texttt{mem} (see
+\cite[\S2.1]{Church}) and treat the value of the memoized procedure at each
+input as a random variable.  However, the full class of models expressible as
+probabilistic programs does not correspond to an existing notational framework.
+This is not surprising: we would expect that a computationally universal class
+of models requires a computational language to describe.\footnote{
+  The language of probabilistic Turing machines is also ``universal'' in
+  the sense that it could describe a program for forward-sampling at the
+  machine level.  But such a description lacks many of the useful
+  characteristics of a probabilistic program: semantics for what the random
+  variables are and what they depend on, and abstraction and modularity to
+  allow for local changes to the model program.
+}
+
+Suppose the value of a random variable is observed---say, $\text{H} = 85$---and
+we wish to infer values of other random variables.  Rejection sampling of full
+executions of the model program, which in this context we call \emph{global
+rejection sampling}, produces joint samples from the posterior distribution
+$P\pn{\text{R}, \text{S}, \text{G} \mvert \text{H}=85}$; it is achieved in
+Venture by the directive
+\begin{lstlisting}
+(infer (rejection default all 1))
+\end{lstlisting}
+Global rejection sampling is essentially the only inference program that
+can be employed on a black-box model program with no accompanying source
+code or inspection infrastructure.  Our model, however, is not a black box;
+due to the richness of the description language, a wide range of inference
+programs are readily implementable.  Rejection sampling can be performed on
+one random variable at a time, conditioned on the current values of the
+other variables, resulting in a Markov chain Monte Carlo (MCMC) inference
+routine whose state is a random tuple $(\text{R}, \text{S}, \text{G})$
+whose distribution, after sufficiently many transitions, is approximately
+the posterior.
+%Inference on a single variable, randomly chosen from the
+%collection of random variables in the model, is achieved in Venture by the
+%directive
+%\begin{lstlisting}
+%infer (rejection default one 1)
+%\end{lstlisting}
+Note that inference on one variable at a time allows the programmer to
+choose the order in which variables are inferred, or to choose not to infer
+the values of variables on which the variable of interest does not depend.
+This need not be done manually: Venture dynamically tracks dependencies between
+random variables, which, for example, allows one to run Metropolis--Hastings
+inference on a single random variable $X$ in which proposals only modify the
+values of those variables that depend on $X$:
+\begin{lstlisting}
+(infer (mh default one 1))
+\end{lstlisting}
+(Here the keywords \texttt{default one} mean that $X$ is chosen randomly from
+the set of random variables in the model, but it is also possible to specify an
+explicit choice of $X$ by supplying different arguments to $\texttt{mh}$.)
+While standard inference routines such as rejection sampling and
+Metropolis--Hastings are built into Venture, inference in general can be (and in
+Venture, is) fully programmable, allowing for composite inference strategies
+which use different inference subroutines on different parts of the model at
+different times, as well as dynamic choices of inference strategy which depend
+on state accrued during the execution of the model program and inference
+thereupon.
+
+%\begin{verbatim}
+%* Probabilistic programming in general, briefly (note: this is maximally
+%vague, so this outline is not complete until I have more specificity on
+%this item)
+%  + vkm: 1-2 pages; just use a simple program as an example, and explain
+%  that tutorial-style.
+%  + "this probprog induces this directed graphical model; equiv to fixed
+%  control flow"
+%\end{verbatim}
