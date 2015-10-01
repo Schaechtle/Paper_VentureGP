@@ -1,4 +1,3 @@
-\label{sec:thompson}
 In this section, we introduce Thompson sampling, the basic solution strategy
 underlying the Bayesian optimization implementations in Section
 \ref{sec:metaprogram}.  First, we cast our Bayesian optimization task as a
@@ -173,11 +172,7 @@ Thompson sampling.  This application has the following properties:
   \item The hyperparameters of the Gaussian process are inferred using
     Metropolis--Hastings sampling after each action.
 \end{itemize}
-Details of both the model and the inference algorithm are given in the
-subsections below.  An implementation will be presented in Section
-\ref{sec:gp-drift}.
 
-\subsubsection{Representations}
 In this version of Thompson sampling, the contexts $\ttheta$ are Gaussian
 processes over the action space $\Acal = [-20, 20] \subseteq \R$.  That is,
 \[ V \sim \GP(\mu, K), \]
@@ -232,7 +227,6 @@ taken.  $\Theta$ is, however, quite easily representable as a computational
 procedure together with parameters and past samples, as we do in the
 representation $\ttheta = (\mu_\prior, K_\prior, \eta, \abf_\past, \rbf_\past)$.
 
-\subsubsection{Approximation Strategies}
 We combine the Update and Sample steps of Algorithm \ref{alg:thompson} by
 running a Metropolis--Hastings (MH) sampler whose stationary distribution is the
 posterior $P\pn{\theta \mvert \abf_\past, \rbf_\past}$.  The functional forms of
