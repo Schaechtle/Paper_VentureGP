@@ -1,7 +1,3 @@
-{\tt gpmem} is an extension of previous approaches to stochastic memoization. Previous approaches such as the one introduced for Dirichlet Processes in the church language~\citep{goodman2008church} deal with the discrete-valued domain. We introduce memoization for the continuous valued domain. This is important for problems of regression and optimization where target functions should not be artificially discretized. We present a probabilistic programming technique that uses a GP to provide a statistical variant of memoization. 
+{\tt gpmem} is an extension of previous approaches to stochastic memoization. Previous approaches such as the one introduced for Dirichlet Processes in the Church language~\citep{goodman2008church} deal with the discrete-valued domain. We introduce memoization for the continuous valued domain. This is important for problems of regression and optimization where target functions should not be artificially discretized. We present a probabilistic programming technique that uses a GP to provide a statistical variant of memoization. 
 
-We implement this by memoizing a target procedure in a wrapper that remembers previously computed values. GP memoization additionally produces a statistical emulator based on GP whose predictions automatically improve whenever a new value of the target procedure becomes available.
-
-
-
-The technique gives rise to a number of use-cases of GPs in a fully Bayesian setting which are otherwise hard to implement.
+We implement this by memoizing a target procedure in a wrapper that remembers previously computed values. The technique gives rise to a number of use-cases of GPs in a fully Bayesian setting which are otherwise hard to implement.
