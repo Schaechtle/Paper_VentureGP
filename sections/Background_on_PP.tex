@@ -3,10 +3,10 @@ probabilistic generative models and inference on those models.  For us, a
 \emph{model program} means an executable description of a generative model.  An
 \emph{inference program} is an executable description of an inference algorithm,
 which may also make use of randomness.  In this paper, our examples will use the
-Venture probabilistic programming language~\cite{Venture}, but the concepts
+Venture probabilistic programming language~\citep{mansinghka2014venture}, but the concepts
 illustrated apply to probabilistic programming in general.  Notably, in Venture,
 the sample space for all random variables occurring in a model is the set of all
-possible execution traces of the model program (see \cite[\S4]{Venture} and
+possible execution traces of the model program (see \citep[\S4]{mansinghka2014venture} and
 Section \ref{sec:interactivity}).  In fact, we take this as a definition: for a
 probabilistic program written in Venture, we define the \emph{model program} to
 consist of all instructions (synonymously, \emph{directives}) which enter the
@@ -16,7 +16,7 @@ including untraced directives which manipulate the existing trace.
 The range of models describable as probabilistic programs is very broad,
 containing graphical models (including plate notation) as a special case.
 There is a precise sense in which any computable generative model can be
-expressed as a probabilistic program~\cite{AckermanCondProb}.  The power of the
+expressed as a probabilistic program~\citep{ackerman2010computability}.  The power of the
 modelling language comes not from executability of models---in other words,
 not from the ability to perform \emph{forward-sampling}---but from the rich
 additional layers of description which allow automatic reasoning (such as
@@ -26,7 +26,7 @@ exploratory inference programming) about models.
 The range of inference algorithms describable as probabilistic programs is also
 very broad.  General-purpose versions of rejection sampling, Gibbs sampling,
 Metropolis--Hastings, mean-field, and slice sampling are built into Venture as
-primitives~\cite{Venture}.  Custom inference algorithms can be written as
+primitives~\citep{mansinghka2014venture}.  Custom inference algorithms can be written as
 programs that manipulate traces: below we implement Thompson sampling as a
 custom inference program.
 
@@ -104,7 +104,7 @@ expressible in an existing framework can be seen as those arising from a
 restricted class of probabilistic programs; one such case is plate notation
 in graphical models, which corresponds to probabilistic programs with fixed
 control flow which employ memoization via \texttt{mem} (see
-\cite[\S2.1]{Church}) and treat the value of the memoized procedure at each
+\citep[\S2.1]{goodman2008church}) and treat the value of the memoized procedure at each
 input as a random variable.  However, the full class of models expressible as
 probabilistic programs does not correspond to an existing notational framework.
 This is not surprising: we would expect that a computationally universal class
