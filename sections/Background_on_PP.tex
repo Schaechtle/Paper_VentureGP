@@ -124,7 +124,7 @@ rejection sampling}, produces joint samples from the posterior distribution
 $P\pn{\text{R}, \text{S}, \text{G} \mvert \text{H}=85}$; it is achieved in
 Venture by the directive
 \begin{lstlisting}
-(infer (rejection default all 1))
+infer rejection( default, all, 1)
 \end{lstlisting}
 Global rejection sampling is essentially the only inference program that
 can be employed on a black-box model program with no accompanying source
@@ -150,7 +150,7 @@ random variables, which, for example, allows one to run Metropolis--Hastings
 inference on a single random variable $X$ in which proposals only modify the
 values of those variables that depend on $X$:
 \begin{lstlisting}
-(infer (mh default one 1))
+infer mh( default, one, 1)
 \end{lstlisting}
 (Here the keywords \texttt{default one} mean that $X$ is chosen randomly from
 the set of random variables in the model, but it is also possible to specify an
