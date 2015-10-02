@@ -6,12 +6,16 @@ P(\bm{\theta} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{
 \end{equation}
 Let the $\mathbf{K}$ be the sum of a smoothing and a white noise (WN) kernel. For this case, Neal suggested the problem of outliers in data as a use-case for a hierarchical Bayesian treatment of Gaussian processes~\citeyearpar{neal1997monte}\footnote{In \citep{neal1997monte} the sum of an SE plus a constant kernel is used. We keep the WN kernel for illustrative purposes.}. The work suggests a hierarchical system of hyper-parameterization. Here, we draw hyper-parameters from a $\Gamma$ distributions:
 \begin{equation}
+\label{eq:hyper-ell}
 \ell^{(t)} \sim \Gamma(\alpha_1,\beta_1),\;\sigma^{(t)} \sim \Gamma(\alpha_2,\beta_2)
 \end{equation} 
 and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
 \begin{equation}
+\label{eq:hyper-alpha}
 \alpha_1^{(t)} \sim \Gamma(\alpha^1_{\alpha},\beta^1_{ \alpha } ),\; \alpha_2^{(t)} \sim \Gamma(\alpha^2_{\alpha},\beta^2_{\alpha}),\cdots
 \end{equation}
+% the input below will be empty, if we're in the paper. For my thesis, it will contain a causal network of the hyper-parameters.
+\input{sections/neal_bnet.tex}
 Assuming the covariance structure is additive comprised of a smoothing and a white noise kernel, one can represent this kind of model using \gpmem\ with only a few lines of code:
 
 \input{code/code_venhyper.tex}
