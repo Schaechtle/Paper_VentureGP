@@ -8,9 +8,9 @@ and outliers are generated with a parallel line:
 \label{eq:line2}
 \hat{y} = 2x + 40.
 \end{equation}
-We add some small amount of white noise. We generate eight data points with (\ref{eq:line1}) and two with (\ref{eq:line2}). Since we suspect the underlying data generating mechanism to be linear, we fit a linear kernel with a constant covariance as intercept and some white noise.
+We add some small amount of white noise. We generate eight data points with (\ref{eq:line1}) and two with (\ref{eq:line2}). Since we suspect the underlying data generating mechanism to be linear, we fit a linear kernel with a constant covariance as intercept and some white noise:
 \begin{equation}
-\mathbf{K} = \text{LIN} + \text{C} + \text{WN}
+\mathbf{K} = \text{LIN} + \text{C} + \text{WN}.
 \end{equation}
 where we upper case matrix notation denotes the covariance matrix of the complete training data. Omitting the scaling parameter for the linear kernel, there are two hyperparameters to learn, that is the noise variance and the hyper-parameter for the constant function. Maximum a posteriori inference fits the single one best line and accounts for the outliers with a large noise scaling parameter. MH does better. It assigns a small amount of probability mass to a different scaling parameter and a larger constant. The resulting prediction (indicating with the predictive mean in figure \ref{fig:BayesVSFreq}) is closer to the true underlying function.   
 
