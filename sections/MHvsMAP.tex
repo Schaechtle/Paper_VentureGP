@@ -12,7 +12,7 @@ We add some small amount of white noise. We generate eight data points with (\re
 \begin{equation}
 \mathbf{K} = \text{LIN} + \text{C} + \text{WN}.
 \end{equation}
-where we upper case matrix notation denotes the covariance matrix of the complete training data. Omitting the scaling parameter for the linear kernel, there are two hyperparameters to learn, that is the noise variance and the hyper-parameter for the constant function. Maximum a posteriori inference fits the single one best line and accounts for the outliers with a large noise scaling parameter. MH does better. It assigns a small amount of probability mass to a different scaling parameter and a larger constant. The resulting prediction (indicating with the predictive mean in figure \ref{fig:BayesVSFreq}) is closer to the true underlying function.   
+where we upper case matrix notation denotes the covariance matrix of the complete training data. Omitting the scaling parameter for the linear kernel, there are two hyperparameters to learn, that is the noise variance and the hyper-parameter for the constant function. \ac{MAP} inference fits the single one best line and accounts for the outliers with a large noise scaling parameter. MH does better. It assigns a small amount of probability mass to a different scaling parameter and a larger constant. The resulting prediction (indicating with the predictive mean in figure \ref{fig:BayesVSFreq}) is closer to the true underlying function.   
 
 \begin{figure}
         \centering
@@ -26,6 +26,6 @@ where we upper case matrix notation denotes the covariance matrix of the complet
             \caption{MH}
                 \label{fig:mhlin}
         \end{subfigure}%
-        \caption{(a) depicts MAP inference on the data, (b) depicts MH for hyperparameter inference. The blue line is the actual data generating function. Red are samples drawn from the posterior. The dark red line is the posterior predictive mean. We see that the MH shifts the posterior closer to the ground truth than MAP.  }\label{fig:BayesVSFreq}
+        \caption{(a) depicts \ac{MAP} inference on the data, (b) depicts MH for hyperparameter inference. The blue line is the actual data generating function. Red are samples drawn from the posterior. The dark red line is the posterior predictive mean. We see that the MH shifts the posterior closer to the ground truth than MAP.  }\label{fig:BayesVSFreq}
 \end{figure}
 
