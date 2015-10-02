@@ -4,11 +4,11 @@ In the following, we will refer to covariance functions that are not composite a
 \begin{figure}
 \centering
 \input{figs/parseTree.tex}
-\caption{Composition of covariance function parsed using the example SE $\times$ LIN $+$ PER $\times$ LIN $+$  RQ $\times$ LIN}\label{fig:composite}
+\caption{Composition of covariance function parsed using the example SE $\times$ LIN $+$ PER $\times$ LIN $+$  RQ $\times$ LIN. We deploy kernel summation ($+$) and kernel multiplication ($\times$).}\label{fig:composite}
 \end{figure}
 
 
-Knowledge about the composite nature of covariance functions is not new, however, until recently, the choice and the composition of covariance functions were done ad-hoc. The Automated Statistician Project came up with an approximate search over the possible space of kernel structures~\citep{duvenaud2013structure,lloyd2014automatic}. However, a fully Bayesian treatment of this was not done before. To the best of our knowledge, we are the first one to present a fully Bayesian solution to this. We deploy a probabilistic context free grammar for our prior on structures(see Fig. \ref{fig:schema})
+Knowledge about the composite nature of covariance functions is not new, however, until recently, the choice and the composition of covariance functions were done ad-hoc. The Automatic Statistician Project\footnote{\url{http://www.automaticstatistician.com/}}. came up with an approximate search over the possible space of kernel structures~\citep{duvenaud2013structure,lloyd2014automatic}. However, a fully Bayesian treatment was not available before. To the best of our knowledge, we are the first one to present a fully Bayesian solution to this. We deploy a probabilistic context free grammar for our prior on structures(see Fig. \ref{fig:schema})
 \begin{figure}
 \centering
 \input{figs/schematic.tex}
@@ -26,7 +26,7 @@ y^* \approx \frac{1}{T} \sum^T_{t=1} f(x^* | \bm{\theta}^{(t)},\mathbf{K}^{(t)})
 \end{equation}
 
 
-In order to provide the sampling of the kernel, we introduce a stochastic process to the SP that simulates the grammar for algebraic expressions of covariance function algebra:
+In order to provide the sampling of the kernel, we introduce a stochastic process that simulates the grammar for algebraic expressions of covariance function algebra:
 \begin{equation}
 \mathbf{K}^{(t)} \sim  P(\mathbf{K} \mid \bm{\Omega},s,n)
 \end{equation}
@@ -53,14 +53,14 @@ where $P(n)$ is a prior on the number of base kernels used which can sample from
 Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. Certain covariance functions can differ in terms of the hyper-parameterization but can be absorbed into a single covariance function with a different parameterization. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify. Rules for this simplification can be found in appendix B.
 
 
-For reproducing results from the Automated Statistician Project in a Bayesian fashion we first define a prior on the hypothesis space. Note that, as in the implementation of the Automated Statistician, we upper-bound the complexity of the space of covariance functions we want to explore. We also put vague priors on hyper-parameters.
+The Automatic Statistician Project is implemented using deterministic optimization and search. For reproducing results from this Project in a Bayesian fashion we first define a prior on the hypothesis space. Note that, as in the implementation of the Automatic Statistician, we upper-bound the complexity of the space of covariance functions we want to explore. We also put vague priors on hyper-parameters.
 
 \input{code/code_venstructure.tex}
 
 
 
 
-We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automated Statistician. This lead to coherent results, for example for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}. The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels. We see that that the most probable alternatives for a structural description both recover the data dynamics (Fig. \ref{fig:posterior_twosamples} for the airline data set).
+We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automatic Statistician. This lead to coherent results, for example for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels. We see that the most probable alternatives for a structural description both recover the data dynamics (Fig. \ref{fig:posterior_twosamples} for the airline data set).
 
 \begin{comment}
 \begin{figure}
@@ -106,7 +106,7 @@ We defined the space of covariance structures in a way allowing us to reproduce 
 	\begin{subfigure}[b]{\textwidth} \centering
                 \includegraphics[width=0.6\textwidth]{figs/airline_struct_2.pdf}\caption{}
         \end{subfigure}%
-        \caption{(a) most frequent sample drawn from the posterior on structure. We have found two global components. First, A smooth trend (LINxSE) with a non-linear increasing slope. Second, a periodic component with increasing variation and noise. (b) second most frequent sample drawn from the posterior on structure. We found one global component. It is comprised of local changes that are periodic and with changing variation.}\label{fig:posterior_twosamples}
+        \caption{We see two possible hypotheses for the composite structure of $\mathbf{K}$. (a) Most frequent sample drawn from the posterior on structure. We have found two global components. First, a smooth trend (LIN $\times$ SE) with a non-linear increasing slope. Second, a periodic component with increasing variation and noise. (b) Second most frequent sample drawn from the posterior on structure. We found one global component. It is comprised of local changes that are periodic and with changing variation.}\label{fig:posterior_twosamples}
 \end{figure}
 We further investigated the quality of our stochastic processes by running a leave one out cross-validation computing residuals to gain confidence on the posterior.
 \begin{comment}
@@ -153,9 +153,9 @@ and covariance matrix
 \hat{\mathbf{K}}_a =   \mathbf{K_a}(\xbf,\xbf) -  \mathbf{K_a}(\xbf,\xbf^*)\mathbf{K}(\xbf^*,\xbf^*)^{-1} \mathbf{K_a}(\xbf^*,\xbf).
 \end{equation}
 \end{comment}
-Confident about our results, we can now query the data for certain structures being present. We illustrate this using the Mauna Loa data used in previous work on automated kernel discovery~\citep{duvenaud2013structure}. We assume a relatively simple hypothesis space  consisting of only four kernels, a linear, a smoothing, a periodic and a white noise kernel. In this experimemt, we resort to the white noise kernel instead RQ (similar to \citep{lloyd2014automatic}).  We can now run the algorithm, compute a posterior of structures. We can also query this posterior distribution for the marginal of certain simple structures to occur. We demonstrate this in Fig. \ref{fig:query}
+Confident about our results, we can now query the data for certain structures being present. We illustrate this using the Mauna Loa data used in previous work on automated kernel discovery~\citep{duvenaud2013structure}. We assume a relatively simple hypothesis space  consisting of only four kernels, a linear, a smoothing, a periodic and a white noise kernel. In this experiment, we resort to the white noise kernel instead RQ (similar to \citep{lloyd2014automatic}).  We can now run the algorithm, compute a posterior of structures. We can also query this posterior distribution for the marginal of certain simple structures to occur. We demonstrate this in Fig. \ref{fig:query}
 \begin{figure}
 \centering
 \input{figs/structureQuery.tex}
-\caption{We can query the data, asking, similar to symbolic reasoning, if some statements are probable to be true. In this example, we are interested in three qualitative aspects of data, which we formulate in terms of the following: 1. Is it true that there is a trend? Is it true that there are recurring patterns and is it true that that there is noise in the data? Given the answers to these questions, we can then ask more specific questions.}\label{fig:query}
+\caption{Like in symbolic reasoning we can query the data if some logical statements are probable to be true. Here, we are interested in three qualitative aspects of the data, which we formulate in terms of the following: 1. Is it true that there is a trend? Is it true that there are recurring patterns and is it true that that there is white noise or heteroskedastic noise in the data?}\label{fig:query}
 \end{figure}
