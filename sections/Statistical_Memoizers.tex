@@ -36,21 +36,21 @@ To illustrate the linguistic power of $\mm$, consider a simple model program
 that uses $\mm$, procedure abstraction, and a loop:
 
 \begin{lstlisting}[frame=single,escapechar=\#,numbers=left,numbersep=5pt,numberstyle=\tiny\color{gray}]
-(define (choose_next_point em)
-  (gridsearch_argmax em))
-(define (extract_answer em)
-  ;; Here (stats em) is the memo table {(x_i, y_i)}.
-  ;; Take the (x,y) pair with the largest y.
-  (first (max (stats em) second)))
-(assume theta (tag 'params #{\it $\langle$parameters for the statistical emulator$\rangle$}#))
+define choose_next_point = proc(em) { gridsearch_argmax( em) }
 
-(assume_list (f_probe f_emu) (mem&em f theta))
-(let loop ((count 15))
-  (if (= count 0)
-    (extract_answer f_emu)
-    (begin
-      (f_probe (choose_next_point f_emu)) #\label{ln:mem&em-penultimate}#
-      (loop (- count 1)))))
+ \\ Here stats( em) is the memo table {(x_i, y_i)}.
+ \\ Take the (x,y) pair with the largest y.
+define extract_answer = proc(em) { first(max( stats( em, second)))}
+ 
+assume theta =  tag( quote( params) #{\it $\langle$parameters for the statistical emulator$\rangle$}#))
+assume_list (f_probe f_emu) =  mem&em(f, theta))
+
+for t...T:
+  f_probe( choose_next_point( f_emu)) #\label{ln:mem&em-penultimate}#
+extract_answer( f_emu)    
+    
+       
+      
 \end{lstlisting}
 This program is written in a Venture-flavored pseudocode language that we call
 ``pseudo-Venture.''  Most of the code we present, including Figure

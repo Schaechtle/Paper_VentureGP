@@ -1,23 +1,20 @@
-Venture is a compositional language for custom inference strategies that comes with a Scheme-like and a JavaScript-like front-end syntaxes.
-Its implementation is based on on three concepts:
-  (i) \emph{stochastic procedures} that specify and encapsulate random variables, analogously to conditional probability tables in a Bayesian network;
-  (ii) \emph{execution traces} that represent (partial) execution histories and track the conditional dependencies of the random variables occurring therein; and
-  (iii) \emph{scaffolds} that partition execution histories and factor global inference problems into sub-problems.
-These building blocks provide a powerful and concise way to represent probability distributions, including distributions with a dynamically determined and unbounded set of random variables.
-In this \paperOrChapter we will use only the four basic Venture directives: ASSUME, OBSERVE, SAMPLE and INFER.
+Venture is a probabilistic programming language that allows both, the design of custom inference algorithms and arbitraly nested and hierarchical models. It comes with two different front end syntaxes, one Scheme-like and  one JavaScript-like.
+
+Venture provides a powerful and concise way to represent probability distributions, including distributions with a dynamically determined and unbounded set of random variables.
+In this \paperOrChapter we will use only the four basic Venture directives: \texttt{assume}, \texttt{observe}, \texttt{sample} and \texttt{infer}~\citep{mansinghka2014venture}.
 \begin{itemize}
-  \item ASSUME induces a hypothesis space for (probabilistic) models including random variables by binding the result of a supplied expression to a supplied symbol.
-  \item Whereas in Scheme an expression is evaluated within an environment, in Venture an expression is evaluated within a (partial) trace of the model program.
+  \item \texttt{assume} induces a hypothesis space for (probabilistic) models including random variables by binding the result of a supplied expression to a supplied symbol.
+  \item \texttt{sample} samples the value of the supplied expression within the current model program. Such an expression is evaluated within a trace of the model program.
     Thus, the value of an expression within a model program is a random variable, whose randomness comes from the distribution on possible execution traces of the program.
-    The SAMPLE directive samples the value of the supplied expression within the current model program.
-  \item OBSERVE constrains the supplied expression to have the supplied value.
-    In other words, all samples taken after an OBSERVE are conditioned on the observed data.
-  \item INFER uses the supplied inference program to mutate the execution trace.
-    For a correct inference program, this will result approximate sampling from the true posterior on execution traces, conditioned on the model and constraints introduced by ASSUME and OBSERVE.
-    The posterior on any random variable can then be approximately sampled by calling SAMPLE to extract values from the trace.
+    The 
+  \item \texttt{observe} constrains the supplied expression to have the supplied value.
+    In other words, all samples taken after an \texttt{observe} are conditioned on the observed data.
+  \item \texttt{infer} uses the supplied inference program changes the modeled probability distribution.
+    This will result approximate sampling from the true posterior, conditioned on the model and constraints introduced by \texttt{assume} and \texttt{observe}.
+    The posterior on any random variable can then be approximately sampled by calling \texttt{sample} to extract values from the modeled distribution.
 \end{itemize}
 
-INFER is commonly done using the Metropolis--Hastings algorithm (MH)~\citep{metropolis1953equation}.
+\texttt{infer} is commonly done using the Metropolis--Hastings algorithm (MH)~\citep{metropolis1953equation}.
 Many of the most popular MCMC algorithms can be interpreted as special cases of MH~\citep{andrieu2003introduction}.
 We can outline the MH algorithm as follows.
 The following two-step process is repeated as long as desired (say, for $T$ iterations):
