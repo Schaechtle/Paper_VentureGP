@@ -11,6 +11,7 @@
 \usepackage{bm}
 \usepackage{amsmath,amssymb}
 \usepackage{natbib}
+\usepackage[nolist]{acronym}
 %\pgfplotsset{compat=1.9}
 \usepackage[framemethod=TikZ]{mdframed}% http://ctan.org/pkg/mdframed
 \usepackage{graphicx}
@@ -28,9 +29,12 @@
 \usepackage[inline]{asymptote}
 \usepackage{mathtools}
 \usepackage{inconsolata}
-\usepackage{algorithm}
 \usepackage{placeins}
 \usepackage{setspace}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
 
 \usetikzlibrary{tikzmark}
 \usetikzlibrary{bayesnet}
@@ -107,6 +111,12 @@
 \DeclareMathOperator{\Uniform}{Uniform}
 \DeclareMathOperator{\SE}{SE}
 
+\begin{acronym}
+\acro{MAP} {Maximum a posteriori}
+\acro{MDP} {Markov Decision Processes} 
+\end{acronym}
+
+
 % The following is a modified version of what's available on Wikibooks,
 % http://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
   \definecolor{mygreen}{rgb}{0,0.6,0}
@@ -141,7 +151,7 @@
  \lstdefinelanguage{Venture}{
     alsoletter={\&,=,!,?}
     keywordstyle=\color{black},
-    morecomment=[l]{;},
+    morecomment=[l]{\\},
     commentstyle=\color{mygreen},
     keywordstyle=[2]\color{DarkRed},
     keywords=[2]{assume,predict,infer,observe,define,assume_list,sample,call_back},
@@ -168,7 +178,22 @@
     showstringspaces=false,
   }
 
+\newdimen\linenumbersep
 
+\newcommand{\linenumber}[1]{%
+  \linenumbersep 4pt%
+  \advance\linenumbersep\mdflength{innerleftmargin}%
+  \advance\linenumbersep\mdflength{innerlinewidth}%
+  \advance\linenumbersep\mdflength{middlelinewidth}%
+  \advance\linenumbersep\mdflength{outerlinewidth}%
+  \advance\linenumbersep\mdflength{linewidth}%
+  \makebox[0pt][r]{{\rmfamily\tiny#1}\hspace*{\linenumbersep}}}
+\small
+
+\let\OldStatex\Statex
+\renewcommand{\Statex}[1][3]{%
+  \setlength\@tempdima{\algorithmicindent}%
+  \OldStatex\hskip\dimexpr#1\@tempdima\relax}
 
 \jmlrheading{}{}{}{}{}{}
 
@@ -215,8 +240,8 @@ This paper describes the {\em Gaussian process memoizer}, a probabilistic progra
 \section{Example Applications}
 \subsection{Hyperparameter estimation with structured hyper-prior}
 \input{sections/hyperparameters.tex}
-\subsubsection{Broader applicability of \gpmem}\label{sec:gpmem-broader}
-\input{sections/applicability.tex}
+%\subsubsection{Broader applicability of \gpmem}\label{sec:gpmem-broader}
+%\input{sections/applicability.tex}
 \subsection{Discovering symbolic models for time series}\label{sec:structurelearning}
 \input{sections/StructureLearning.tex}
 
