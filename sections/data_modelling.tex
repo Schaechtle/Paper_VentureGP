@@ -1,30 +1,48 @@
 \label{sec:special-case-gpmem}
-From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$.
+From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$ (Alg. \ref{alg:frest}).
+
+\begin{minipage}{\textwidth}
+
+\begin{algorithm}
+
+The restricted function
+
+\begin{algorithmic}[1]
+
+\Function{$f_\restr$}{$x$}
+\If{$x \in \mathcal{D}$}
+ \State \Return $\mathcal{D}[x]$
+\Else
+ \State raise Exception('Illegal input')
+\EndIf 
+\EndFunction
+
+\end{algorithmic}
+  \label{alg:frest}
+
+
+\end{algorithm}
+\end{minipage}
+\bigskip
+
 Modelling the data set with a GP then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
-Indeed, if $f_\restr$ is a foreign procedure made available as a black-box to Venture, whose secret underlying source code is:
+Indeed, if $f_\restr$ is a foreign procedure made available as a black-box to Venture, whose secret underlying pseudo code is in Alg. \ref{alg:frest},
+then the \texttt{OBSERVE} code can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
+\begin{mdframed}
+\begin{minipage}{0.9\linewidth}
 
-\begin{minipage}{8cm}
-\begin{verbatim}
-def f_restr(x):
-  if x in D:
-    return D[x]
-  else:
-    raise Exception('Illegal input')
-\end{verbatim}
+\begin{lstlisting}[mathescape,label=alg:venfrest,basicstyle=\selectfont\ttfamily,numbers=none,escapechar=\#]
+#\linenumber{1}#assume_list (f_probe f_emu) =  gpmem( f_restr)
+#\linenumber{2}#for i=1 to n:
+#\linenumber{3}#  predict f_compute( x[i])
+#\linenumber{4}#  infer mh(quote(hyper-parameters), one, 100)
+#\linenumber{5}#sample (f_emu( array( 1, 2, 3))
+\end{lstlisting}
 \end{minipage}
+\end{mdframed}
 
-Then the \texttt{OBSERVE} code in Listing \ref{alg:gpNeal} can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
 
-\begin{minipage}{10cm}
-\begin{verbatim}
-[ASSUME (list f_compute f_emu) (gpmem f_restr)]
-for i=1 to n:
-  [PREDICT (f_compute x[i])]
-  [INFER (MH {hyper-parameters} one 100)]
-[SAMPLE (f_emu (array 1 2 3))]
-\end{verbatim}
-\end{minipage}
-
+\vspace{0.2cm}
 This rewriting has at least two benefits: (i) readability (in some cases), and (ii) amenability to active learning.
 As to (i), the statistical code of creating a Gaussian process is replaced with a memoization-like idiom, which will be more familiar to programmers.
 As to (ii), when using \gpmem, it is quite easy to decide incrementally which data point to sample next: for example, the loop from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in which the next index \texttt{i} is chosen by a supplied decision rule.
