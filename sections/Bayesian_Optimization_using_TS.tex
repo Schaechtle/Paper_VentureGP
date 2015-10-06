@@ -11,7 +11,7 @@ memoizer.  Finally, we give a full mathematical specification of one particular
 application of Thompson sampling, which (among others) will be implemented in
 Section \ref{sec:metaprogram}.
 
-\subsection{Framework}\label{sec:thompson-framework}
+\myparagraph{Framework}\label{sec:thompson-framework}
 Thompson sampling~\cite{thompson1933likelihood} is a widely used Bayesian
 framework for addressing the trade-off between exploration and exploitation in
 the so-called multi-armed (or continuum-armed) bandit problem.  In this
@@ -100,7 +100,7 @@ the most general context space $\widehat\Theta$ is the space of program texts.
 Any other context space $\Theta$ has a natural embedding as a subset of
 $\widehat\Theta$.
 
-\subsection{Thompson Sampling with a Statistical Memoizer}
+\myparagraph{Thompson Sampling with a Statistical Memoizer}
 \label{sec:thompson-mem-em}
 Thompson sampling as described above can be expressed compactly in terms of a
 statistical memoizer, as in Listing \ref{lst:thompson-mem-em} (see also Figure
@@ -111,21 +111,26 @@ thus treat the notations $a,r,\abf_\past,\rbf_\past$ as synonyms for
 $x,y,\xbf_\past,\ybf_\past$, respectively, differing only in that they carry the
 connotations of ``action'' and ``reward.''
 
-\FloatBarrier
-\begin{lstlisting}[frame=single,language=Venture,label=lst:thompson-mem-em,caption={
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[escapechar=\#,language=Venture,label=lst:thompson-mem-em,caption={
   Code template for Thompson sampling in pseudo-Venture using a statistical
   memoizer.  The choice of statistical memoizer (\texttt{mem\&em}), prior on
   semicontexts (\texttt{prior\_on\_semicontexts}), and approximation strategy
   for maximizing the emulator (\texttt{argmax}) are not included.
 }]
-(assume theta (tag 'theta (prior_on_semicontexts)))
-(assume_list (r_probe r_emulate)
-             (mem&em do_action theta))
-(let loop ((a (argmax r_emulate)))
-  (r_probe a)
-  (inference_on 'theta)
-  (loop (argmax r_emulate)))
+#\linenumber{1}#assume theta = tag(quote( theta ), 0,  prior_on_semicontexts())
+#\linenumber{2}#assume (r_probe r_emulate) = mem&em( do_action, theta)
+
+#\linenumber{3}#infer repeat(15, do(pass,
+#\linenumber{4}#     a = mc_argmax(r_emulate, quote(_)),
+#\linenumber{5}#     r_probe(a)
+#\linenumber{6}#     mh(quote(theta), one, 50)))
 \end{lstlisting}
+\end{minipage}
+\end{mdframed}
 
 \FloatBarrier
 
@@ -162,7 +167,7 @@ $\argmax_{\texttt{a}} \Ebkt{\texttt{(func a)}}$.
   \label{fig:slide1}
 \end{figure}
 
-\subsection{A Mathematical Specification}\label{sec:math-spec}
+\myparagraph{A Mathematical Specification}\label{sec:math-spec}
 Below, we give the mathematical specification of a particular application of
 Thompson sampling.  This application has the following properties:
 \begin{itemize}
@@ -326,3 +331,5 @@ function at points near $a$ (see Figure \ref{fig:slide2}).\footnote{
   a desirable property; indeed, this is why we use $\muhat$ rather than the
   exact posterior mean $\mu$.
 }
+ We see a comlete probabilistic program with \gpmem\ implementing Bayesian optimization with Thompson Sampling below (Listing \ref{alg:bayesopt)}).
+ \input{code/code_venBayesOpt.tex}
