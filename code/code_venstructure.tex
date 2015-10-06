@@ -15,7 +15,7 @@
   // kernel composition
 #\linenumber{6}#  if (size(l) <= 1)
 #\linenumber{7}#       { first(l) }
-#\linenumber{8}#  else { if (flip()) 
+#\linenumber{8}#  else { if (bernoulli()) 
 #\linenumber{9}#                   { add_funcs(first(l), grammar(rest(l))) }
 #\linenumber{10}#              else { mult_funcs(first(l), grammar(rest(l))) }
 #\linenumber{11}#       }

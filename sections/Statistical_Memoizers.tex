@@ -38,8 +38,8 @@ that uses $\mm$, procedure abstraction, and a loop:
 \begin{lstlisting}[frame=single,escapechar=\#,numbers=left,numbersep=5pt,numberstyle=\tiny\color{gray}]
 define choose_next_point = proc(em) { gridsearch_argmax( em) }
 
- \\ Here stats( em) is the memo table {(x_i, y_i)}.
- \\ Take the (x,y) pair with the largest y.
+ // Here stats( em) is the memo table {(x_i, y_i)}.
+ // Take the (x,y) pair with the largest y.
 define extract_answer = proc(em) { first(max( stats( em, second)))}
  
 assume theta =  tag( quote( params) #{\it $\langle$parameters for the statistical emulator$\rangle$}#))

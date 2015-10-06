@@ -7,28 +7,28 @@
 #\linenumber{2}#assume l = tag(quote(hyper), 1, uniform_continuous(0, 10))
 #\linenumber{3}#assume se = make_squaredexp(sf, l)
 #\linenumber{4}#assume blackbox_f = get_bayesopt_blackbox()
-#\linenumber{5}#assume (f_compute, f_emulator) = gpmem(blackbox_f, se)
+#\linenumber{5}#assume (f_compute, f_emulate) = gpmem(blackbox_f, se)
 
-// A very naive estimate of the argmax of the given function
-define mc_argmax = proc(func) {
-  candidate_xs = mapv(proc(i) {uniform_continuous(-20, 20)},
-                      arange(20));
-  candidate_ys = mapv(func, candidate_xs);
-  lookup(candidate_xs, argmax_of_array(candidate_ys))
-};
+// A naive estimate of the argmax of the given function
+#\linenumber{6}#define mc_argmax = proc(func) {
+#\linenumber{7}#  candidate_xs = mapv(proc(i) {uniform_continuous(-20, 20)},
+#\linenumber{8}#                      arange(20));
+#\linenumber{9}#  candidate_ys = mapv(func, candidate_xs);
+#\linenumber{10}#  lookup(candidate_xs, argmax_of_array(candidate_ys))
+#\linenumber{11}#};
 
 // Shortcut to sample the emulator at a single point without packing
 // and unpacking arrays
-define emulator_pointwise = proc(x) {
-    run(sample(lookup(f_emulator(array(unquote(x))), 0)))
-};
+#\linenumber{12}#define emulate_pointwise = proc(x) {
+#\linenumber{13}#    run(sample(lookup(f_emulate(array(unquote(x))), 0)))
+#\linenumber{14}#};
 
 // Main inference loop
-infer repeat(15, do(pass,
-    // Probe V at the point mc_argmax(emulator_pointwise)
-    predict(f_compute(unquote(mc_argmax(emulator_pointwise)))),
+#\linenumber{15}#infer repeat(15, do(pass,
+    // Probe V at the point mc_argmax(emulate_pointwise)
+#\linenumber{16}#    predict(f_compute(unquote(mc_argmax(emulate_pointwise)))),
     // Infer hyperparameters
-    mh(quote(hyper), one, 50)));
+#\linenumber{17}#    mh(quote(hyper), one, 50)));
 \end{lstlisting}
   
 \end{minipage}
