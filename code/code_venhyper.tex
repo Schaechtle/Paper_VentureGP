@@ -1,37 +1,38 @@
 \begin{mdframed}
 \begin{minipage}{\linewidth}
 \belowcaptionskip=-10pt
-\begin{lstlisting}[mathescape,label=alg:gphierarch,basicstyle=\selectfont\ttfamily,numbers=none]
+\small
+\begin{lstlisting}[mathescape,label=alg:gphierarch,basicstyle=\selectfont\ttfamily,numbers=none,caption={Hyper-Prior Learning},escapechar=\#]
 /// SETTING UP THE MODEL
-assume alpha_sf = tag(quote(hyperhyper), 0, gamma(7, 1))
-assume beta_sf = tag(quote(hyperhyper), 1, gamma(7, 1))
-assume alpha_l = tag(quote(hyperhyper), 2, gamma(7, 1))
-assume beta_l = tag(quote(hyperhyper), 3, gamma(7, 1))
+#\linenumber{1}#assume alpha_sf = tag(quote(hyperhyper), 0, gamma(7, 1))
+#\linenumber{2}#assume beta_sf = tag(quote(hyperhyper), 1, gamma(7, 1))
+#\linenumber{3}#assume alpha_l = tag(quote(hyperhyper), 2, gamma(7, 1))
+#\linenumber{4}#assume beta_l = tag(quote(hyperhyper), 3, gamma(7, 1))
 
 // Parameters of the covariance function
-assume sf = tag(quote(hyper), 0, gamma(alpha_sf, beta_sf)))
-assume l = tag(quote(hyper), 1, gamma(alpha_l, beta_l)))
-assume sigma = tag(quote(hyper), 2, uniform_continuous(0, 2)) 
+#\linenumber{5}#assume sf = tag(quote(hyper), 0, gamma(alpha_sf, beta_sf)))
+#\linenumber{6}#assume l = tag(quote(hyper), 1, gamma(alpha_l, beta_l)))
+#\linenumber{7}#assume sigma = tag(quote(hyper), 2, uniform_continuous(0, 2)) 
 
 // The covariance function
-assume se = make_squaredexp(sf, l)
-assume wn = make_whitenoise(sigma)
-assume covariance = add_funcs(se, wn)
+#\linenumber{8}#assume se = make_squaredexp(sf, l)
+#\linenumber{9}#assume wn = make_whitenoise(sigma)
+#\linenumber{10}#assume composite_covariance = add_funcs(se, wn)
 
 /// PERFORMING INFERENCE
 // Create a prober and emulator using gpmem
-assume f_restr = get_neal_blackbox()
-assume (f_compute, f_emu) = gpmem(f_restr, covariance)
+#\linenumber{11}#assume f_restr = get_neal_blackbox()
+#\linenumber{12}#assume (f_compute, f_emu) = gpmem(f_restr, composite_covariance)
 
 // Probe all data points
-predict mapv(f_compute, get_neal_data_xs())
+#\linenumber{13}#for n ... N
+#\linenumber{14}#    predict f_compute(get_neal_data_xs(n))
 
 // Infer hypers and hyperhypers
-infer repeat(100, do(
-    mh(quote(hyperhyper), one, 2),
-    mh(quote(hyper), one, 1)))
+#\linenumber{15}#infer repeat(100, do(
+#\linenumber{16}#    mh(quote(hyperhyper), one, 2),
+#\linenumber{17}#    mh(quote(hyper), one, 1)))
 
 \end{lstlisting}
 \end{minipage}
- 
 \end{mdframed}

@@ -28,7 +28,7 @@ then the \texttt{OBSERVE} code can be rewritten using \gpmem\ as follows (where 
 \begin{minipage}{0.9\linewidth}
 
 \begin{lstlisting}[mathescape,label=alg:venfrest,basicstyle=\selectfont\ttfamily,numbers=none,caption={Observation with \gpmem},escapechar=\#]
-#\linenumber{1}#assume_list (f_probe f_emu) =  gpmem( f_restr)
+#\linenumber{1}#assume (f_probe f_emu) =  gpmem( f_restr)
 #\linenumber{2}#for i=1 to n:
 #\linenumber{3}#  predict f_compute( x[i])
 #\linenumber{4}#  infer mh(quote(hyper-parameters), one, 100)

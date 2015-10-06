@@ -111,6 +111,8 @@
 \DeclareMathOperator{\Uniform}{Uniform}
 \DeclareMathOperator{\SE}{SE}
 
+\newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
+
 \begin{acronym}
 \acro{MAP} {Maximum a posteriori}
 \acro{MDP} {Markov Decision Processes} 
@@ -125,40 +127,19 @@
   \definecolor{mygreen}{rgb}{0,0.4,0}
   \definecolor{mypurple}{rgb}{0.38,0,0.83}
   \definecolor{myorange}{rgb}{0.75,0.3,0}
-  \lstset{
-    language=LISP,
-    comment=[l]{//},
-    keywordstyle=\color{black},
-    commentstyle=\color{mygreen},
-    keywordstyle=[2]\color{RawSienna},
-    keywords=[2]{assume,predict,infer,observe,define},
-    keywordstyle=[3]\color{black},
-    keywords=[3]{then,else,proc,tag,gamma,uniform_continuous,log,make_squaredexp,make_whitenoise,gpmem,mapv,first,repeat,do,mh,one,add_funcs,make_se,lambda,lookup,argmax_of_array,linspace,run,array,pass,mc_argmax,uniform_structure,subset,lte,if,flip,mult_funcs,for,to,get_neal_blackbox,get_neal_data_xs,get_data_xs,size,get_bayesopt_blackbox},
-    basicstyle=\tt,
-    literate=%
-    *{0}{{{\color{DarkBlue}0}}}1
-    {1}{{{\color{DarkBlue}1}}}1
-    {2}{{{\color{DarkBlue}2}}}1
-    {3}{{{\color{DarkBlue}3}}}1
-    {4}{{{\color{DarkBlue}4}}}1
-    {5}{{{\color{DarkBlue}5}}}1
-    {6}{{{\color{DarkBlue}6}}}1
-    {7}{{{\color{DarkBlue}7}}}1
-    {8}{{{\color{DarkBlue}8}}}1
-    {9}{{{\color{DarkBlue}9}}}1
-  }
+
 
  \lstdefinelanguage{Venture}{
     alsoletter={\&,=,!,?}
     keywordstyle=\color{black},
-    morecomment=[l]{\\},
+    morecomment=[l]{//},
     commentstyle=\color{mygreen},
     keywordstyle=[2]\color{DarkRed},
-    keywords=[2]{assume,predict,infer,observe,define,assume_list,sample,call_back},
+    keywords=[2]{assume,predict,infer,observe,define,assume_list,sample,call_back,for},
     keywordstyle=[3]\color{myorange},
-    keywords=[3]{if,then,else,lambda,tag,do,repeat,run,pass,true,false,default,all,one,begin,let,letrec,set!},
+    keywords=[3]{if,then,else,lambda,tag,do,proc,repeat,run,pass,true,false,quote,default,all,one,begin,let,lte,letrec,set!},
     keywordstyle=[4]\color{mypurple},
-    keywords=[4]{flip,normal,rejection,mh,max,length,list,first,second,gridsearch_argmax,apply,lookup,size,mem\&em,contains,stats,map,gpmem,quadmem, mem,make_gp,make_const_func,make_squaredexp,draw_gp_curves,exclude,closest_point,contents,set_contents,contents_changed?,contents_changed,mark_recently_changed,peek,increment,tail,repeatO,confine,return,print},
+    keywords=[4]{flip,normal,flip,bernoulli,uniform_continuous,uniform_structure,uniform_discrete,gamma,mh,rejection,array,max,length,list,first,second,gridsearch_argmax,apply,add_funcs,mult_funcs,subset,lookup,size,mem\&em,contains,stats,map,mapv,gpmem,quadmem,make_whitenoise, mem,make_gp,make_const_func,make_squaredexp,draw_gp_curves,exclude,closest_point,contents,set_contents,contents_changed?,contents_changed,mark_recently_changed,peek,increment,tail,repeatO,confine,return,print,get_neal_blackbox,get_neal_data_xs,get_data_xs,size,get_bayesopt_blackbox},
     literate=%
     *{0}{{{\color{DarkBlue}0}}}1
     {1}{{{\color{DarkBlue}1}}}1
@@ -172,7 +153,6 @@
     {9}{{{\color{DarkBlue}9}}}1,
   }
   \lstset{
-    captionpos=b,
     basicstyle=\singlespacing\ttfamily,
     language=Venture,
     showstringspaces=false,

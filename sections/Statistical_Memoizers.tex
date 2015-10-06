@@ -43,7 +43,7 @@ define choose_next_point = proc(em) { gridsearch_argmax( em) }
 define extract_answer = proc(em) { first(max( stats( em, second)))}
  
 assume theta =  tag( quote( params) #{\it $\langle$parameters for the statistical emulator$\rangle$}#))
-assume_list (f_probe f_emu) =  mem&em(f, theta))
+assume (f_probe f_emu) =  mem&em(f, theta))
 
 for t...T:
   f_probe( choose_next_point( f_emu)) #\label{ln:mem&em-penultimate}#
@@ -81,7 +81,7 @@ We highlight two points:
 
   \item Adding a single line to the program, such as
     \begin{lstlisting}
-    (infer (mh 'params one 50))
+    infer mh( quote( params), one, 50)
     \end{lstlisting}
     after line \ref{ln:mem&em-penultimate} to infer the parameters of the
     emulator\footnote{

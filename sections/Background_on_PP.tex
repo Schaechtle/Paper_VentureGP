@@ -32,11 +32,17 @@ custom inference program.
 
 Listing \ref{lst:pp-first} shows a simple probabilistic program containing only
 modelling instructions:
-
-\lstinputlisting[frame=single,label=lst:pp-first,caption={
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\lstinputlisting[escapechar=\#,label=lst:pp-first,caption={
   A simple probabilistic program (written in Venture) containing only modelling
   instructions.
 }]{code/pp_first_example_v2.scm}
+\end{minipage}
+\end{mdframed}     
+
 This program reads as follows: It is raining (R) with probability $0.3$.
 If it is raining, then the sprinkler (S) is never on; if it is not raining,
 then the sprinkler is on with probability $0.8$.  The probability that the

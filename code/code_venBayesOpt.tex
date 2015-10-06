@@ -1,0 +1,35 @@
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[caption={Bayesian optimization using \gpmem},mathescape,numbers=none,label=alg:bayesopt,escapechar=\#]
+#\linenumber{1}#assume sf = tag(quote(hyper), 0, uniform_continuous(0, 10))
+#\linenumber{2}#assume l = tag(quote(hyper), 1, uniform_continuous(0, 10))
+#\linenumber{3}#assume se = make_squaredexp(sf, l)
+#\linenumber{4}#assume blackbox_f = get_bayesopt_blackbox()
+#\linenumber{5}#assume (f_compute, f_emulator) = gpmem(blackbox_f, se)
+
+// A very naive estimate of the argmax of the given function
+define mc_argmax = proc(func) {
+  candidate_xs = mapv(proc(i) {uniform_continuous(-20, 20)},
+                      arange(20));
+  candidate_ys = mapv(func, candidate_xs);
+  lookup(candidate_xs, argmax_of_array(candidate_ys))
+};
+
+// Shortcut to sample the emulator at a single point without packing
+// and unpacking arrays
+define emulator_pointwise = proc(x) {
+    run(sample(lookup(f_emulator(array(unquote(x))), 0)))
+};
+
+// Main inference loop
+infer repeat(15, do(pass,
+    // Probe V at the point mc_argmax(emulator_pointwise)
+    predict(f_compute(unquote(mc_argmax(emulator_pointwise)))),
+    // Infer hyperparameters
+    mh(quote(hyper), one, 50)));
+\end{lstlisting}
+  
+\end{minipage}
+\end{mdframed}     
