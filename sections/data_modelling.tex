@@ -1,5 +1,7 @@
 \label{sec:special-case-gpmem}
-From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$ (Alg. \ref{alg:frest}).
+We implement \gpmem\ by memoizing a target procedure in a wrapper that remembers previously computed values.
+This comes with interesting implications:
+from the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_\restr(x)$, where $f_\restr$ is restricted to only allow evaluation at a specific set of inputs $x$ (Alg. \ref{alg:frest}).
 \begin{algorithm}
 
 \caption{Restricted Function}
@@ -19,16 +21,14 @@ From the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can 
 
 
 \end{algorithm}
-
-
-Modelling the data set with a GP then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
+Modelling the data set with a \ac{GP} then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain.
 Indeed, if $f_\restr$ is a foreign procedure made available as a black-box to Venture, whose secret underlying pseudo code is in Alg. \ref{alg:frest},
-then the \texttt{OBSERVE} code can be rewritten using \gpmem\ as follows (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
+then the \texttt{observe} code can be rewritten using \gpmem\ as in Listing \ref{alg:venfrest} (where here the data set \texttt{D} has keys \texttt{x[1]},\ldots,\texttt{x[n]}):
 \begin{mdframed}
 \begin{minipage}{0.9\linewidth}
-
+\small
 \begin{lstlisting}[mathescape,label=alg:venfrest,basicstyle=\selectfont\ttfamily,numbers=none,caption={Observation with \gpmem},escapechar=\#]
-#\linenumber{1}#assume (f_probe f_emu) =  gpmem( f_restr)
+#\linenumber{1}#assume (f_compute f_emu) =  gpmem( f_restr)
 #\linenumber{2}#for i=1 to n:
 #\linenumber{3}#  predict f_compute( x[i])
 #\linenumber{4}#  infer mh(quote(hyper-parameters), one, 100)
@@ -44,3 +44,10 @@ As to (i), the statistical code of creating a Gaussian process is replaced with 
 As to (ii), when using \gpmem, it is quite easy to decide incrementally which data point to sample next: for example, the loop from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in which the next index \texttt{i} is chosen by a supplied decision rule.
 In this way, we could use \gpmem\ to perform online learning using only a subset of the available data.
 
+\begin{figure}
+\input{figs/gpmem_tutorial.tex} 
+%\put(-245,10){\line(1,0){200}}
+\put(-39,30){\thicklines \vector(0,-1){20}}
+\put(-113,-42){\thicklines \vector(0,-1){20}}
+\caption{\gpmem\ tutorial}
+\end{figure}
