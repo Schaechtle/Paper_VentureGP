@@ -17,12 +17,12 @@ Rule 1 is derived as follows:
 &= \sigma_c^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_c^2}\bigg) \\
 \end{aligned}
 \end{equation}
+For stationary kernels that only depend on the lag vector between $x$ and $x^\prime$ it holds that multiplying such a kernel with a WN kernel we get another WN kernel (Rule 2). Take for example the SE kernel:
+\begin{equation}
+ \sigma_a^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_c^2}\bigg) \times  \sigma_b \delta_{x,x^\prime} =  \sigma_a \sigma_b \delta_{x,x^\prime}
+\end{equation}
 Rule 3 is derived as follows:
 \begin{equation}
  \theta_c (x \times x^\prime) = \theta_a (x \times x^\prime) + \theta_b (x \times x^\prime) 
 \end{equation}
-For stationary kernels that only depend on the lag vector between $x$ and $x^\prime$ it holds that multiplying such a kernel with a WN kernel we get another WN kernel. Take for example the SE kernel:
-\begin{equation}
- \sigma_a^2 \exp \bigg(-\frac{(x-x^\prime)^2}{2\ell_c^2}\bigg) \times  \sigma_b \delta_{x,x^\prime} =  \sigma_a \sigma_b \delta_{x,x^\prime}
-\end{equation}
-Multiplying any kernel with a constant obviously changes only the scale parameter of a kernel.
+Multiplying any kernel with a constant obviously changes only the scale parameter of a kernel (Rule 4).

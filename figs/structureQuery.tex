@@ -1,40 +1,41 @@
 \footnotesize
-% \includegraphics[width=.33\textwidth]{figs/gpSamples/main.png}
+% \includegraphics[width=.153\textwidth]{figs/gpSamples/main.png}
 \begin{tabular}{cccccc}
-\multicolumn{6}{c}{ \includegraphics[width=0.8\textwidth]{figs/mauna_data.png}}     \\                                               
+\multicolumn{6}{c}{ \includegraphics[width=0.6\textwidth]{figs/mauna_data.png}}     \\                                               
 \multicolumn{6}{c}{\tikzmark{a}}     \\  
 \multicolumn{6}{c}{}     \\   
 \multicolumn{6}{c}{\tikzmark{b}}     \\  
-\multicolumn{6}{c}{ \includegraphics[width=0.6\textwidth]{figs/mauna_structure.png}}     \\                                               
+\multicolumn{6}{c}{ \includegraphics[width=0.5\textwidth]{figs/mauna_structure.png}}     \\                                               
 \multicolumn{6}{c}{\tikzmark{c}}     \\  
 \multicolumn{6}{c}{}     \\   
 \multicolumn{6}{c}{\tikzmark{d}}     \\           
 \multicolumn{6}{c}{\normalsize \color{blue} What is the probability of a trend, a recurring pattern {\bf and} noise in the data?}     \\               
 \multicolumn{6}{c}{$P\big((\text{LIN}\lor\text{LIN}\times\text{SE})\land
 (\text{PER}\lor\text{PER}\times\text{SE}\lor\text{PER}\times\text{LIN})\land
-(\text{WN}\lor\text{LIN}\times\text{WN})\big)
+(\text{WN}\lor\text{LIN}\times\text{WN})\big) = 0.36
 $}                                                     \\
-          &      \tikzmark{trend_part}     &  &    \tikzmark{recurring_part}   &     \tikzmark{noise_part}     &                          \\
+         \multicolumn{2}{c}{ \tikzmark{trend_part}}     &  \multicolumn{2}{c}{$\;\;\;\;$\tikzmark{recurring_part}}   &     \multicolumn{2}{c}{\tikzmark{noise_part}}                               \\
           &          &  &  &  &                            \\
 \multicolumn{2}{c}{\tikzmark{trend}}& & &   \multicolumn{2}{c}{ \tikzmark{noise}} \\  
 \multicolumn{2}{c}{\normalsize \color{blue} Is there a trend?}& & &   \multicolumn{2}{c}{ \normalsize \color{blue} Is there noise?} \\
-\multicolumn{2}{c}{$P(\text{LIN}\lor\text{LIN}\times\text{SE})$}& & &   \multicolumn{2}{c}{$P(\text{WN}\lor\text{LIN}\times\text{WN})$} \\
+\multicolumn{2}{c}{$P(\text{LIN}\lor\text{LIN}\times\text{SE}) = 0.65$}& & &   \multicolumn{2}{c}{$P(\text{WN}\lor\text{LIN}\times\text{WN}) = 0.75$} \\
+\multicolumn{2}{c}{\includegraphics[width=.15\textwidth]{figs/gpSamples/trend.png}}& & &   \multicolumn{2}{c}{\includegraphics[width=.15\textwidth]{figs/gpSamples/noise.png}} \\
 \multicolumn{2}{c}{\tikzmark{trend_below}}& & &   \multicolumn{2}{c}{ \tikzmark{noise_below}} \\  
-
         &          &  &       &       &                            \\
          \tikzmark{lin}  &\tikzmark{linse}             &         &       &                 \tikzmark{linwn}  &\tikzmark{wn}            \\
 
            {\normalsize \color{blue} A linear trend?}  &{\normalsize \color{blue} A smooth trend?}   &         &       &                 {\normalsize \color{blue} Heteroskedastic noise?}  &{\normalsize \color{blue} White noise?}           \\
-          $P(\text{LIN})$& $P(\text{LIN}\times\text{SE})$         &          &    &$P(\text{LIN}\times\text{WN})$  &$P(\text{WN})$    \\
-         &          &         &       &                &          \\
+          $P(\text{LIN}) = 0.63$& $P(\text{LIN}\times\text{SE}) = 0.02$         &          &    &$P(\text{LIN}\times\text{WN}) = 0$  &$P(\text{WN}) = 0.75$    \\
+                \includegraphics[width=.15\textwidth]{figs/gpSamples/lin.png}& \includegraphics[width=.15\textwidth]{figs/gpSamples/selin.png}    &          &    &\includegraphics[width=.15\textwidth]{figs/gpSamples/linwn.png}  &\includegraphics[width=.15\textwidth]{figs/gpSamples/wn.png}   \\
          &          &         &\tikzmark{recurring}       &                &          \\
       \multicolumn{6}{c}{\normalsize \color{blue} Is there repeating structure?} \\
-  \multicolumn{6}{c}{$P(\text{PER}\lor\text{PER}\times\text{SE}\lor\text{PER}\times\text{LIN})$} \\
+  \multicolumn{6}{c}{$P(\text{PER}\lor\text{PER}\times\text{SE}\lor\text{PER}\times\text{LIN}) = 0.73$} \\
+   \multicolumn{6}{c}{\includegraphics[width=.15\textwidth]{figs/gpSamples/recurring.png}$\;\;\;\;\;\;$} \\
      & &    \multicolumn{2}{c}{\tikzmark{recurring_below}} & &\\
       &          &  &       &       &                            \\
          &  \tikzmark{per}        &   \multicolumn{2}{c}{\tikzmark{perse}}     &   \tikzmark{perlin}    &    \\
-        \multicolumn{2}{c}{$P(\text{PER})$}         &           \multicolumn{2}{c}{$P(\text{PER}\times\text{SE})$}         &                   \multicolumn{2}{c}{$P(\text{PER}\times\text{LIN})$}           \\
-   &          &  &       &       &                            \\
+        \multicolumn{2}{c}{$P(\text{PER}) = 0.32$}         &           \multicolumn{2}{c}{$P(\text{PER}\times\text{SE}) = 0.34$}         &                   \multicolumn{2}{c}{$P(\text{PER}\times\text{LIN}) = 0.07$}           \\
+        \multicolumn{2}{c}{\includegraphics[width=.15\textwidth]{figs/gpSamples/per.png}}         &           \multicolumn{2}{c}{\includegraphics[width=.15\textwidth]{figs/gpSamples/seper.png}}         &                   \multicolumn{2}{c}{\includegraphics[width=.15\textwidth]{figs/gpSamples/perlin.png}}           
         \end{tabular}
  \begin{tikzpicture}[overlay, remember picture, yshift=.25\baselineskip, shorten >=.5pt, shorten <=.5pt]
    \draw [->] ({pic cs:a}) to ({pic cs:b});

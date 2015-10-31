@@ -1,11 +1,8 @@
-SE and WN are defined in the text above, for completeness we will introduce the covariance:
-% ToDo: check if this should be removed
-\begin{equation}
-k_{LIN}(x,x^\prime) = \theta (x x^\prime) 
-\end{equation}
-\begin{equation}
-k_{PER}(x,x^\prime) = \theta \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg) 
-\end{equation}
-\begin{equation}
-k_{RQ}(x,x^\prime) =   \theta \bigg(1 + \frac{(x - x^\prime)^2}{2 \alpha \ell^2} \bigg)^{-\alpha}
-\end{equation}
+\begin{align}
+\text{SE} &= \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2}) \label{eq:SE}\\
+\text{LIN} &=   \sigma^2(x x^\prime) \label{eq:LIN}\\
+\text{C} &=   \sigma^2\label{eq:C}\\
+\text{WN} &= \sigma^2 \delta_{x,x^\prime} \label{eq:WN} \\
+\text{RQ} &=    \sigma^2 \bigg(1 + \frac{(x - x^\prime)^2}{2 \alpha \ell^2} \bigg)^{-\alpha} \label{eq:RQ} \\
+\text{PER} &=  \sigma^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg). \label{eq:PER}
+\end{align}

@@ -1,25 +1,13 @@
-In this section, we introduce Thompson sampling, the basic solution strategy
-underlying the Bayesian optimization implementations in Section
-\ref{sec:metaprogram}.  First, we cast our Bayesian optimization task as a
-Markov decision process (MDP) and give a high-level algorithmic description of
-how Thompson sampling can be used to choose actions in an approximately optimal
-manner for this MDP.  We note that probabilistic programming has the expressive
-power to support exploration of much richer context spaces than are typically
-used in computational Thompson sampling.  Next, we present a code template for
-expressing Thompson sampling as a probabilistic program using a statistical
-memoizer.  Finally, we give a full mathematical specification of one particular
-application of Thompson sampling, which (among others) will be implemented in
-Section \ref{sec:metaprogram}.
-
-\myparagraph{Framework}\label{sec:thompson-framework}
+We introduce Thompson sampling, the basic solution strategy
+underlying the Bayesian optimization with \gpmem.
 Thompson sampling~\cite{thompson1933likelihood} is a widely used Bayesian
 framework for addressing the trade-off between exploration and exploitation in
-the so-called multi-armed (or continuum-armed) bandit problem.  In this
-subsection, we cast the multi-armed bandit problem as a one-state Markov
+multi-armed (or continuum-armed) bandit problems.  
+We cast the multi-armed bandit problem as a one-state Markov
 decision process, and describe how Thompson sampling can be used to choose
-actions for that MDP.
+actions for that \ac{MDP}.
 
-The setup is as follows: An agent is to take a sequence of actions $a_1, a_2,
+Here, an agent is to take a sequence of actions $a_1, a_2,
 \ldots$ from a (possibly infinite) set of possible actions $\Acal$.  After each
 action, a reward $r \in \R$ is received, according to an unknown conditional
 distribution $P_\true\pn{r \mvert a}$.  The agent's goal is to maximize the
@@ -99,7 +87,7 @@ procedure $(\lambda (a) \ldots)$.  Thus, for computational Thompson sampling,
 the most general context space $\widehat\Theta$ is the space of program texts.
 Any other context space $\Theta$ has a natural embedding as a subset of
 $\widehat\Theta$.
-
+\begin{comment}
 \myparagraph{Thompson Sampling with a Statistical Memoizer}
 \label{sec:thompson-mem-em}
 Thompson sampling as described above can be expressed compactly in terms of a
@@ -166,10 +154,9 @@ $\argmax_{\texttt{a}} \Ebkt{\texttt{(func a)}}$.
   }
   \label{fig:slide1}
 \end{figure}
-
+\end{comment}
 \myparagraph{A Mathematical Specification}\label{sec:math-spec}
-Below, we give the mathematical specification of a particular application of
-Thompson sampling.  This application has the following properties:
+Our mathematical specification assert the following properties:
 \begin{itemize}
   \item The regression function has a Gaussian process prior.
   \item The actions $a_1,a_2,\ldots \in \Acal$ are chosen by a Metropolis-like search
@@ -187,23 +174,10 @@ $K$ is a computable (symmetric, positive-semidefinite) function $\Acal \times
 where $R_a$ represents the reward for action $a$.  Computationally, we represent
 a context as a data structure
 \[ \ttheta = (\theta, \abf_\past, \rbf_\past) = (\mu_\prior, K_\prior, \eta, \abf_\past, \rbf_\past), \]
-where:
-\begin{itemize}
-  \item $\mu_\prior$ is a procedure to be used as the prior mean function.  To
-    simplify the treatment, we take $\mu_\prior \equiv 0$.
-  \item $K_\prior$ is a procedure to be used as the prior covariance function.
-    In this example, we use a fixed functional form\footnote{
-      However, within this framework there is no reason why the functional form
-      of $K_\prior$ cannot itself be random and be chosen by probabilistic
-      inference.  The support of $P(K_\prior)$ could, for example, be the search
-      space of composite kernel structures explored in Duvenaud et
-      al.~\cite{Duvenaud}.
-    }
-    $K_\prior = K_\prior\pn{\bullet \mvert \sigma,\ell}$, the squared exponential
-    \[ K_\prior(a,a') = \sigma^2 \exp\pn{-\frac{(a-a')^2}{2\ell}}. \]
-  \item $\eta$ is a set of (hyper)parameters for the mean and covariance
-    functions; in this case $\eta = \br{\sigma, \ell}$.
-\end{itemize}
+where $\mu_\prior$ is a procedure to be used as the prior mean function. w.l.o.g. we set $\mu_\prior \equiv 0$.
+$K_\prior$ is a procedure to be used as the prior covariance function, parameterized by 
+$\eta$.
+
 The posterior mean and covariance for such a context $\ttheta$ are gotten by the
 usual conditioning formulas (assuming, for ease of exposition as above, that the
 prior mean is zero):\footnote{
@@ -228,7 +202,7 @@ prior mean is zero):\footnote{
 \end{align*}
 Note that the context space $\Theta$ is not a finite-dimensional parametric
 family, since the vectors $\abf_\past$ and $\rbf_\past$ grow as more samples are
-taken.  $\Theta$ is, however, quite easily representable as a computational
+taken.  $\Theta$ is, however, representable as a computational
 procedure together with parameters and past samples, as we do in the
 representation $\ttheta = (\mu_\prior, K_\prior, \eta, \abf_\past, \rbf_\past)$.
 
@@ -305,22 +279,55 @@ and
 \[ \widetilde{r}_{i,a} \sim \Ncal(\mu(a), K(a,a)) \]
 and $\br{\widetilde{r}_{i,a}}_{i=1}^{N_\avg}$ are i.i.d.\ for a fixed $a$.
 Here the temperature parameter $s \geq 0$ and the population size $N_\avg$ are
-specified ahead of time.  Note the following properties of the above acceptance
-probability:
-\begin{itemize}
-  \item Proposals of estimated value higher than that of the current action are
-    always accepted, while proposals of estimated value lower than that of the
-    current action are accepted with a probability that decays exponentially
-    with respect to the difference in value.
-  \item The rate of the decay is determined by the temperature parameter $s$,
-    where high temperature corresponds to generous acceptance probabilities.
-    For $s=0$, all proposals of lower value are rejected; for $s=\infty$, all
-    proposals are accepted.
-  \item For points $a$ at which the posterior mean $\mu(a)$ is low but the
-    posterior variance $K(a,a)$ is high, it is possible (especially when
-    $N_\avg$ is small) to draw a ``wild'' value of $\muhat(a)$, resulting in a
-    favorable acceptance probability.
-\end{itemize}
+specified ahead of time.  Proposals of estimated value higher than that of the current action are
+always accepted, while proposals of estimated value lower than that of the
+current action are accepted with a probability that decays exponentially
+with respect to the difference in value.
+The rate of the decay is determined by the temperature parameter $s$,
+where high temperature corresponds to generous acceptance probabilities.
+For $s=0$, all proposals of lower value are rejected; for $s=\infty$, all
+proposals are accepted.
+For points $a$ at which the posterior mean $\mu(a)$ is low but the
+posterior variance $K(a,a)$ is high, it is possible (especially when
+$N_\avg$ is small) to draw a ``wild'' value of $\muhat(a)$, resulting in a
+favorable acceptance probability.
+
+
+
+
+ \begin{figure}
+  \setlength{\tabcolsep}{1pt} 
+ \centering
+\begin{tabular}{rl}
+\includegraphics[width=0.6\textwidth]{figs/bayesopt/iteration_vs_error.png}&\includegraphics[width=0.4\textwidth]{figs/bayesopt/legend.png}
+\put(-126,133){\scriptsize Trimodal ground truth, drift proposal}
+\put(-126,125){\scriptsize Trimodal ground truth, uniform proposal}
+\put(-126,117){\scriptsize Bimodal ground truth, uniform proposal}
+\put(-126,108){\scriptsize Bimodal ground truth, drift proposal}
+\put(-126,100){\scriptsize Local Optima, trimodal function}
+\put(-126,92){\scriptsize Local Optima, bimodal function}
+\put(-119,78){\scriptsize Ground Truth}
+\put(-119,66){\scriptsize Posterior samples}
+\put(-119,55){\scriptsize Next Probe}
+\put(-119,43){\scriptsize Estimated Optimum}
+\put(-119,31){\scriptsize Past Probes}
+\end{tabular}
+\begin{tabular}{llll}\hline
+\multicolumn{1}{|l|}{\raisebox{-0.5\height}{\includegraphics[width=0.3\textwidth]{figs/bayesopt/opt_sequence_uniform_trimodal_7.png}}}&
+\multicolumn{1}{l|}{\raisebox{-0.5\height}{\includegraphics[width=0.3\textwidth]{figs/bayesopt/opt_sequence_uniform_trimodal_8.png}}}&
+\multicolumn{1}{l|}{\raisebox{-0.5\height}{\includegraphics[width=0.3\textwidth]{figs/bayesopt/opt_sequence_uniform_trimodal_9.png}}} \\ \hline
+\multicolumn{1}{|l|}{\raisebox{-0.5\height}{\includegraphics[width=0.3\textwidth]{figs/bayesopt/opt_sequence_uniform_trimodal_10.png}}}&
+\multicolumn{1}{l|}{\raisebox{-0.5\height}{\includegraphics[width=0.3\textwidth]{figs/bayesopt/opt_sequence_uniform_trimodal_11.png}}}&
+\multicolumn{1}{l|}{\raisebox{-0.5\height}{\includegraphics[width=0.3\textwidth]{figs/bayesopt/opt_sequence_uniform_trimodal_12.png}}} \\ \hline
+\end{tabular}
+\put(-360,56){\footnotesize$i = 7$}
+\put(-238,56){\footnotesize$i = 8$}
+\put(-117,56){\footnotesize$i = 9$}
+\put(-360,-8){\footnotesize$i = 10$}
+\put(-238,-8){\footnotesize$i = 11$}
+\put(-117,-8){\footnotesize$i = 12$}
+\caption{Top: the estimated optimum over time. Blue and Red represent optimization with uniform and Gaussian drift proposals. Black lines indicate the local optima of the true functions. Bottom: a sequence of actions. Depicted are iterations 7-12 with uniform proposals.}
+\end{figure}
 Indeed, taking an action $a$ with low estimated value but high uncertainty
 serves the useful function of improving the accuracy of the estimated value
 function at points near $a$ (see Figure \ref{fig:slide2}).\footnote{
@@ -331,5 +338,6 @@ function at points near $a$ (see Figure \ref{fig:slide2}).\footnote{
   a desirable property; indeed, this is why we use $\muhat$ rather than the
   exact posterior mean $\mu$.
 }
- We see a comlete probabilistic program with \gpmem\ implementing Bayesian optimization with Thompson Sampling below (Listing \ref{alg:bayesopt)}).
+We see a comlete probabilistic program with \gpmem\ implementing Bayesian optimization
+with Thompson Sampling below (Listing \ref{alg:bayesopt}).
  \input{code/code_venBayesOpt.tex}

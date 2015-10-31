@@ -2,7 +2,8 @@
 \usepackage{listings}
 \usepackage[svgnames,dvipsnames]{xcolor} % Specify colors by their 'svgnames', for a full list of all colors available see here: http://www.latextemplates.com/svgnames-colors
 \usepackage{etoolbox}
-\usepackage{jmlr2e}
+%\usepackage{jmlr2e}
+\usepackage{nips15submit_e,times}
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{tcolorbox}
@@ -35,6 +36,12 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 
+\usepackage[inline]{asymptote}
+
+
+\begin{asydef}
+defaultpen(fontsize(11));
+\end{asydef}
 
 \usetikzlibrary{tikzmark}
 \usetikzlibrary{bayesnet}
@@ -114,8 +121,11 @@
 \newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
 
 \begin{acronym}
+\acro{GP} {Gaussian Process}
 \acro{MAP} {Maximum a posteriori}
+\acro{MCMC} {Markov Chain Monte Carlo}
 \acro{MDP} {Markov Decision Processes} 
+\acro{MH} {Metropolis-Hastings}
 \end{acronym}
 
 
@@ -175,12 +185,12 @@
   \setlength\@tempdima{\algorithmicindent}%
   \OldStatex\hskip\dimexpr#1\@tempdima\relax}
 
-\jmlrheading{}{}{}{}{}{}
+%\jmlrheading{}{}{}{}{}{}
 
 % Short headings should be running head and authors last names
 
-\ShortHeadings{Probabilistic Programming with Gaussian Process Memoization}{}
-\firstpageno{1}
+%\ShortHeadings{Probabilistic Programming with Gaussian Process Memoization}{}
+%\firstpageno{1}
 
 \begin{document}
 \title{Probabilistic Programming with Gaussian Process Memoization}
@@ -188,7 +198,7 @@
 
 \author{}
 
-\editor{}
+%\editor{}
 
 \maketitle
 \begin{abstract}
@@ -197,27 +207,33 @@ This paper describes the {\em Gaussian process memoizer}, a probabilistic progra
 
 \section{Introduction}
 \input{sections/VenGPIntroduction.tex}
-\subsection{Background on Probabilistic Programming}\label{sec:pp-background}
-\input{sections/Background_on_PP.tex}
-\subsection{Traces and Interactivity}
-\input{sections/Traces_and_Interactivity.tex}
-\subsection{Memoization}
-\input{sections/Memoization.tex}
-\subsection{Venture}
-\input{sections/VentureLanguage.tex}
+%\subsection{Background on Probabilistic Programming}\label{sec:pp-background}
+%\input{sections/Background_on_PP.tex}
+%\myparagraph{Traces and Interactivity}
+%\input{sections/Traces_and_Interactivity.tex}
+%\subsection{Memoization}
+
+%\subsection{Venture}
+%\input{sections/VentureLanguage.tex}
 
 \section{Gaussian Processes Memoization}
 \input{sections/GP.tex}
 
-\subsection{A Bayesian interpretation}
-\input{sections/MHvsMAP.tex}
+%\subsection{A Bayesian interpretation}
+%\input{sections/MHvsMAP.tex}
 
-\subsection{Gaussian Process Memoization}
+\subsection{Memoization}
+\input{sections/Memoization.tex}
 \input{sections/Statistical_Memoizers.tex}
-\input{sections/gpmem.tex}
+%\input{sections/gpmem.tex}
 
 \input{sections/data_modelling.tex}
 \section{Example Applications}
+\gpmem\ is an elegant linguistic framework for function learning-related tasks.
+The technique allows language constructs from programming to help express models
+which would be cumbersome to express in statistics notation.
+We will now illustrate this with three example applications. 
+
 \subsection{Hyperparameter estimation with structured hyper-prior}
 \input{sections/hyperparameters.tex}
 %\subsubsection{Broader applicability of \gpmem}\label{sec:gpmem-broader}
@@ -225,7 +241,6 @@ This paper describes the {\em Gaussian process memoizer}, a probabilistic progra
 \subsection{Discovering symbolic models for time series}\label{sec:structurelearning}
 \input{sections/StructureLearning.tex}
 
-\FloatBarrier
 \subsection{Bayesian optimization via Thompson sampling}
 \label{sec:thompson}
 \input{sections/Bayesian_Optimization_using_TS.tex}
@@ -238,8 +253,8 @@ This paper describes the {\em Gaussian process memoizer}, a probabilistic progra
 %\input{sections/TSimplementation.tex}
 \section{Discussion}
 \input{sections/Conclusion.tex}
-\subsection{Contributions}
 
+\newpage
 \section*{Appendix}
 \subsection*{A Covariance Functions}
 \input{sections/Appendix_Cov.tex}
@@ -247,7 +262,10 @@ This paper describes the {\em Gaussian process memoizer}, a probabilistic progra
 \subsection*{B Covariance Simplification}
 \input{sections/Appendix_Simplification.tex}
 
+\subsection*{C Additional Structure Learning Results}
+\input{sections/Appendix_Structure_Results.tex}
+
 \newpage
-\bibliography{May2015}
+\bibliography{September2015}
 \bibliographystyle{apalike}
 \end{document}

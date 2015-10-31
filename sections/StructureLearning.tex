@@ -1,25 +1,25 @@
-The space of possible kernel composition is infinite. Combining inference over this space with the problem of finding a good parameterization that could potentially explain the observed data best poses a hard problem. The natural language interpretation of the meaning of a kernel and its composition renders this a problem of symbolic computation. Duvenaud and colleagues note that a sum of kernels can be interpreted as logical OR operations and kernel multiplication as logical AND~\citeyearpar{duvenaud2013structure}. This is due to the kernel rendering two points similar if $k_1$ OR $k_2$ outputs a high value in the case of a sum. Respectively, multiplication of two kernels results in high values only if $k_1$ AND $k_2$ have high values (see Fig. \ref{fig:composite} exemplifies how to interpret global vs. local aspects and its symbolic analog respectively). 
-In the following, we will refer to covariance functions that are not composite as base covariance functions.
+Inductive learning of symbolic expression for continuous-valued time series
+data is a hard task which has recently been tackled using a greedy search over 
+the approximate posterior of the possible kernel compostions for
+\ac{GP}s~\citep{duvenaud2013structure,lloyd2014automatic}\footnote{\url{http://www.automaticstatistician.com/}}.
 
-\begin{figure}
-\centering
-\input{figs/parseTree.tex}
-\caption{Composition of covariance function parsed using the example SE $\times$ LIN $+$ PER $\times$ LIN $+$  RQ $\times$ LIN. We deploy kernel summation ($+$) and kernel multiplication ($\times$).}\label{fig:composite}
-\end{figure}
+With \gpmem\ we can provide a fully Bayesian treatment of this, previously unavaible,
+using a stochastic grammar  (see Fig. \ref{fig:schema}).
 
-
-Knowledge about the composite nature of covariance functions is not new, however, until recently, the choice and the composition of covariance functions were done ad-hoc. The Automatic Statistician Project\footnote{\url{http://www.automaticstatistician.com/}}. came up with an approximate search over the possible space of kernel structures~\citep{duvenaud2013structure,lloyd2014automatic}. However, a fully Bayesian treatment was not available before. To the best of our knowledge, we are the first one to present a fully Bayesian solution to this. We deploy a probabilistic context free grammar for our prior on structures(see Fig. \ref{fig:schema})
 \begin{figure}
 \centering
 \input{figs/schematic.tex}
 \caption{Graphical description of Bayesian GP structure learning.}\label{fig:schema}
 \end{figure}
 
+We deploy a probabilistic context free grammar for our prior on structures. An input of non-composite kernels (base kernels) is supplied to generate a posterior distributions of composite structure to express local and global aspects of the data.
 
-Our probabilistic programming based MCMC framework approximates the following intractable integrals of the expectation for the prediction:
+
+We approximate the following intractable integrals of the expectation for the prediction:
 \begin{equation}
 \mathbb{E}[y^* \mid x^*,\mathbf{D},\mathbf{K}] =\iint f(x^*,\bm{\theta},\mathbf{K})\,P(\bm{\theta} \mid \mathbf{D,\mathbf{K}})\,P(\mathbf{K}|\bm{\Omega},s,n) \; \mathbf{d} \bm{\theta} \mathbf{d} \mathbf{K}.  
 \end{equation}
+
 This is done by sampling from the posterior probability distribution of the hyper-parameters and the possible kernel:
 \begin{equation}
 y^* \approx \frac{1}{T} \sum^T_{t=1} f(x^* | \bm{\theta}^{(t)},\mathbf{K}^{(t)}). 
@@ -30,37 +30,30 @@ In order to provide the sampling of the kernel, we introduce a stochastic proces
 \begin{equation}
 \mathbf{K}^{(t)} \sim  P(\mathbf{K} \mid \bm{\Omega},s,n)
 \end{equation}
-Here, we start with a set of possible kernels and draw a random subset. For this subset of size $n$, we sample a set of possible operators that operate on the base kernels. 
-
-The marginal probability of a kernel structure which allows us to sample  is characterized by the probability of a uniformly chosen subset of the set of $n$ possible covariance functions times the probability of sampling a global or a local structure which is given by a binomial distribution: 
-
+Here, we start with the set of given base kernels and draw a random subset.
+For this subset of size $n$, we sample a set of possible operators $\bm{\Omega}$ combining base kernels. 
+The marginal probability of a composite structure
 \begin{equation}
 P(\mathbf{K} \mid \bm{\Omega},s,n) = P(\bm{\Omega} \mid s,n)\times P(s \mid n) \times P(n),
 \end{equation}
-with
-\begin{equation}
-P(\bm{\Omega} \mid s,n)= {n \choose r}  p_{+\times}^k (1 - p_{+\times})^{n-k}
-\end{equation}
-and
+is characterized by the prior $P(n)$ on the number of base kernels used, the probability of a uniformly chosen subset of the set of $n$ possible covariance functions
 \begin{equation}
 \label{eq:subsets}
-P(s \mid n) = \frac{n!}{ \mid s \mid !}
+P(s \mid n) = \frac{n!}{ \mid s \mid !},
 \end{equation}
-where $P(n)$ is a prior on the number of base kernels used which can sample from a discrete uniform distribution. This will strongly prefer simple covariance structures with few base kernels since individual base kernels are more likely to be sampled in this case due to (\ref{eq:subsets}). Alternatively, we can approximate a uniform prior over structures by weighting $P(n)$ towards higher numbers. It is possible to also assign a prior for the probability to sample global or local structures, however, we have assigned complete uncertainty to this with the probability of a flip $p = 0.5$.
+and the probability of sampling a global or a local structure, which is given by a binomial distribution: 
+\begin{equation}
+P(\bm{\Omega} \mid s,n)= {n \choose r}  p_{+\times}^k (1 - p_{+\times})^{n-k}.
+\end{equation}
 
 
 
-Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. Certain covariance functions can differ in terms of the hyper-parameterization but can be absorbed into a single covariance function with a different parameterization. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify. Rules for this simplification can be found in appendix B.
-
-
-The Automatic Statistician Project is implemented using deterministic optimization and search. We reproduce results from this Project in a Bayesian fashion using \gpmem\ (Listing \ref{alg:structureVent}). We first define a prior on the hypothesis space. Note that, as in the implementation of the Automatic Statistician, we upper-bound the complexity of the space of covariance functions we want to explore. We also put vague priors on hyper-parameters.
+Many equivalent covariance structures can be sampled due to covariance function algebra and equivalent representations with different parameterization~\citep{lloyd2014automatic}. To inspect the posterior of these equivalent structures we convert each kernel expression into a sum of products and subsequently simplify. All base kernels can be found in Appendix A, rules for this simplification can be found in appendix B. The code for learning of kernel structure is as follows:
 
 \input{code/code_venstructure.tex}
 
-
-
-
-We defined the space of covariance structures in a way allowing us to reproduce results for covariance function structure learning as in the Automatic Statistician. This lead to coherent results, for example for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). The sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels. We see that the most probable alternatives for a structural description both recover the data dynamics (Fig. \ref{fig:posterior_twosamples} for the airline data set).
+We defined the space of covariance structures in a way that allows us to produce results coherent with 
+work presented in Automatic Statistician. For example, for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Our most frequent sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels. We see that the most probable alternatives for a structural description both recover the data dynamics (Fig. \ref{fig:posterior_twosamples} for the airline data set).
 
 \begin{comment}
 \begin{figure}
@@ -94,22 +87,7 @@ We defined the space of covariance structures in a way allowing us to reproduce 
         \put(-175,33){\Large $\times$} 
         \caption{a) We see the predictive posterior as a result 1000 nested MH steps on the airline data set. b) depicts a decomposition of this posterior for the structures sampled by Venture. RQ is the rational quadratic covariance function. The first line shows the global trend and denotes the rest of the structure that is shown above. In the second line, the see the periodic component on the right hand side. The left hand side denotes short term deviations both multiplied by a smoothing kernel. The third and fourth lines denote how we reach the second line: both periodic and rational quadratic covariance functions are multiplied by a linear covariance function with slope zero.}\label{fig:tutorial}
 \end{figure}
-\end{comment}
 
-\begin{figure}
-        \centering
-        \begin{subfigure}[b]{\textwidth} \centering
-                \includegraphics[width=0.65\textwidth]{figs/airline_struct_1.pdf}\caption{}
-        \end{subfigure}\\
-        
-        \vspace*{0.75cm}
-	\begin{subfigure}[b]{\textwidth} \centering
-                \includegraphics[width=0.6\textwidth]{figs/airline_struct_2.pdf}\caption{}
-        \end{subfigure}%
-        \caption{We see two possible hypotheses for the composite structure of $\mathbf{K}$. (a) Most frequent sample drawn from the posterior on structure. We have found two global components. First, a smooth trend (LIN $\times$ SE) with a non-linear increasing slope. Second, a periodic component with increasing variation and noise. (b) Second most frequent sample drawn from the posterior on structure. We found one global component. It is comprised of local changes that are periodic and with changing variation.}\label{fig:posterior_twosamples}
-\end{figure}
-We further investigated the quality of our stochastic processes by running a leave one out cross-validation computing residuals to gain confidence on the posterior.
-\begin{comment}
 \begin{figure}
 \centering
     \includegraphics[width=\textwidth]{figs/structureCo2b.png}
@@ -157,5 +135,5 @@ Confident about our results, we can now query the data for certain structures be
 \begin{figure}
 \centering
 \input{figs/structureQuery.tex}
-\caption{Like in symbolic reasoning we can query the data if some logical statements are probable to be true. Here, we are interested in three qualitative aspects of the data, which we formulate in terms of the following: 1. Is it true that there is a trend? Is it true that there are recurring patterns and is it true that that there is white noise or heteroskedastic noise in the data?}\label{fig:query}
+\caption{We can query the data if some logical statements are probable to be true, for example, is it true that there is a trend?}\label{fig:query}
 \end{figure}
