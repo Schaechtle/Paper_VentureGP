@@ -37,7 +37,9 @@
 \usepackage{algpseudocode}
 
 \usepackage[inline]{asymptote}
+\usetikzlibrary{arrows}
 
+\usepackage{enumitem}
 
 \begin{asydef}
 defaultpen(fontsize(11));
@@ -137,7 +139,7 @@ defaultpen(fontsize(11));
   \definecolor{mygreen}{rgb}{0,0.4,0}
   \definecolor{mypurple}{rgb}{0.38,0,0.83}
   \definecolor{myorange}{rgb}{0.75,0.3,0}
-
+  \definecolor{myblue}{RGB}{76,114,176}
 
  \lstdefinelanguage{Venture}{
     alsoletter={\&,=,!,?}
@@ -243,6 +245,9 @@ We will now illustrate this with three example applications.
 
 \subsection{Bayesian optimization via Thompson sampling}
 \label{sec:thompson}
+
+\input{sections/meta_program.tex}
+\myparagraph{Thompson Sampling}
 \input{sections/Bayesian_Optimization_using_TS.tex}
 %input{sections/BayesianOptimization.tex}
 %\subsubsection{Thompson sampling framework}

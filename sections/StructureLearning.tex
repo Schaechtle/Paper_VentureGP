@@ -9,7 +9,7 @@ using a stochastic grammar  (see Fig. \ref{fig:schema}).
 \begin{figure}
 \centering
 \input{figs/schematic.tex}
-\caption{Graphical description of Bayesian GP structure learning.}\label{fig:schema}
+\caption{(a) Graphical description of Bayesian GP structure learning. (b) Composite structure.}\label{fig:schema}
 \end{figure}
 
 We deploy a probabilistic context free grammar for our prior on structures. An input of non-composite kernels (base kernels) is supplied to generate a posterior distributions of composite structure to express local and global aspects of the data.
@@ -131,7 +131,12 @@ and covariance matrix
 \hat{\mathbf{K}}_a =   \mathbf{K_a}(\xbf,\xbf) -  \mathbf{K_a}(\xbf,\xbf^*)\mathbf{K}(\xbf^*,\xbf^*)^{-1} \mathbf{K_a}(\xbf^*,\xbf).
 \end{equation}
 \end{comment}
-Confident about our results, we can now query the data for certain structures being present. We illustrate this using the Mauna Loa data used in previous work on automated kernel discovery~\citep{duvenaud2013structure}. We assume a relatively simple hypothesis space  consisting of only four kernels, a linear, a smoothing, a periodic and a white noise kernel. In this experiment, we resort to the white noise kernel instead RQ (similar to \citep{lloyd2014automatic}).  We can now run the algorithm, compute a posterior of structures. We can also query this posterior distribution for the marginal of certain simple structures to occur. We demonstrate this in Fig. \ref{fig:query}
+Confident about our results, we can now query the data for certain structures being present. We illustrate this using the Mauna Loa data used in previous work on automated kernel discovery~\citep{duvenaud2013structure}. We assume a relatively simple hypothesis space  consisting of only four kernels, a linear, a smoothing, a periodic and a white noise kernel. In this experiment, we resort to the white noise kernel instead RQ (similar to \citep{lloyd2014automatic}).  We can now run the algorithm, compute a posterior of structures (see Fig. \ref{fig:posterior}). We can also query this posterior distribution for the marginal of certain simple structures to occur. We demonstrate this in Fig. \ref{fig:query}
+\begin{figure}
+\centering
+\input{figs/structure_posterior.tex}
+\caption{Posterior of structure and qualitative, human interpretable reading. We take the raw data (top), compute a posterior distribution on structures (bar plot). We take the peak of this distribution ($\text{LIN}+\text{PER}+\text{SE}+\text{WN}$) and show its human readable interpretation (left of bar plot). Below the bar plot show one sample of this structure with corresponding parameters. On the bottom, we sample from a \ac{GP} with with this kernel-hyper-parameter combination.}\label{fig:posterior}
+\end{figure}
 \begin{figure}
 \centering
 \input{figs/structureQuery.tex}
