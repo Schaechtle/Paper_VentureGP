@@ -39,9 +39,9 @@
 \begin{tikzpicture}[grow=right, sloped]
 \node[operator] {\small $+$}
     child {
-        node[operator] {\small $\times$}        
+        node[operator] {\small $+$}        
             child {
-               node[operator] {\small $+$}        
+               node[operator] {\small $\times$}        
         child {
                 node[operator, label=right:
                     {$\cdots$}] {}
@@ -51,7 +51,7 @@
             }
             child {
                 node[end, label=right:
-                    {$\mathbf{K}_4$}] {}
+                    {SE$_{\theta^4}$}] {}
                 edge from parent
                 node[above] {}
                 node[below]  {}
@@ -62,7 +62,7 @@
             }
             child {
                 node[end, label=right:
-                    {$\mathbf{K}_3$}] {}
+                    {WN$_{\theta^3}$}] {}
                 edge from parent
                 node[above] {}
                 node[below]  {}
@@ -72,17 +72,17 @@
             node[below]  {}
     }
     child {
-        node[operator] {\small $+$}        
+        node[operator] {\small $\times$}        
         child {
                 node[end, label=right:
-                    {$\mathbf{K}_2$}] {}
+                    {PER$_{\theta^2}$}] {}
                 edge from parent
                 node[above] {}
                 node[below]  {}
             }
             child {
                 node[end, label=right:
-                    {$\mathbf{K}_1$}] {}
+                    {LIN$_{\theta^1}$}] {}
                 edge from parent
                 node[above] {}
                 node[below]  {}
@@ -92,7 +92,22 @@
             node[below]  {}
     };
 \node[xshift=-1cm] (K) {$\mathbf{K}=$}; 
- \node[xshift=2.6cm,below =2.4cm of K] (Keq) {$\mathbf{K}=\mathbf{K}_1+\mathbf{K}_2+\mathbf{K}_3 \times (\mathbf{K}_4+\cdots)$};
+ \node[xshift=2.6cm,below =2.4cm of K] (Keq) {$\mathbf{K}=\text{LIN}_{\theta^1} \times \text{PER}_{\theta^2}+\text{WN}_{\theta^3} + \text{SE}_{\theta^4} \times ( \cdots )$};
 \end{tikzpicture}
 \caption{} 
+\end{subfigure}
+
+\begin{subfigure}[b]{0.99\textwidth}\centering
+\begin{tabular}{cccc}
+\multicolumn{4}{c}{\bf Base Components} \rule{0pt}{6ex} \\ 
+\small LIN: Linearity &\small PER: Periodicity &\small SE: Smoothness &\small WN: White Noise \rule{0pt}{2ex} \\
+\includegraphics[height=2cm]{figs/kernel/kernelLIN.png} & \includegraphics[height=2cm]{figs/kernel/kernelPER.png} & \includegraphics[height=2cm]{figs/kernel/kernelSE.png} & \includegraphics[height=2cm]{figs/kernel/kernelWN.png}\\
+\end{tabular}
+\begin{tabular}{cccc}
+\multicolumn{4}{c}{\bf Composite Structure} \rule{0pt}{4ex}  \\ 
+\small LIN + PER: &\small LIN $\times$ PER: &\small SE $\times$ PER: &\small LIN $\times$ LIN: \rule{0pt}{2ex} \\
+\small Periodicity with Trend &\small Growing Amplitude &\small Local Periodicity&\small Quadratic \rule{0pt}{2ex} \\
+\includegraphics[height=2cm]{figs/kernel/kernelLINplusPER.png} & \includegraphics[height=2cm]{figs/kernel/kernelLINtimesPER.png} & \includegraphics[height=2cm]{figs/kernel/kernelSEplusPER.png}& \includegraphics[height=2cm]{figs/kernel/kernelLINtimesLIN.png}\\
+\end{tabular}
+\caption{}
 \end{subfigure}
