@@ -14,7 +14,7 @@ and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
 \alpha_1^{(t)} \sim \Gamma(\alpha^1_{\alpha},\beta^1_{ \alpha } ),\; \alpha_2^{(t)} \sim \Gamma(\alpha^2_{\alpha},\beta^2_{\alpha}),\cdots
 \end{equation}
 % the input below will be empty, if we're in the paper. For my thesis, it will contain a causal network of the hyper-parameters.
-One can represent this kind of model using \gpmem\ (Listing \ref{alg:gphierarch}).
+One can represent this kind of model using \gpmem\ (Fig. \ref{fig:neal_tutorial}).
 Neal provides a custom inference algorithm setting and evaluates it using the following synthetic data problem. Let $f$ be the underlying function that generates the data:
 \begin{equation}
 f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
@@ -97,7 +97,11 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
 
 
 We illustrate the hyper-parameters by showing a comparison between $\sigma$ (Fig. \ref{fig:neal}). We see that \gpmem\ learns the posterior distribution well, the posterior even exhibits a bimodal histogram when sampling $\sigma$ 100 times reflecting the two modes of data generation, that is normal noise and outliers. 
+\begin{figure}
+\input{figs/neal_tutorial.tex}
+\caption{Hyper-parameterization}
+\label{fig:neal_tutorial}
+\end{figure}
 
-\input{code/code_venhyper.tex}
 
 
