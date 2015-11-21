@@ -9,7 +9,7 @@ using a stochastic grammar  (see Fig. \ref{fig:schema}).
 \begin{figure}
 \centering
 \input{figs/schematic.tex}
-\caption{(a) Graphical description of Bayesian GP structure learning. (b) Composite structure.}\label{fig:schema}
+\caption{(a) Graphical description of Bayesian GP structure learning. (b) Composite structure. (c) The natural language interpretation of the structure.}\label{fig:schema}
 \end{figure}
 
 We deploy a probabilistic context free grammar for our prior on structures. An input of non-composite kernels (base kernels) is supplied to generate a posterior distributions of composite structure to express local and global aspects of the data.
@@ -55,82 +55,6 @@ Many equivalent covariance structures can be sampled due to covariance function 
 We defined the space of covariance structures in a way that allows us to produce results coherent with 
 work presented in Automatic Statistician. For example, for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Our most frequent sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels. We see that the most probable alternatives for a structural description both recover the data dynamics (Fig. \ref{fig:posterior_twosamples} for the airline data set).
 
-\begin{comment}
-\begin{figure}
-        \centering
-        \begin{subfigure}[b]{\textwidth} \centering
-                \includegraphics[height=3cm]{figs/airline_tree_3x.png}
-                \caption{The predictive posterior using the full grammar structure.}
-                \label{fig:airlineBO}
-        \end{subfigure}%
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-          
-        \begin{subfigure}[b]{\textwidth} \centering
-                \includegraphics[width=\textwidth]{figs/grammar_tutorial2.png}
-                \caption{Compositional Structure}
-                \label{fig:AirlineA))}
-        \end{subfigure}
-        \put(-270,280){SE $\times$ LIN + SE $\times$ LIN (RQ + PER ) $\;\;\; = $} 
-        \put(-271,269){\rotatebox{90}{\Large $\Bigg\{$}} 
-        \put(-250,267){\vector(-3,-1){30}}
-        \put(-220,230){{\Large $+\;\;\;\;\;\;$}SE $\times$ (LIN $\times$ RQ + LIN $\times$ PER) $\;\;\; = $} 
-        \put(-395,165){SE {\Large $\times$ \bigg(}} 
-        \put(-5,165){\Large \bigg)} 
-        \put(-185,165){\Large $+$} 
-        \put(-230,146){\vector(0,-1){10}}
-        \put(-20,146){\line(0,-1){78}}
-        \put(-20,68){\vector(-1,0){150}}
-        \put(-251,130){\rotatebox{270}{\Large $\Bigg\{$}} 
-        \put(-235,95){\Large $\times$} 
-        \put(-191,67){\rotatebox{270}{\Large $\Bigg\{$}} 
-        \put(-175,33){\Large $\times$} 
-        \caption{a) We see the predictive posterior as a result 1000 nested MH steps on the airline data set. b) depicts a decomposition of this posterior for the structures sampled by Venture. RQ is the rational quadratic covariance function. The first line shows the global trend and denotes the rest of the structure that is shown above. In the second line, the see the periodic component on the right hand side. The left hand side denotes short term deviations both multiplied by a smoothing kernel. The third and fourth lines denote how we reach the second line: both periodic and rational quadratic covariance functions are multiplied by a linear covariance function with slope zero.}\label{fig:tutorial}
-\end{figure}
-
-\begin{figure}
-\centering
-    \includegraphics[width=\textwidth]{figs/structureCo2b.png}
-    \caption{Posterior on structure of the CO2 data. We have cut the tail of the distribution for space reasons since the number of possible structures is large. We see the final sample of the each of the 545 chains with 2000 nested steps each. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ PER $\times$ SE $+$ RQ $\times$ SE.}\label{fig:structureCo2}
-\end{figure}
-
-\begin{figure}
-\centering
-    \includegraphics[width=\textwidth]{figs/structureAirlinec.png}
-    \caption{Posterior on structure of airline data set. We have cut the tail of the distribution for space reasons since the number of possible structures is large. We see the final sample of the each of the 144 chains with 2000 nested steps each. Note that \citet{duvenaud2013structure} report LIN $\times$ SE $+$ (PER  + RQ) $\times$ SE $\times$ LIN}\label{fig:structureAir}
-\end{figure}
-
-
-\begin{figure}
-        \centering
-        \begin{subfigure}[b]{0.5\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/structureAirline_res_c.png}
-                \caption{Residuals}
-                \label{fig:res}
-        \end{subfigure}%
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.5\textwidth} \centering
-                \includegraphics[height=4.5cm]{figs/structureAirline_log_c.png}
-                \caption{Log Likelihood}
-                \label{fig:log))}
-        \end{subfigure}
-        \caption{2000 steps along the Markov Chain.}\label{fig:reslog}
-\end{figure}
-
-
-Given two additive components $\mathbf{K} = \mathbf{K_a} + \mathbf{K_b}$, one can compute the margninal of a global component of a composite kernel structure~\citep{benavoli2015gaussian} with a gaussian posterior $\mathcal{N}(f_a \mid \hat{\mu}_a,\hat{\mathbf{K}}_a)$  where:
-
-\begin{equation}
-\label{eq:marginalComponentMean}
-\hat{\bm\mu}_a   = \mathbf{K_a}(\xbf,\xbf^*)\, \mathbf{K}(\xbf^*,\xbf^*)^{-1}\, \ybf
-\end{equation}
-and covariance matrix
-\begin{equation}
-\label{eq:marginalComponentCovariance}
-\hat{\mathbf{K}}_a =   \mathbf{K_a}(\xbf,\xbf) -  \mathbf{K_a}(\xbf,\xbf^*)\mathbf{K}(\xbf^*,\xbf^*)^{-1} \mathbf{K_a}(\xbf^*,\xbf).
-\end{equation}
-\end{comment}
 Confident about our results, we can now query the data for certain structures being present. We illustrate this using the Mauna Loa data used in previous work on automated kernel discovery~\citep{duvenaud2013structure}. We assume a relatively simple hypothesis space  consisting of only four kernels, a linear, a smoothing, a periodic and a white noise kernel. In this experiment, we resort to the white noise kernel instead RQ (similar to \citep{lloyd2014automatic}).  We can now run the algorithm, compute a posterior of structures (see Fig. \ref{fig:posterior}). We can also query this posterior distribution for the marginal of certain simple structures to occur. We demonstrate this in Fig. \ref{fig:query}
 \begin{figure}
 \centering

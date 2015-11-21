@@ -8,22 +8,23 @@
 
 // prior on the number of kernels
 #\linenumber{2}#assume p_number_k = uniform_structure(n)
-#\linenumber{3}#assume sub_s = tag(quote(grammar), 0,
+#\linenumber{3}#assume subset_kernels = tag(quote(grammar), 0,
 #\linenumber{4}#                           subset(kernels, p_number_k))
 
-#\linenumber{5}#assume grammar = proc(l) {
-  // kernel composition
+
+// kernel composition
+#\linenumber{5}#assume composition = proc(l) {
 #\linenumber{6}#  if (size(l) <= 1)
 #\linenumber{7}#       { first(l) }
 #\linenumber{8}#  else { if (bernoulli()) 
-#\linenumber{9}#                   { add_funcs(first(l), grammar(rest(l))) }
-#\linenumber{10}#              else { mult_funcs(first(l), grammar(rest(l))) }
+#\linenumber{9}#                   { add_funcs(first(l), composition(rest(l))) }
+#\linenumber{10}#              else { mult_funcs(first(l), composition(rest(l))) }
 #\linenumber{11}#       }
 #\linenumber{12}#  }
                           
-#\linenumber{13}#assume K = tag(quote(grammar), 1, grammar(sub_s))
+#\linenumber{13}#assume K = tag(quote(grammar), 1, composition(subset_kernels))
 
-#\linenumber{14}#assume (f_compute f_emu) = gpmem(f_restr, K)
+#\linenumber{14}#assume (f_compute f_emu) = gpmem(f_look_up, K)
 
 // Probe all data points
 #\linenumber{15}#for n ... N
@@ -32,8 +33,8 @@
 // PERFORMING INFERENCE  
 #\linenumber{17}#infer  repeat(2000, do(
 #\linenumber{18}#                        mh(quote(grammar), one, 1),
-#\linenumber{19}#                        for kernel $\in \mathbf{K}$ 
-#\linenumber{20}# 			    mh(quote(hyper$_{kernel}$), one, 1)))
+#\linenumber{19}#                        for kernel in K: 
+#\linenumber{20}# 			    mh(quote(parameters$_{\text{kernel}}$), one, 1)))
 \end{lstlisting}
 
 \end{minipage}
