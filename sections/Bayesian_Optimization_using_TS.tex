@@ -294,6 +294,20 @@ favorable acceptance probability.
 
 
 
+Indeed, taking an action $a$ with low estimated value but high uncertainty
+serves the useful function of improving the accuracy of the estimated value
+function at points near $a$ (see Figure \ref{fig:slide2}).\footnote{
+  At least, this is true when we use a smoothing prior covariance function such
+  as the squared exponential.
+}$^,$\footnote{
+  For this reason, we consider the sensitivity of $\muhat$ to uncertainty to be
+  a desirable property; indeed, this is why we use $\muhat$ rather than the
+  exact posterior mean $\mu$.
+}
+We see a comlete probabilistic program with \gpmem\ implementing Bayesian optimization
+with Thompson Sampling below (Listing \ref{alg:bayesopt}).
+ \input{code/code_venBayesOpt.tex}
+
 
  \begin{figure}
   \setlength{\tabcolsep}{1pt} 
@@ -340,16 +354,3 @@ favorable acceptance probability.
 \put(-117,-72){\footnotesize$i = 13$}
 \caption{Top: the estimated optimum over time. Blue and Red represent optimization with uniform and Gaussian drift proposals. Black lines indicate the local optima of the true functions. Bottom: a sequence of actions. Depicted are iterations 7-12 with uniform proposals.}
 \end{figure}
-Indeed, taking an action $a$ with low estimated value but high uncertainty
-serves the useful function of improving the accuracy of the estimated value
-function at points near $a$ (see Figure \ref{fig:slide2}).\footnote{
-  At least, this is true when we use a smoothing prior covariance function such
-  as the squared exponential.
-}$^,$\footnote{
-  For this reason, we consider the sensitivity of $\muhat$ to uncertainty to be
-  a desirable property; indeed, this is why we use $\muhat$ rather than the
-  exact posterior mean $\mu$.
-}
-We see a comlete probabilistic program with \gpmem\ implementing Bayesian optimization
-with Thompson Sampling below (Listing \ref{alg:bayesopt}).
- \input{code/code_venBayesOpt.tex}
