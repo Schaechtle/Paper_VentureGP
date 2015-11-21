@@ -19,53 +19,9 @@ Neal provides a custom inference algorithm setting and evaluates it using the fo
 \begin{equation}
 f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
 \end{equation}
-We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. \gpmem\  can capture the true underlying function within only 100 MH steps on the hyper-parameters to get a good approximation for their posterior (see Fig. \ref{fig:neal}). Note that Neal devises an additional noise model and performs a large number of Hybrid-Monte Carlo and Gibbs steps.  
+We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. \gpmem\  can capture the true underlying function within only 100 MH steps on the hyper-parameters to get a good approximation for their posterior. Note that Neal devises an additional noise model and performs a large number of Hybrid-Monte Carlo and Gibbs steps.  
 \begin{comment}
  
-
-
-\begin{figure}
-        \centering
-         %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.24\textwidth} \centering
-                \includegraphics[height=3.9cm]{figs/neal_se_2final.png}
-                        \put(-76,24){\color{green} \thicklines \circle{10}}
-			\put(-28,26){\color{green} \thicklines  \circle{10}}
-			\put(-70,63){\color{green} \thicklines  \circle{10}}
-	
-                \caption{Observed}
-                \label{fig:NealAO}
-        \end{subfigure}
-         %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.24\textwidth} \centering
-                \includegraphics[height=3.9cm]{figs/neal_se_3final.png}
-                        \put(-76,24){\color{green} \thicklines \circle{10}}
-			\put(-28,26){\color{green} \thicklines  \circle{10}}
-			\put(-70,63){\color{green} \thicklines  \circle{10}}
-                \caption{Inferred}
-                \label{fig:NealAI}
-        \end{subfigure}
-        		\put(-95,45){\color{green} \thicklines \vector(1,0){20}}
-			\put(-96,37){\color{green} \thicklines \vector(1,0){20}}
-			\put(-96,78){\color{green} \thicklines \vector(1,0){20}}
-    \centering
-        \begin{subfigure}[b]{0.24\textwidth} \centering
-                \includegraphics[height=3.5cm]{figs/neal_contour_l_vs_sigma_s__marginal_before.png}
-                \caption{Before}
-                \label{fig:before}
-        \end{subfigure}%
-        ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-          %(or a blank line to force the subfigure onto a new line)
-        \begin{subfigure}[b]{0.24\textwidth} \centering
-                \includegraphics[height=3.5cm]{figs/neal_contour_l_vs_sigma_s__marginal_after.png}
-                \caption{After}
-                \label{fig:after))}
-        \end{subfigure}
-        \caption{(a) and (b) show \gpmem\ on Neal's example. Outliers are marked with green circles. After \gpmem\ observes some data-points, an arbitrary smooth trend with a high level of noise is sampled (a). After running inference on the hierarchical system of hyper-parameters we see that the posterior reflects the actual curve well (b). We see that the outliers are rejected. This is partly due to the shift in the hyper-parameters for lengthscale $\ell$ and noise $\sigma$. From a uniform/gamma prior (c) we compute a bimodal posterior (d)}\label{fig:neal}
-\end{figure}
-\end{comment}
 \begin{figure}
 \begin{subfigure}[b]{0.49\textwidth}\centering
 \begin{tabular}{ll}
@@ -96,10 +52,13 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
 \end{figure}
 
 
-We illustrate the hyper-parameters by showing a comparison between $\sigma$ (Fig. \ref{fig:neal}). We see that \gpmem\ learns the posterior distribution well, the posterior even exhibits a bimodal histogram when sampling $\sigma$ 100 times reflecting the two modes of data generation, that is normal noise and outliers. 
+\end{comment}
+
+
+
 \begin{figure}
 \input{figs/neal_tutorial.tex}
-\caption{Hyper-parameterization}
+\caption{Regression with outliers and hierarchical prior structure.}
 \label{fig:neal_tutorial}
 \end{figure}
 
