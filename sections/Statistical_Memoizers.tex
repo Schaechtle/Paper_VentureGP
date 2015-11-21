@@ -23,55 +23,25 @@ different prior distributions $P(f)$; in this paper, we deploy a Gaussian proces
 prior (implemented as \texttt{gpmem} below).  Note that we require the ability
 to sample $\ftt_\emu$ jointly at multiple inputs because the values of
 $f(\xtt_1),\ldots,f(\xtt_k)$ will in general be dependent.
-To illustrate the linguistic power of \gpmem\, consider a simple model program
-that uses \gpmem\, procedure abstraction, and a loop:
 
-\begin{minipage}{\textwidth}
-\small
-\begin{lstlisting}[frame=single,escapechar=\#,numbers=left,numbersep=5pt,numberstyle=\tiny\color{gray}]
-define choose_next_point = proc(em) { gridsearch_argmax( em) }
+In Venture, we initialize \gpmem\ as follows:
 
- // Here stats( em) is the memo table {(x_i, y_i)}.
- // Take the (x,y) pair with the largest y.
-define extract_answer = proc(em) { first(max( stats( em, second)))}
- 
- // Hyper-parameter 
-assume theta =  tag( quote( params), 0, gamma(1,1))
-assume (f_probe f_emu) =  gpmem(f, make_squaredexp(1.0, theta))
-
-for t...T:
-  f_probe( choose_next_point( f_emu)) #\label{ln:mem&em-penultimate}#
-extract_answer( f_emu)    
-\end{lstlisting}
-\end{minipage}
+    \begin{lstlisting}
+    assume K = make_squaredexp (sf, l)
+    assume (f_compute f_emu) =  gpmem( f, K))
+    \end{lstlisting}
 
 
-An equivalent model in typical statistics notation, written in a way that
-attempts to be as linguistically faithful as possible, is
-\begin{align*}
-  \s{0}f &\sim P(f) \\
-  \s{t}\xtt &= \argmax_x \s{t}f(x) \\
-  \s{t+1}f &\sim P\pn{\s{t}f \mvert \s{t}f(\s{t}\xtt) = \texttt(\ftt\ \s{t}\xtt\texttt)}.
-\end{align*}
-The linguistic constructs for abstraction are not present in
-statistics notation.  The equation $\s{t}\xtt = \argmax_x \s{t}f(x)$
-has to be inlined in statistics notation: while something like
-\[ \s{t}\xtt \sim F(\s{t}P) \]
-(where $\s{t}P$ is a probability measure, and $F$ here plays the role of
-\texttt{choose\_next\_point}) is mathematically coherent, it is not what
-statisticians would ordinarily write.  This lack of abstraction then makes
-modularity, or the easy digestion of large but finely decomposable models,
-more difficult in statistics notation.
 
 Adding a single line to the program, such as
     \begin{lstlisting}
-    infer mh( quote( params), one, 50)
+    infer mh( quote( parameters), one, 50),
     \end{lstlisting}
-after line \ref{ln:mem&em-penultimate} to infer the parameters of the
-emulator, would require a significant refactoring and elaboration of the statistics
-notation.  One basic reason is that probabilistic programs are written
-procedurally, whereas statistical notation is declarative; reasoning
-declaratively about the dynamics of a fundamentally procedural inference
+allows us perform Bayesian inference over the parameters \texttt{sf} and \text{l}. 
+Such inference can be performed without the refactoring and elaboration needed if one
+would describe the above declaratively as in traditional statistics notation. 
+In contrast to traditional statistics notation, probabilistic programs are written
+procedurally; reasoning declaratively about the dynamics of a fundamentally procedural inference
 algorithm is often unwieldy due to the absence of programming constructs
 such as loops and mutable state.
 
