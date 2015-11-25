@@ -31,7 +31,7 @@
 #\linenumber{16}#    predict f_compute(get_data_xs(n))
 
 // PERFORMING INFERENCE  
-#\linenumber{17}#infer  repeat(2000, do(
+#\linenumber{17}#infer  repeat(200, do(
 #\linenumber{18}#                        mh(quote(grammar), one, 1),
 #\linenumber{19}#                        for kernel in K: 
 #\linenumber{20}# 			    mh(quote(parameters$_{\text{kernel}}$), one, 1)))
