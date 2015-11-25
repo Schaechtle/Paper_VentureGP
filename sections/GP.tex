@@ -4,17 +4,56 @@ Let the data be pairs of real-valued scalars $\{(x_i,y_i)\}_{i=1}^n$
 \ac{GP}s present a non-parametric way to express prior knowledge on the space of possible functions $f$ modeling
 a regression relationship.
 Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
-Often one assumes the values $\ybf$ are noisily measured, that is, one only sees the values of $\ybf_\noisy = \ybf + \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$.
-In that case, the log-likelihood of a \ac{GP} is
+The joint prior distribution of training and test output is defined as 
 \begin{equation}
-\log p\pn{\ybf_\noisy \mvert \xbf} =
--\frac12 \ybf^\top (\bm{\Sigma}
-+ \sigma_\noise^2 \Ibf)^{-1} \ybf
-- \frac12\log \abs{\bm{\Sigma} + \sigma_\noise^2 \Ibf}
+\begin{bmatrix}
+\mathbf{f} \\ 
+\mathbf{\hat{f}}
+\end{bmatrix}
+\sim \mathcal{N}\bigg(
+0,
+\begin{bmatrix}
+K(\mathbf{x},\mathbf{x})& K(\mathbf{x},\mathbf{\hat{x}})\\ 
+K(\mathbf{\hat{x}},\mathbf{x})& K(\mathbf{\hat{x}},\mathbf{\hat{x}})
+\end{bmatrix}
+\bigg)
+\end{equation}
+We sample from the predictive posterior by applying Bayes rule to the multivariate Gaussian that is determined by the \ac{GP}:
+\begin{align}
+\mathbf{\hat{f}} \mid \mathbf{\hat{x}},\mathbf{x},\mathbf{f} &
+\sim \mathcal{N}(
+K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}\mathbf{f},
+K(\mathbf{\hat{x}},\mathbf{\hat{x}}) -K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}K(\mathbf{x},\mathbf{\hat{x}})\\
+& = \mathcal{N}(\bm{\hat{\mu}},\mathbf{\hat{K}})
+\end{align}
+
+Often one assumes the values $\ybf$ are noisily measured, that is, one only sees the values of $\ybf_\noisy = \mathbf{f}+ \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$. This noise term can be absorbed into the covariance matrix $\mathbf{K}(\mathbf{x},\mathbf{x})$ which in the following, we will write as $\mathbf{K}$ for readability. The log-likelihood of a \ac{GP} can then be written as:
+\begin{equation}
+\label{eq:gplogdens}
+\log P(\mathbf{f} \mid \xbf) =
+-\frac12 \ybf^\top 
+\mathbf{K}^{-1} \ybf
+- \frac12\log \abs{\mathbf{K}}
 - \frac{n}{2}\log 2\pi
 \end{equation}
 where $n$ is the number of data points.
-Both log-likelihood and predictive posterior can be computed efficiently in a Venture SP with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} resulting in a computational complexity of $\mathcal{O}(n^3)$ in the number of data points.
+Both log-likelihood and predictive posterior can be computed efficiently in a Venture SP with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} where 
+we compute (\ref{eq:gplogdens}) as
+\begin{equation}
+\log(P(\mathbf{f}\mid \mathbf{x})\coloneqq - \frac{1}{2} \mathbf{f}^\top \bm{\alpha} - \sum_i \log \mathbf{L}_{ii} - \frac{n}{2} \log 2 \pi
+\end{equation}
+where 
+\begin{equation}
+\label{eq:chol_L}
+\mathbf{L} \coloneqq \text{cholesky}(\mathbf{K})
+\end{equation}
+and 
+\begin{equation}
+\label{eq:alpha}
+\bm{\alpha} \coloneqq  \mathbf{L}^\top \backslash(\mathbf{L} \backslash \mathbf{f}). 
+\end{equation}
+This results in a computational complexity of $\mathcal{O}(n^3)$ in the number of data points for
+sampling with a complexity of $n^3/6$ for (\ref{eq:chol_L}) an $n^2/2$ for (\ref{eq:alpha}). 
 
 
 
@@ -74,60 +113,3 @@ at once as in the second view.  Thus, it stands to reason that any
 computationally implementable notion of ``nonparametric random functions'' must
 involve incremental random choices in one way or another, and Gaussian processes
 in Venture are no exception.
-\begin{comment}
-Behind the scenes, Venture attaches a state $D = (\xbf_\past, \ybf_\past)$ to
-each procedure created by \texttt{make\_gp}, where $\xbf_\past$ is a vector of
-all past inputs to $\gtt$ in the current trace, and $\ybf_\past$ is the
-corresponding vector of outputs.  (The state $D$ is updated each time an
-invocation of $\gtt$ is added to or removed from the current trace.)  Thus, the
-incremental random choices made by a GP $\gtt$ in Venture are simply samples
-from the conditional distribution $P\pn{\gtt \mvert D}$.  That is, if $\gtt$ was
-initialized as \texttt{make\_gp mean cov)} and has accrued state $D =
-(\xbf_\past, \ybf_\past)$, then
-\[
-\texttt{(g }\xbf\texttt{)}
-\sim
-P\pn{
-  \texttt{(g}_0\ \xbf\texttt{)}
-  \mvert
-  \texttt{(g}_0\ \xbf_\past\texttt{)} = \ybf_\past
-}, \qquad\text{where $\gtt_0 \sim \texttt{make\_gp mean cov)}$}.
-\]
-
- 
-
-
-Statefully represented random functions highlight the difference between
-\texttt{predict} and \texttt{sample} (see Section \ref{sec:interactivity}).  To
-illustrate, consider the following program:
-
-\begin{mdframed}
-\begin{lstlisting}[language=Venture,escapechar=\#]
-assume zero = make_const_func( 0.0)
-assume se =  make_squaredexp( 1.0, 1.0)
-assume g = make_gp( zero, se)
-
-call_back( draw_gp_curves( g( ...)))
-#\includegraphics[width=10cm]{figs/interactive_gp_prior.png}#
-sample( g( array(1 2 3)))
-\\ [-1.04331626 -0.72016875 -0.44525212]
-call_back( draw_gp_curves( g( ...)))
-#\includegraphics[width=10cm]{figs/interactive_gp_after_sample.png}#
-predict( g( array(1 2 3)))
-\\ [ 0.55736593  0.09784888  0.56553757]
-call_back( draw_gp_curves( g( ...)))
-#\includegraphics[width=10cm]{figs/interactive_gp_after_predict.png}#
-\end{lstlisting}
-\end{mdframed}
-(The callback \texttt{draw\_gp\_curves} draws a cloud of curves sampled from
-$\gtt$.)  The \texttt{sample} directive does not affect the state of $\gtt$, so
-the distribution of $\gtt$ after the \texttt{sample} is the same as the prior.
-The \texttt{predict}, however, does affect the state; the distribution of $\gtt$
-after the \texttt{predict} directive is conditioned on the values returned by
-$\gtt$ inside the directive.  This explains why, in the final plot, all curves
-go through the points returned by the previous \texttt{predict} directive, and
-do not go through the points returned by the \texttt{sample} directive (which
-are marked with black dots for reference).
-
-
-\end{comment}
