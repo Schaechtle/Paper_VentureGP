@@ -1,4 +1,6 @@
-The probability of the hyper-parameters of a GP as defined above and given covariance function structure $\mathbf{K}$ is:
+In a Bayesian treatment of  hyper-parameter learning for \ac{GP}s,
+we can write the probability of the hyper-parameters of a GP as
+defined above, given covariance function $\mathbf{K}$ as:
 \begin{equation}
 \label{eq:hyperProbability}
 P(\bm{\theta} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{K})P(\bm{\theta} \mid  \mathbf{K})}{P(\mathbf{D} \mid \mathbf{K})}.
