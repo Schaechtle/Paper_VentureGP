@@ -12,7 +12,7 @@ using a stochastic grammar  (see Fig. \ref{fig:schema}).
 \caption{(a) Graphical description of Bayesian GP structure learning. (b) Composite structure. (c) The natural language interpretation of the structure.}\label{fig:schema}
 \end{figure}
 
-We deploy a probabilistic context free grammar for our prior on structures. An input of non-composite kernels (base kernels) is supplied to generate a posterior distributions of composite structure to express local and global aspects of the data.
+The stochastic grammar models a prior on different structural compositions of the covariance function. An input of non-composite kernels (base kernels) is supplied to generate a posterior distributions of composite structure to express local and global aspects of the data.
 
 
 We approximate the following intractable integrals of the expectation for the prediction:
@@ -43,7 +43,7 @@ P(s \mid n) = \frac{n!}{ \mid s \mid !},
 \end{equation}
 and the probability of sampling a global or a local structure, which is given by a binomial distribution: 
 \begin{equation}
-P(\bm{\Omega} \mid s,n)= {n \choose r}  p_{+\times}^k (1 - p_{+\times})^{n-k}.
+P(\bm{\Omega} \mid s,n)= {n \choose r}  p_{+\times}^r (1 - p_{+\times})^{n-r}.
 \end{equation}
 
 
@@ -52,10 +52,14 @@ Many equivalent covariance structures can be sampled due to covariance function 
 
 \input{code/code_venstructure.tex}
 
-We defined the space of covariance structures in a way that allows us to produce results coherent with 
-work presented in Automatic Statistician. For example, for the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Our most frequent sample is identical with the highest scoring result reported in previous work using a search-and-score method~\citep{duvenaud2013structure} for the CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the predictive capability is comparable. However, the components factor in a different way due to different parameterization of the individual base kernels. We see that the most probable alternatives for a structural description both recover the data dynamics (Fig. \ref{fig:posterior_twosamples} for the airline data set).
+We defined a simmple space of covariance structures in a way that allows us to produce results coherent with 
+work presented in Automatic Statistician. We illustrate results in Fig. \ref{fig:posterior} and \ref{fig:posterior_airline} using the Mauna Loa  CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Both datasets served as illustration in the Automatic Statistician project. Previous work on automated kernel discovery~\citep{duvenaud2013structure} illustrated the Mauna Loa data using an RQ kernel.
+We resort to the white noise kernel instead RQ (similar to \citep{lloyd2014automatic}).
 
-Confident about our results, we can now query the data for certain structures being present. We illustrate this using the Mauna Loa data used in previous work on automated kernel discovery~\citep{duvenaud2013structure}. We assume a relatively simple hypothesis space  consisting of only four kernels, a linear, a smoothing, a periodic and a white noise kernel. In this experiment, we resort to the white noise kernel instead RQ (similar to \citep{lloyd2014automatic}).  We can now run the algorithm, compute a posterior of structures (see Fig. \ref{fig:posterior} and \ref{fig:posterior_airline}). We can also query this posterior distribution for the marginal of certain simple structures to occur. We demonstrate this in Fig. \ref{fig:query}
+In contrast to what previous work has presented, we compute a posterior on structures. This allows us to gain valuable insight into the data that was previously unavailable. 
+We can query the data for the probability of certain structures to hold true. For example, we could be interested in whether or not a trend as is present in the data.
+We can also formulate queries using logical operators such as AND and OR. This provides us with a rich language to ask questions about our time series data and let the data speak for itself for finding the answers. We demonstrate this in Fig \ref{fig:query}.
+
 \begin{figure}
 \centering
 \input{figs/structure_posterior.tex}
