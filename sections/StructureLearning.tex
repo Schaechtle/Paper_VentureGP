@@ -17,12 +17,12 @@ We deploy a probabilistic context free grammar for our prior on structures. An i
 
 We approximate the following intractable integrals of the expectation for the prediction:
 \begin{equation}
-\mathbb{E}[y^* \mid x^*,\mathbf{D},\mathbf{K}] =\iint f(x^*,\bm{\theta},\mathbf{K})\,P(\bm{\theta} \mid \mathbf{D,\mathbf{K}})\,P(\mathbf{K}|\bm{\Omega},s,n) \; \mathbf{d} \bm{\theta} \mathbf{d} \mathbf{K}.  
+\mathbb{E}[\hat{f} \mid \hat{x},\mathbf{D},\mathbf{K}] =\iint f(\hat{x},\bm{\theta},\mathbf{K})\,P(\bm{\theta} \mid \mathbf{D,\mathbf{K}})\,P(\mathbf{K}|\bm{\Omega},s,n) \; \mathbf{d} \bm{\theta} \mathbf{d} \mathbf{K}.  
 \end{equation}
 
 This is done by sampling from the posterior probability distribution of the hyper-parameters and the possible kernel:
 \begin{equation}
-y^* \approx \frac{1}{T} \sum^T_{t=1} f(x^* | \bm{\theta}^{(t)},\mathbf{K}^{(t)}). 
+\hat{f} \approx \frac{1}{T} \sum^T_{t=1} f(\hat{x} | \bm{\theta}^{(t)},\mathbf{K}^{(t)}). 
 \end{equation}
 
 

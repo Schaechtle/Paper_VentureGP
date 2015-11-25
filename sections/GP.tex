@@ -1,7 +1,5 @@
-
-Let the data be pairs of real-valued scalars $\{(x_i,y_i)\}_{i=1}^n$
-(complete data will be denoted by column vectors $\mathbf{x}$, $\mathbf{y}$).
-\ac{GP}s present a non-parametric way to express prior knowledge on the space of possible functions $f$ modeling
+\ac{GP}s are a Bayesian method for regression. We consider the regression input to be real-valued scalars $x_i$ and the regression output as the value of a function $f$ at $x_i$. The complete training data will be denoted by column vectors $\mathbf{x}$ and $\mathbf{f}$. Unseen test data is denoted with $\mathbf{\hat{x}}$ and $\mathbf{\hat{f}}$.
+\ac{GP}s present a non-parametric way to express prior knowledge on the space of all possible functions $f$ modeling
 a regression relationship.
 Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
 The joint prior distribution of training and test output is defined as 
@@ -16,7 +14,7 @@ The joint prior distribution of training and test output is defined as
 K(\mathbf{x},\mathbf{x})& K(\mathbf{x},\mathbf{\hat{x}})\\ 
 K(\mathbf{\hat{x}},\mathbf{x})& K(\mathbf{\hat{x}},\mathbf{\hat{x}})
 \end{bmatrix}
-\bigg)
+\bigg).
 \end{equation}
 We sample from the predictive posterior by applying Bayes rule to the multivariate Gaussian that is determined by the \ac{GP}:
 \begin{align}
@@ -27,7 +25,7 @@ K(\mathbf{\hat{x}},\mathbf{\hat{x}}) -K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x
 & = \mathcal{N}(\bm{\hat{\mu}},\mathbf{\hat{K}})
 \end{align}
 
-Often one assumes the values $\ybf$ are noisily measured, that is, one only sees the values of $\ybf_\noisy = \mathbf{f}+ \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$. This noise term can be absorbed into the covariance matrix $\mathbf{K}(\mathbf{x},\mathbf{x})$ which in the following, we will write as $\mathbf{K}$ for readability. The log-likelihood of a \ac{GP} can then be written as:
+Often one assumes the observed regression output is noisily measured, that is, one only sees the values of $\ybf_\noisy = \mathbf{f}+ \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$. This noise term can be absorbed into the covariance matrix $\mathbf{K}(\mathbf{x},\mathbf{x})$ which in the following, we will write as $\mathbf{K}$ for readability. The log-likelihood of a \ac{GP} can then be written as:
 \begin{equation}
 \label{eq:gplogdens}
 \log P(\mathbf{f} \mid \xbf) =
@@ -97,7 +95,7 @@ x_{N+n}$) will be distributed according to the joint conditional distribution
   P\pn{\big.
     \texttt(\gtt\ x_{N+1}\texttt), \ldots, \texttt(\gtt\ x_{N+n}\texttt)
     \mvert
-    \texttt(\gtt\ x_i\texttt) = y_i \text{ for $i=1,\ldots,N$}}.
+    \texttt(\gtt\ x_i\texttt) = f_i \text{ for $i=1,\ldots,N$}}.
 \]
 In the second view, $\gtt$ is a randomly chosen deterministic function, chosen
 from the space of all deterministic real-valued functions; in this view, the
@@ -111,5 +109,5 @@ values of the calls could have arbitrarily high entropy, it is not
 computationally possible in finite time to choose the entire function $\gtt$ all
 at once as in the second view.  Thus, it stands to reason that any
 computationally implementable notion of ``nonparametric random functions'' must
-involve incremental random choices in one way or another, and Gaussian processes
+involve incremental random choices in one way or another, and \ac{GP}s
 in Venture are no exception.
