@@ -2,6 +2,18 @@
 \ac{GP}s present a non-parametric way to express prior knowledge on the space of all possible functions $f$ modeling
 a regression relationship.
 Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
+\begin{definition}
+A Gaussian process (GP) is a collection of random variables, any
+finite number of which have a joint Gaussian distribution~\citep[][chapter 2]{rasmussen2006gaussian}.
+\end{definition}
+This collection of random variables represent the value of the function $f(x)$ at location $x$.
+The \ac{GP} determines a Gaussian distribution over possible functions 
+which is determined by a \ac{GP} mean function $m(x)$ and a covariance function or kernel $k(x,x^\prime)$.
+Without loss of generality, we can set $m(x)=0$. We write $\mathbf{K}(\mathbf{x},\mathbf{x}^\prime)$
+for a covariance matrix determined by an input vector $\mathbf{x}$ and a covariance function $k$.
+ 
+
+
 The joint prior distribution of training and test output is defined as 
 \begin{equation}
 \begin{bmatrix}
@@ -16,14 +28,67 @@ K(\mathbf{\hat{x}},\mathbf{x})& K(\mathbf{\hat{x}},\mathbf{\hat{x}})
 \end{bmatrix}
 \bigg).
 \end{equation}
-We sample from the predictive posterior by applying Bayes rule to the multivariate Gaussian that is determined by the \ac{GP}:
+Since the joint distribution is Gaussian, the conditional is Gaussian, too
+\begin{equation}
+\label{eq:simple_posterior}
+P(\hat{\mathbf{f}} \mid \mathbf{f})  = \frac{P(\hat{\mathbf{f}}, \mathbf{f}) }{P(\mathbf{f})}.
+\end{equation}
+This predictive posterior can be written as:
+
+\begin{equation}
+\label{eq:mackay_posterior}
+P(\hat{\mathbf{f}} \mid \mathbf{f}) 
+\propto \exp\bigg\{
+\begin{bmatrix}
+\mathbf{f} \; 
+\mathbf{\hat{f}}
+\end{bmatrix}
+\begin{bmatrix}
+K(\mathbf{x},\mathbf{x})& K(\mathbf{x},\mathbf{\hat{x}})\\ 
+K(\mathbf{\hat{x}},\mathbf{x})& K(\mathbf{\hat{x}},\mathbf{\hat{x}})
+\end{bmatrix}^{-1}
+\begin{bmatrix}
+\mathbf{f} \\ 
+\mathbf{\hat{f}}
+\end{bmatrix}
+\bigg\}
+\end{equation}
+Instead of computing the inverse as above, we resort to write 
+
+\begin{equation}
+\begin{bmatrix}
+K(\mathbf{x},\mathbf{x})& K(\mathbf{x},\mathbf{\hat{x}})\\ 
+K(\mathbf{\hat{x}},\mathbf{x})& K(\mathbf{\hat{x}},\mathbf{\hat{x}})
+\end{bmatrix}^{-1}
+=
+\begin{bmatrix}
+\mathbf{M}& \mathbf{m}\\ 
+\mathbf{m}^\top & \mathbf{\hat{K}}^{-1} 
+\end{bmatrix}
+\end{equation}
+where we use using partionened inverse equations (\citealp*{barnett1979matrix} following \citealp*{mackay1998introduction}) with:
 \begin{align}
-\mathbf{\hat{f}} \mid \mathbf{\hat{x}},\mathbf{x},\mathbf{f} &
-\sim \mathcal{N}(
-K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}\mathbf{f},
-K(\mathbf{\hat{x}},\mathbf{\hat{x}}) -K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}K(\mathbf{x},\mathbf{\hat{x}})\\
-& = \mathcal{N}(\bm{\hat{\mu}},\mathbf{\hat{K}})
+\mathbf{\hat{K}} =& K(\mathbf{\hat{x}},\mathbf{\hat{x}}) -K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}K(\mathbf{x},\mathbf{\hat{x}}),\\
+\mathbf{m} =& -\mathbf{\hat{K}}^{-1} \mathbf{K}(\mathbf{x},\mathbf{x}^{-1}) K(\mathbf{x},\mathbf{\hat{x}}),\text{ and}\\
+\mathbf{M} =&  \mathbf{K}(\mathbf{x},\mathbf{x}^{-1}) + \frac{1}{\mathbf{\hat{K}}}\mathbf{m}\mathbf{m}^\top.
 \end{align}
+by substituting in \ref{eq:mackay_posterior}, we can write:
+\begin{equation}
+P(\hat{\mathbf{f}} \mid \mathbf{f}) 
+\propto \frac{1}{Z} 
+\exp\bigg\{
+\frac{(\mathbf{\hat{f}} - (K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}\mathbf{f}))^2}{2(K(\mathbf{\hat{x}},\mathbf{\hat{x}}) -K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}K(\mathbf{x},\mathbf{\hat{x}}))}
+\bigg\}.
+\end{equation} 
+In this expression, we simplify 
+\begin{equation}
+\bm{\hat{\mu}} = K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}\mathbf{f}
+\end{equation}
+so that for sampling from the predictive posterior, we can write:
+\begin{equation}
+\mathbf{\hat{f}} \mid \mathbf{\hat{x}},\mathbf{x},\mathbf{f} 
+\sim \mathcal{N}(\bm{\hat{\mu}},\mathbf{\hat{K}}).
+\end{equation}
 
 Often one assumes the observed regression output is noisily measured, that is, one only sees the values of $\ybf_\noisy = \mathbf{f}+ \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$. This noise term can be absorbed into the covariance matrix $\mathbf{K}(\mathbf{x},\mathbf{x})$ which in the following, we will write as $\mathbf{K}$ for readability. The log-likelihood of a \ac{GP} can then be written as:
 \begin{equation}
