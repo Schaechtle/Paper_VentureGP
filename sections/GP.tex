@@ -6,7 +6,8 @@ Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian
 A Gaussian process (GP) is a collection of random variables, any
 finite number of which have a joint Gaussian distribution~\citep[][chapter 2]{rasmussen2006gaussian}.
 \end{definition}
-This collection of random variables represent the value of the function $f(x)$ at location $x$.
+The collection of random variables $\br{f(x)}$ (indexed by $x$) represents the
+values of the function $f$ at each location $x$.
 The \ac{GP} determines a Gaussian distribution over possible functions 
 which is determined by a \ac{GP} mean function $m(x)$ and a covariance function or kernel $k(x,x^\prime)$.
 Without loss of generality, we can set $m(x)=0$. We write $\mathbf{K}(\mathbf{x},\mathbf{x}^\prime)$
@@ -122,7 +123,8 @@ sampling with a complexity of $n^3/6$ for (\ref{eq:chol_L}) an $n^2/2$ for (\ref
 
 The covariance function (or kernel) of a \ac{GP} governs high-level properties of the observed data such as linearity, periodicity and smoothness.
 It comes with few free parameters that we call hyper-parameters.
-Adjusting these results in minor changes, for example with regards to when two data points are treated similar.
+Adjusting the hyper-parameters changes non-qualitative attributes such as length
+scales while preserving the qualitative properties of the distribution.
 More drastically different covariance functions are achieved by changing the structure of the covariance function itself.
 %A different type could be a linear covariance function:
 %\begin{equation}
