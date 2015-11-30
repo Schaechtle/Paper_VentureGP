@@ -11,15 +11,16 @@ specific set of inputs $x$.
 Modelling the data set with a \ac{GP} then amounts to trying to learn
 a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which
 extends $f$ to its full domain. We can then the incorporate
-observations in two different ways: we either are either told that the
-at a point \texttt{x} the value is \texttt{y}:
+observations in two different ways: we can either constrain the
+output of the emulator at a point \texttt{x} to a known value \texttt{y}:
 
     \begin{lstlisting}
-    observe f_emu ( x) = y
+    observe f_emu(x) = y
     \end{lstlisting}
-Or we express this as
+or request a computation, which has the effect of constraining the
+emulator to the copmuted value
     \begin{lstlisting}
-    predict f_compute ( x)
+    predict f_compute(x)
     \end{lstlisting}
 
 The second expression has at least two benefits: (i) readability (in
