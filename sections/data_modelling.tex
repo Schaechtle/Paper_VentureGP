@@ -1,10 +1,19 @@
 \label{sec:special-case-gpmem}
-We implement \gpmem\ by memoizing a target procedure in a wrapper that remembers previously computed values.
+We implement \gpmem\ by memoizing a target procedure in a wrapper that
+remembers previously computed values.
 This comes with interesting implications:
-from the standpoint of computation, a data set of the form $\{(x_i, y_i)\}$ can be thought of as a function $y = f_{\text{look-up}}(x)$, where $f_{\text{look-up}}$ is restricted to only allow evaluation at a specific set of inputs $x$.
+from the standpoint of computation, a data set of the form $\{(x_i,
+y_i)\}$ can be thought of as a function $y = f_{\text{look-up}}(x)$,
+where $f_{\text{look-up}}$ is restricted to only allow evaluation at a
+specific set of inputs $x$.
 
 
-Modelling the data set with a \ac{GP} then amounts to trying to learn a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which extends $f$ to its full domain. We can then the incorporate observations in two different ways: we either are either told that the at a point \texttt{x} the value is \texttt{y}:
+Modelling the data set with a \ac{GP} then amounts to trying to learn
+a smooth function $f_\emu$ (``emu'' stands for ``emulator'') which
+extends $f$ to its full domain. We can then the incorporate
+observations in two different ways: we either are either told that the
+at a point \texttt{x} the value is \texttt{y}:
+
     \begin{lstlisting}
     observe f_emu ( x) = y
     \end{lstlisting}
@@ -12,21 +21,36 @@ Or we express this as
     \begin{lstlisting}
     predict f_compute ( x)
     \end{lstlisting}
-The second expression has at least two benefits: (i) readability (in some cases), and (ii) amenability to active learning.
-As to (i), the statistical code of creating a Gaussian process is replaced with a memoization-like idiom, which will be more familiar to programmers.
-As to (ii), when using \gpmem, it is quite easy to decide incrementally which data point to sample next: for example, the loop from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in which the next index \texttt{i} is chosen by a supplied decision rule.
-In this way, we could use \gpmem\ to perform online learning using only a subset of the available data.
 
-We illustrate the use of \gpmem\ in this context in a tutorial in Fig. \ref{fig:gpmem_tutorial}.
+The second expression has at least two benefits: (i) readability (in
+some cases), and (ii) amenability to active learning.
+As to (i), the statistical code of creating a Gaussian process is
+replaced with a memoization-like idiom, which will be more familiar to
+programmers.
+As to (ii), when using \gpmem, it is quite easy to decide
+incrementally which data point to sample next: for example, the loop
+from \texttt{x[1]} to \texttt{x[n]} could be replaced by a loop in
+which the next index \texttt{i} is chosen by a supplied decision rule.
+In this way, we could use \gpmem\ to perform online learning using
+only a subset of the available data.
+
+We illustrate the use of \gpmem\ in this context in a tutorial in
+Fig. \ref{fig:gpmem_tutorial}.
 
 \begin{figure}
-\input{figs/gpmem_tutorial.tex} 
+\input{figs/gpmem_tutorial.tex}
 %\put(-245,10){\line(1,0){200}}
 \put(-33,77){\color{ForestGreen}\thicklines \vector(0,-1){15}}
 \put(-96,6){\color{ForestGreen}\thicklines \vector(0,-1){15}}
 \put(-48,-63){\thicklines \vector(0,-1){15}}
 \put(-84,-43){\thicklines \vector(0,-1){15}}
 \put(-73,-68){\thicklines \vector(0,1){15}}
-\caption{\gpmem\ tutorial. The top shows a schematic of \gpmem. \texttt{f\_compute} probes an outside resource. This can be expensive (top left). Every probe is memoized and improves the \ac{GP}-based emulator. Below the schematic we see a movie of the evolution of \gpmem's state of believe of the world given certain Venture directives.}
+\caption{\gpmem\ tutorial. The top shows a schematic of \gpmem.
+  \texttt{f\_compute} probes an outside resource.
+  This can be expensive (top left).
+  Every probe is memoized and improves the \ac{GP}-based
+  emulator. Below the schematic we see a movie of the evolution
+  of \gpmem's state of believe of the world given certain Venture
+  directives.}
 \label{fig:gpmem_tutorial}
 \end{figure}
