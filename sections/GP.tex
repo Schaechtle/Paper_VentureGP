@@ -10,8 +10,13 @@ The collection of random variables $\br{f(x)}$ (indexed by $x$) represents the
 values of the function $f$ at each location $x$.
 The \ac{GP} determines a Gaussian distribution over possible functions 
 which is determined by a \ac{GP} mean function $m(x)$ and a covariance function or kernel $k(x,x^\prime)$.
-Without loss of generality, we can set $m(x)=0$. We write $\mathbf{K}(\mathbf{x},\mathbf{x}^\prime)$
-for a covariance matrix determined by an input vector $\mathbf{x}$ and a covariance function $k$.
+We are going to derive expressions for the conditional mean and covariance of a
+GP.  To simplify the calculations, we will assume prior mean zero; once the
+derivation is done, this assumption can easily be relaxed via translation.
+
+We write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that
+is, the covaricance between the random vectors $\{f(x\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in
+\xbf'}$.
  
 
 
@@ -101,15 +106,30 @@ Often one assumes the observed regression output is noisily measured, that is, o
 - \frac{n}{2}\log 2\pi
 \end{equation}
 where $n$ is the number of data points.
-Both log-likelihood and predictive posterior can be computed efficiently in a Venture SP with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian} where 
-we compute (\ref{eq:gplogdens}) as
+Both log-likelihood and predictive posterior can be computed efficiently using a \ac{SP} in Venture~\citep{mansinghka2014venture}
+with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian}. 
+We write the Cholesky factorization as 
+$\mathbf{L} \coloneqq \text{chol}(\mathbf{K})$ when
+:
+\begin{equation}
+\mathbf{K} = LL^\top
+\end{equation}
+where L is a lower triangular matrix. This allows us to compute the inverse of a covariance matrix as
+\begin{equation}
+\mathbf{K}^{-1} = (\mathbf{L}^{-1})^\top (\mathbf{L}^{-1})
+\end{equation}
+and its determinant as 
+\begin{equation}
+det(\mathbf{K}) = det(\mathbf{L})^2
+\end{equation}
+We compute (\ref{eq:gplogdens}) as
 \begin{equation}
 \log(P(\mathbf{f}\mid \mathbf{x})\coloneqq - \frac{1}{2} \mathbf{f}^\top \bm{\alpha} - \sum_i \log \mathbf{L}_{ii} - \frac{n}{2} \log 2 \pi
 \end{equation}
 where 
 \begin{equation}
 \label{eq:chol_L}
-\mathbf{L} \coloneqq \text{cholesky}(\mathbf{K})
+\mathbf{L} \coloneqq \text{chol}(\mathbf{K})
 \end{equation}
 and 
 \begin{equation}
