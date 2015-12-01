@@ -52,12 +52,12 @@ Many equivalent covariance structures can be sampled due to covariance function 
 
 \input{code/code_venstructure.tex}
 
-We defined a simmple space of covariance structures in a way that allows us to produce results coherent with 
-work presented in Automatic Statistician. We illustrate results in Fig. \ref{fig:posterior} and \ref{fig:posterior_airline} using the Mauna Loa  CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Both datasets served as illustration in the Automatic Statistician project. Previous work on automated kernel discovery~\citep{duvenaud2013structure} illustrated the Mauna Loa data using an RQ kernel.
-We resort to the white noise kernel instead RQ (similar to \citep{lloyd2014automatic}).
+We defined a simple space of covariance structures in a way that allows us to produce results coherent with 
+work presented in Automatic Statistician. We illustrate results in Fig. \ref{fig:posterior} and \ref{fig:posterior_airline} using the Mauna Loa  CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Both datasets served as illustrations in the Automatic Statistician project. Previous work on automated kernel discovery~\citep{duvenaud2013structure} illustrated the Mauna Loa data using an RQ kernel.
+We resort to the white noise kernel instead of RQ (similar to \citep{lloyd2014automatic}).
 
 In contrast to what previous work has presented, we compute a posterior on structures. This allows us to gain valuable insight into the data that was previously unavailable. 
-We can query the data for the probability of certain structures to hold true. For example, we could be interested in whether or not a trend as is present in the data.
+We can query the data for the probability of certain structures to hold true. For example, we could be interested in whether or not a trend is present in the data.
 We can also formulate queries using logical operators such as AND and OR. This provides us with a rich language to ask questions about our time series data and let the data speak for itself for finding the answers. We demonstrate this in Fig \ref{fig:query}.
 
 \begin{figure}
