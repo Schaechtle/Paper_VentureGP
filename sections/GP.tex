@@ -8,93 +8,76 @@ finite number of which have a joint Gaussian distribution~\citep[][chapter 2]{ra
 \end{definition}
 The collection of random variables $\br{f(x)}$ (indexed by $x$) represents the
 values of the function $f$ at each location $x$.
-The \ac{GP} determines a Gaussian distribution over possible functions 
-which is determined by a \ac{GP} mean function $m(x)$ and a covariance function or kernel $k(x,x^\prime)$.
-We are going to derive expressions for the conditional mean and covariance of a
-GP.  To simplify the calculations, we will assume prior mean zero; once the
-derivation is done, this assumption can easily be relaxed via translation.
+We write $f \sim \ac{GP}(m,k)$, where $m$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
+That is, $m(x)$ is the prior mean of the random variable $f(x)$, and $k(x,x')$ is the prior covariance of the random variables $f(x)$ and $f(x')$.
+Throughout, we write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that is, the covaricance between the random vectors $\{f(x)\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in \xbf'}$.
 
-We write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that
-is, the covaricance between the random vectors $\{f(x\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in
-\xbf'}$.
- 
+We now compute the predictive posterior distribution of test output $\hat\fbf := f(\hat\xbf)$ conditioned on training data $\fbf := f(\xbf)$.  (Here $\xbf$ and $\hat\xbf$ are known constant vectors, and we are conditioning on an observed value of $\fbf$.)  To simplify the calculation, we will assume the prior mean $m$ is identically zero; once the derivation is done, this assumption can be easily relaxed via translation.
 
-
-The joint prior distribution of training and test output is defined as 
+The predictive posterior can be computed by first forming the joint density when both training and test data are treated as randomly chosen from the prior, then fixing the value of $\fbf$ to a constant.  To start, let
+\[
+  \Sigma := \bmat{
+    K(\xbf, \xbf)     & K(\xbf, \hat\xbf)     \\
+    K(\hat\xbf, \xbf) & K(\hat\xbf, \hat\xbf)
+  }
+  \text{ and }
+  \Sigma^{-1} =: \bmat{
+    M_{11} & M_{12} \\
+    M_{21} & M_{22}
+  }.
+\]
+We then have
+\[
+  P(\fbf, \hat\fbf)
+  \propto
+  \exp\br{
+    -\frac12
+    \bmat{\fbf^\top & \hat\fbf^\top}
+    \bmat{M_{11} & M_{12} \\ M_{21} & M_{22}}
+    \bmat{\fbf \\ \hat\fbf}
+  }.
+\]
+Treating $\fbf$ as a fixed constant, we obtain
+\[
+  P\pn{\hat\fbf \mvert \fbf}
+  \propto
+  P(\fbf, \hat\fbf)
+  \propto
+  \exp\br{
+    -\frac12 \hat\fbf^\top M_{22} \hat\fbf
+    - \hbf^\top \hat\fbf
+  },
+\]
+where $\hbf = M_{21} \fbf$ is a constant vector.  Thus $P(\hat\fbf | \fbf)$ is Gaussian,
 \begin{equation}
-\begin{bmatrix}
-\mathbf{f} \\ 
-\mathbf{\hat{f}}
-\end{bmatrix}
-\sim \mathcal{N}\bigg(
-0,
-\begin{bmatrix}
-K(\mathbf{x},\mathbf{x})& K(\mathbf{x},\mathbf{\hat{x}})\\ 
-K(\mathbf{\hat{x}},\mathbf{x})& K(\mathbf{\hat{x}},\mathbf{\hat{x}})
-\end{bmatrix}
-\bigg).
+  P\pn{\hat\fbf \mvert \fbf} \sim \Ncal(\hat\mubf, \hat\Kbf),
 \end{equation}
-Since the joint distribution is Gaussian, the conditional is Gaussian, too
-\begin{equation}
-\label{eq:simple_posterior}
-P(\hat{\mathbf{f}} \mid \mathbf{f})  = \frac{P(\hat{\mathbf{f}}, \mathbf{f}) }{P(\mathbf{f})}.
-\end{equation}
-This predictive posterior can be written as:
+with covariance matrix $\hat\Kbf = M_{22}^{-1}$.  To find its mean $\hat\mubf$, we note that $P_{\hat\fbf|\fbf}(\hat\fbf + \hat\mubf)$ is Gaussian with the same covariance as $P(\hat\fbf | \fbf)$, but its exponent has no linear term:
+\begin{align*}
+  P_{\hat\fbf|\fbf} \pn{\hat\fbf + \hat\mubf \mvert \fbf}
+  &\propto
+  \exp\br{
+    -\frac12 (\hat\fbf + \hat\mubf)^\top M_{22} (\hat\fbf + \hat\mubf)
+    - \hbf^\top (\hat\fbf + \hat\mubf)
+  } \\
+  &\propto
+  \exp\br{
+    -\frac12 \hat\fbf^\top M_{22} \hat\fbf
+    - \underbrace{(\hbf + M_{22} \hat\mubf)^\top}_{\text{must be $0$}} \hat\fbf
+  }.
+\end{align*}
+Thus $\hbf = -M_{22} \hat\mubf$ and $\hat\mubf = -M_{22}^{-1} \hbf = -M_{22}^{-1} M_{21} \fbf$.
 
-\begin{equation}
-\label{eq:mackay_posterior}
-P(\hat{\mathbf{f}} \mid \mathbf{f}) 
-\propto \exp\bigg\{
-\begin{bmatrix}
-\mathbf{f} \; 
-\mathbf{\hat{f}}
-\end{bmatrix}
-\begin{bmatrix}
-K(\mathbf{x},\mathbf{x})& K(\mathbf{x},\mathbf{\hat{x}})\\ 
-K(\mathbf{\hat{x}},\mathbf{x})& K(\mathbf{\hat{x}},\mathbf{\hat{x}})
-\end{bmatrix}^{-1}
-\begin{bmatrix}
-\mathbf{f} \\ 
-\mathbf{\hat{f}}
-\end{bmatrix}
-\bigg\}
-\end{equation}
-Instead of computing the inverse as above, we resort to write 
-
-\begin{equation}
-\begin{bmatrix}
-K(\mathbf{x},\mathbf{x})& K(\mathbf{x},\mathbf{\hat{x}})\\ 
-K(\mathbf{\hat{x}},\mathbf{x})& K(\mathbf{\hat{x}},\mathbf{\hat{x}})
-\end{bmatrix}^{-1}
-=
-\begin{bmatrix}
-\mathbf{M}& \mathbf{m}\\ 
-\mathbf{m}^\top & \mathbf{\hat{K}}^{-1} 
-\end{bmatrix}
-\end{equation}
-where we use using partionened inverse equations (\citealp*{barnett1979matrix} following \citealp*{mackay1998introduction}) with:
+The partioned inverse equations (\citealp*{barnett1979matrix} following \citealp*{mackay1998introduction}) give
+\begin{align*}
+  M_{22}^{-1} &= K(\hat\xbf,\hat\xbf) - K(\hat\xbf,\xbf) K(\xbf,\xbf)^{-1} K(\xbf,\hat\xbf), \\
+  M_{21} &= -M_{22} K(\hat\xbf,\xbf) K(\xbf,\xbf)^{-1}.
+\end{align*}
+Substituting these in the above gives
 \begin{align}
-\mathbf{\hat{K}} =& K(\mathbf{\hat{x}},\mathbf{\hat{x}}) -K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}K(\mathbf{x},\mathbf{\hat{x}}),\\
-\mathbf{m} =& -\mathbf{\hat{K}}^{-1} \mathbf{K}(\mathbf{x},\mathbf{x}^{-1}) K(\mathbf{x},\mathbf{\hat{x}}),\text{ and}\\
-\mathbf{M} =&  \mathbf{K}(\mathbf{x},\mathbf{x}^{-1}) + \frac{1}{\mathbf{\hat{K}}}\mathbf{m}\mathbf{m}^\top.
+  \hat\Kbf &= K(\hat\xbf,\hat\xbf) - K(\hat\xbf,\xbf) K(\xbf,\xbf)^{-1} K(\xbf,\hat\xbf), \\
+  \hat\mubf &= K(\hat\xbf,\xbf) K(\xbf,\xbf)^{-1}\fbf.
 \end{align}
-by substituting in \ref{eq:mackay_posterior}, we can write:
-\begin{equation}
-P(\hat{\mathbf{f}} \mid \mathbf{f}) 
-\propto \frac{1}{Z} 
-\exp\bigg\{
-\frac{(\mathbf{\hat{f}} - (K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}\mathbf{f}))^2}{2(K(\mathbf{\hat{x}},\mathbf{\hat{x}}) -K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}K(\mathbf{x},\mathbf{\hat{x}}))}
-\bigg\}.
-\end{equation} 
-In this expression, we simplify 
-\begin{equation}
-\bm{\hat{\mu}} = K(\mathbf{\hat{x}},\mathbf{x}) K(\mathbf{x},\mathbf{x})^{-1}\mathbf{f}
-\end{equation}
-so that for sampling from the predictive posterior, we can write:
-\begin{equation}
-\mathbf{\hat{f}} \mid \mathbf{\hat{x}},\mathbf{x},\mathbf{f} 
-\sim \mathcal{N}(\bm{\hat{\mu}},\mathbf{\hat{K}}).
-\end{equation}
 
 Often one assumes the observed regression output is noisily measured, that is, one only sees the values of $\ybf_\noisy = \mathbf{f}+ \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$. This noise term can be absorbed into the covariance matrix $\mathbf{K}(\mathbf{x},\mathbf{x})$ which in the following, we will write as $\mathbf{K}$ for readability. The log-likelihood of a \ac{GP} can then be written as:
 \begin{equation}
