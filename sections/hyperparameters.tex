@@ -22,39 +22,6 @@ Neal provides a custom inference algorithm setting and evaluates it using the fo
 f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
 \end{equation}
 We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. \gpmem\  can capture the true underlying function within only 100 MH steps on the hyper-parameters to get a good approximation for their posterior. Note that Neal devises an additional noise model and performs a large number of Hybrid-Monte Carlo and Gibbs steps.  
-\begin{comment}
- 
-\begin{figure}
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\begin{tabular}{ll}
-\includegraphics[height=4.5cm]{figs/neal_deterministic.png} &  \includegraphics[height=4.5cm]{figs/outlier.png}
-\end{tabular}
-          \caption{}
-          \label{fig:deterministic}
-\end{subfigure}          
-\begin{subfigure}[b]{0.49\textwidth}\centering
-\centering
-\begin{tabular}{ll}
-\includegraphics[height=4.5cm]{figs/neal_Bayesian.png} &  \includegraphics[height=4.5cm]{figs/outlier_Bayesian.png}
-\end{tabular}
-          \caption{}
-          \label{fig:Bayesian}
-\end{subfigure}
-        		\put(-130,55){\color{green}\thicklines \vector(1,0){80}}
-        		\put(-326,55){\color{green}\thicklines \vector(1,0){80}}
-			\put(-47,21){\color{green} \thicklines \line(1,0){39}}
-			\put(-47,148){\color{green} \thicklines \line(1,0){39}}
-		        \put(-47,21){\color{green} \thicklines \line(0,1){127}}
-		        \put(-8,21){\color{green} \thicklines \line(0,1){127}}
-		        \put(-243,21){\color{green} \thicklines \line(0,1){127}}
-		        \put(-206,21){\color{green} \thicklines \line(0,1){127}}
-		        \put(-243,21){\color{green} \thicklines \line(1,0){37}}
-			\put(-243,148){\color{green} \thicklines \line(1,0){37}}
-\caption{(a) a shows deterministic inferece, that is optimization for an example of Neals synthetic function with an extreme outlier (green).}\label{fig:neal}
-\end{figure}
-
-
-\end{comment}
 
 
 
