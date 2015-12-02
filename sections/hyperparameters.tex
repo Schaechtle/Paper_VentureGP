@@ -5,7 +5,33 @@ defined above, given covariance function $\mathbf{K}$ as:
 \label{eq:hyperProbability}
 P(\bm{\theta} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{K})P(\bm{\theta} \mid  \mathbf{K})}{P(\mathbf{D} \mid \mathbf{K})}.
 \end{equation}
-Let the $\mathbf{K}$ be the sum of a smoothing and a white noise (WN) kernel. For this case, Neal~\citeyearpar{neal1997monte} suggested the problem of outliers in data as a use-case for a hierarchical Bayesian treatment of Gaussian processes\footnote{In Neal's work \citeyearpar{neal1997monte} the sum of an SE plus a constant kernel is used. We keep the WN kernel for illustrative purposes.}. The work suggests a hierarchical system of hyper-parameterization. Here, we draw hyper-parameters from a $\Gamma$ distributions:
+Let $\mathbf{K}$ be the sum of a smoothing and a white noise (WN) kernel. For this case, Neal~\citeyearpar{neal1997monte} suggested the problem of outliers in data as a use-case for a hierarchical Bayesian treatment of Gaussian processes\footnote{In Neal's work \citeyearpar{neal1997monte} the sum of an SE plus a constant kernel is used. We keep the WN kernel for illustrative purposes.}. 
+We can tackle this problem using \gpmem,
+as illustrated with the tutorial in Fig. \ref{fig:neal_tutorial}. 
+The main aim here is to  estimate the posterior of (\ref{eq:hyperProbability}) which we depict in panel (a) of Fig. \ref{fig:neal_tutorial}.
+
+To arrive at this posterior, we must first have access to the data used in this problem. 
+We define the data generating function as in Neal's paper. Let $f$ be the underlying function that generates the data:
+\begin{equation}
+f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
+\end{equation}
+We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. 
+This data set is accessed by a look-up function in Venture (Fig. \ref{fig:neal_tutorial} (b)).
+
+\begin{figure}
+\input{figs/neal_tutorial.tex}
+\put(-410,230){(b)}
+\put(-410,170){(c)}
+\put(-410,90){(d)}
+\put(-410,-10){(e)}
+\put(-410,-110){(f)}
+\put(-410,-210){(g)}
+\caption{Regression with outliers and hierarchical prior structure}
+\label{fig:neal_tutorial}
+\end{figure}
+
+
+Neals work suggests a hierarchical system of hyper-parameterization. Here, we draw hyper-parameters from $\Gamma$ distributions:
 \begin{equation}
 \label{eq:hyper-ell}
 \ell^{(t)} \sim \Gamma(\alpha_1,\beta_1),\;\sigma^{(t)} \sim \Gamma(\alpha_2,\beta_2)
@@ -15,21 +41,24 @@ and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
 \label{eq:hyper-alpha}
 \alpha_1^{(t)} \sim \Gamma(\alpha^1_{\alpha},\beta^1_{ \alpha } ),\; \alpha_2^{(t)} \sim \Gamma(\alpha^2_{\alpha},\beta^2_{\alpha}),\cdots
 \end{equation}
-% the input below will be empty, if we're in the paper. For my thesis, it will contain a causal network of the hyper-parameters.
-One can represent this kind of model using \gpmem\ (Fig. \ref{fig:neal_tutorial}).
-Neal provides a custom inference algorithm setting and evaluates it using the following synthetic data problem. Let $f$ be the underlying function that generates the data:
-\begin{equation}
-f(x) =  0.3 + 0.4 x + 0.5 \sin(2.7x) + \frac{1.1}{(1+ x^2)} + \eta \;\;\; with\;\;\eta \sim \mathcal{N}(0,\sigma)
-\end{equation}
-We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the cases and to $\sigma = 1$ in the remaining cases. \gpmem\  can capture the true underlying function within only 100 MH steps on the hyper-parameters to get a good approximation for their posterior. Note that Neal devises an additional noise model and performs a large number of Hybrid-Monte Carlo and Gibbs steps.  
+We model this in Venture as illustrated in Fig. \ref{fig:neal_tutorial} (c). Note that we omit the prior distributions of (\ref{eq:hyper-alpha}) due limited space in the tutorial.
 
+In Fig. \ref{fig:neal_tutorial}, panel (c), we first construct a composite Kernel by adding a squared-exponential
+covariance function to a white noise covariance function (SE and WN, Appendix A).
+We then initialize \gpmem\ feeding it with the composite covariance and the data look-up function. 
+We sample from the prior with random parameters $\texttt{sf,l}$ and $\texttt{sigma}$ and 
+without any observations available.
+We depict those samples on the right (red), alongside the true function that generated the data (blue) and
+the data points we have available in the data set (black).
 
+We can incorporate observations using both \texttt{observe} and \texttt{predict} (Fig. \ref{fig:neal_tutorial} (e)).
+When we subsequently sample from the emulator, we can now see that the \ac{GP} posterior incorporates knowledge 
+about the data points. Yet, the hyper-parameters are still random, so the emulator does not capture the true
+underlying dynamics of the data correctly. 
 
-\begin{figure}
-\input{figs/neal_tutorial.tex}
-\caption{Regression with outliers and hierarchical prior structure.}
-\label{fig:neal_tutorial}
-\end{figure}
+Next, we demonstrate how we can capture these underlying dynamics within only 100 \ac{MH} steps on the hyper-parameters to get a good approximation for their posterior (Fig. \ref{fig:neal_tutorial} (f)).
+Note that Neal devises an additional noise model and performs a large number of Hybrid-Monte Carlo and Gibbs steps to achieve this, whereas inference in Venture with \gpmem\ is merely one line of code. 
 
-
+Finally, we can change our inference strategy altogether. If we decide that instead of following a Bayesian sampling approach,
+we would like to perform empirical optimization, we do this by only changing one line of code (Fig. \ref{fig:neal_tutorial} (g)). 
 
