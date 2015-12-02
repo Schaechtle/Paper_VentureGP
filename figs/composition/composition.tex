@@ -1,4 +1,46 @@
  \centering
+
+     \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{figs/composition/composition_demo_raw_data.png}
+        \caption{Raw Data}
+    \end{subfigure}
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.45\textwidth}
+\small
+     \begin{align*}
+    \text{LIN} &=   \sigma_1^2(x x^\prime)\\
+    \text{PER} &=  \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg)\\ 
+    \text{LIN} \times \text{PER} &=  \sigma_1^2(x x^\prime)\, \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg) 
+    \end{align*}\vspace{5mm} 
+        \caption{Kernels}
+    \end{subfigure}\vspace{4mm} 
+
+
+Parameterized Kernels:\vspace{3mm} 
+
+     \begin{subfigure}[b]{0.3\textwidth}
+      \centering \footnotesize
+       $20.1^2(x x^\prime) $ \vspace{2mm}
+	\caption{LIN}
+    \end{subfigure}
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+      %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.3\textwidth}
+      \centering \footnotesize
+      $19.1^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/37.7}{6.3^2} \bigg)$ 
+	\caption{PER}
+    \end{subfigure}
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+    %(or a blank line to force the subfigure onto a new line)
+    \begin{subfigure}[b]{0.3\textwidth}
+    \centering \footnotesize
+      $383.9^2 (x x^\prime) \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/37.7}{6.3^2} \bigg)$ 
+        \caption{LIN $\times$ PER}
+    \end{subfigure} \vspace{4mm} 
+
+Prior:
+
      \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{figs/composition/composition_demo_LIN_prior.png}
         \caption{LIN}
@@ -14,8 +56,11 @@
     \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{figs/composition/composition_demo_LINxPER_prior.png}
         \caption{LIN $\times$ PER}
+    \end{subfigure} \vspace{4mm} 
 
-    \end{subfigure}   \begin{subfigure}[b]{0.3\textwidth}
+Posterior:
+
+ \begin{subfigure}[b]{0.3\textwidth}
         \includegraphics[width=\textwidth]{figs/composition/composition_demo_LIN.png}
         \caption{LIN}
     \end{subfigure}

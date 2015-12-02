@@ -10,7 +10,7 @@ The collection of random variables $\br{f(x)}$ (indexed by $x$) represents the
 values of the function $f$ at each location $x$.
 We write $f \sim \ac{GP}(m,k)$, where $m$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
 That is, $m(x)$ is the prior mean of the random variable $f(x)$, and $k(x,x')$ is the prior covariance of the random variables $f(x)$ and $f(x')$.
-Throughout, we write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that is, the covaricance between the random vectors $\{f(x)\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in \xbf'}$.
+Throughout, we write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that is, the covariance between the random vectors $\{f(x)\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in \xbf'}$.
 
 We now compute the predictive posterior distribution of test output $\hat\fbf := f(\hat\xbf)$ conditioned on training data $\fbf := f(\xbf)$.  (Here $\xbf$ and $\hat\xbf$ are known constant vectors, and we are conditioning on an observed value of $\fbf$.)  To simplify the calculation, we will assume the prior mean $m$ is identically zero; once the derivation is done, this assumption can be easily relaxed via translation.
 
@@ -122,24 +122,28 @@ and
 This results in a computational complexity of $\mathcal{O}(n^3)$ in the number of data points for
 sampling with a complexity of $n^3/6$ for (\ref{eq:chol_L}) an $n^2/2$ for (\ref{eq:alpha}). 
 
-\begin{figure}
-\input{figs/composition/composition.tex}
-\caption{Kernel composition}
-\end{figure}
 
 
 The covariance function (or kernel) of a \ac{GP} governs high-level properties of the observed data such as linearity, periodicity and smoothness.
 It comes with few free parameters that we call hyper-parameters.
 Adjusting the hyper-parameters changes non-qualitative attributes such as length
 scales while preserving the qualitative properties of the distribution.
-More drastically different covariance functions are achieved by changing the structure of the covariance function itself.
-%A different type could be a linear covariance function:
-%\begin{equation}
-% k(x,x^\prime) = \sigma^2 (x-\ell) (x^\prime-\ell). 
-%\end{equation}
-Note that covariance function structures are compositional: adding or multiplying two valid covariance functions results in another valid covariance function. 
+These high-level properties are compositional via addition and multiplication of different covariance functions. An addition models a global interaction, that is an interaction of two high-level components that is qualitatively not dependent on the input space. An example for this a periodic function with a linear trend.
+A multiplication models a local interaction of two components. 
+An example for this is a periodic function with a linearly increasing amplitude. We demonstrate kernel composition with local interactions in the tutorial in Fig. \ref{fig:composition_tutorial}. 
 
 
+\begin{figure}
+\input{figs/composition/composition.tex}
+\caption{We depict kernel composition. 
+(a) shows raw data (black) generated with a sine function with linearly growing amplitude (blue). 
+(b) shows the linear and the periodic base kernel as well as a composition of both. 
+The multiplication of the two kernels indicates local interaction. The local interaction we account for in this case is the growing amplitude (a). (c-e) show the parameterized kernels that we introduced in (b).
+The parameters are sampled from the posterior distribution on parameters for a \ac{GP} with kernel $\mathbf{K}=\text{LIN} \times \text{PER}$ where the data points from (a) are observed.
+(f-h) show samples from the prior where the parametrization from (c-e) is used, that is, before any data points are observed.
+(i-k) show samples from the posterior, after the data has been observed. Note that the same data is used for all of the plots.}
+\label{fig:composition_tutorial}
+\end{figure}
 
 
 
