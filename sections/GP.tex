@@ -8,18 +8,13 @@ finite number of which have a joint Gaussian distribution~\citep[][chapter 2]{ra
 \end{definition}
 The collection of random variables $\br{f(x)}$ (indexed by $x$) represents the
 values of the function $f$ at each location $x$.
-The \ac{GP} determines a Gaussian distribution over possible functions 
-which is determined by a \ac{GP} mean function $m(x)$ and a covariance function or kernel $k(x,x^\prime)$.
-We are going to derive expressions for the conditional mean and covariance of a
-GP.  To simplify the calculations, we will assume prior mean zero; once the
-derivation is done, this assumption can easily be relaxed via translation.
+We write $f \sim \ac{GP}(m,k)$, where $m$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
+That is, $m(x)$ is the prior mean of the random variable $f(x)$, and $k(x,x')$ is the prior covariance of the random variables $f(x)$ and $f(x')$.
+Throughout, we write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that is, the covaricance between the random vectors $\{f(x)\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in \xbf'}$.
 
-We write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that
-is, the covaricance between the random vectors $\{f(x\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in
-\xbf'}$.
- 
+We now compute the predictive posterior distribution of test output $\hat\fbf := f(\hat\xbf)$ conditioned on training data $\fbf := f(\xbf)$.  (Here $\xbf$ and $\hat\xbf$ are known constant vectors, and we are conditioning on an observed value of $\fbf$.)  To simplify the calculation, we will assume the prior mean $m$ is identically zero; once the derivation is done, this assumption can be easily relaxed via translation.
 
-The predictive posterior distribution of test output $\hat\fbf$ given training data $\fbf$ can be computed by first forming the joint density when both training and test data are treated as randomly chosen from the prior, then fixing the value of $\fbf$ to a constant.  To start, let
+The predictive posterior can be computed by first forming the joint density when both training and test data are treated as randomly chosen from the prior, then fixing the value of $\fbf$ to a constant.  To start, let
 \[
   \Sigma := \bmat{
     K(\xbf, \xbf)     & K(\xbf, \hat\xbf)     \\
