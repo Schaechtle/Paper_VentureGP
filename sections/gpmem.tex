@@ -1,6 +1,118 @@
-\begin{comment}
-{\tt gpmem} is an extension of previous approaches to stochastic memoization. Previous approaches such as the one introduced for Dirichlet Processes in the Church language~\citep{goodman2008church} deal with the discrete-valued domain. We introduce memoization for the continuous valued domain. This is important for problems of regression and optimization where target functions should not be artificially discretized. We present a probabilistic programming technique that uses a GP to provide a statistical variant of memoization. 
-\end{comment}
+Memoization is the practice of storing previously computed values of a function so that future calls with the same inputs can be evaluated by lookup rather than re-computation.
+To transfer this idea to probabilistic programming, we now introduce a language construct called a
+\emph{statistical memoizer}.  Suppose we have a function $\ftt$ which can be evaluated 
+but we wish to learn about the behavior of $\ftt$ using as
+few evaluations as possible.  The statistical memoizer, which here we give the
+name \gpmem, was motivated by this purpose.  It produces two outputs:
+\[ \ftt \xrightarrow{\gpmem} (\ftt_{\text{compute}}, \ftt_\emu). \]
+The function $\ftt_{compute}$ calls $\ftt$ and stores the output in a memo
+table, just as traditional memoization does.  The function $\ftt_\emu$ is
+an online statistical emulator which uses the memo table as its training
+data.  A fully Bayesian emulator, modelling the true function $\ftt$ as a
+random function $f \sim P(f)$, would satisfy
+\[
+\texttt{(}\ftt_\emu\ \xtt_1\ \ldots\ \xtt_k\texttt{)}
+\sim
+P\pn{
+  f(\xtt_1), \ldots, f(\xtt_k)
+  \mvert
+  \text{$f(\xtt) = \texttt{(f x)}$ for each $\xtt$ in memo table}
+}.
+\]
+Different implementations of the statistical memoizer can have
+different prior distributions $P(f)$; in this paper, we deploy a \ac{GP} 
+prior (implemented as \texttt{gpmem} below).  Note that we require the ability
+to sample $\ftt_\emu$ jointly at multiple inputs because the values of
+$f(\xtt_1),\ldots,f(\xtt_k)$ will in general be dependent.
 
 
-We implement this by memoizing a target procedure in a wrapper that remembers previously computed values. The technique gives rise to a number of use-cases of GPs in a fully Bayesian setting which are otherwise hard to implement.
+\begin{figure}
+\input{figs/gpmem_tutorial.tex}
+%\put(-245,10){\line(1,0){200}}
+\put(-33,77){\color{ForestGreen}\thicklines \vector(0,-1){15}}
+\put(-96,6){\color{ForestGreen}\thicklines \vector(0,-1){15}}
+\put(-48,-63){\thicklines \vector(0,-1){15}}
+\put(-84,-43){\thicklines \vector(0,-1){15}}
+\put(-73,-68){\thicklines \vector(0,1){15}}
+\caption{\small \gpmem\ tutorial. The top shows a schematic of \gpmem.
+  \texttt{f\_compute} probes an outside resource.
+  This can be expensive (top left).
+  Every probe is memoized and improves the emulator. Below the schematic we see the evolution
+  of \gpmem's state of believe of the world given certain Venture
+  directives. On the right, we depict the true function (blue), samples from the emulator (red) and incorporated observations (black).}
+\label{fig:gpmem_tutorial}
+\end{figure}
+
+% Panel 1
+We explain how \gpmem, the statistical memoizer with \ac{GP}-prior, works using a simple tutorial
+(Fig. \ref{fig:gpmem_tutorial}). 
+The top panel of this figure sketches the schematic of \gpmem.
+$\ftt$ is the aforementioned function which can be evaluated using resources that potentially come
+from outside of Venture.  
+We feed this function into \gpmem\ alongside
+a parameterised kernel $\mathbf{K}$. The hyper-parameters for this kernel are sampled from a 
+prior distribution which is depicted in the top right box. In Venture, we can express this as:
+    \begin{lstlisting}
+    assume sf = tag( 'hyper-parameter, 0, gamma(1,1)) 
+    assume l  = tag( 'hyper-parameter, 1, gamma(1,1)) 
+    assume K  = make_squaredexp ( sf, l).
+    \end{lstlisting}
+Note that the hyper-priors over hyper-parameters follows a gamma distribution and we annotate $\texttt{sf}$ and $\texttt{l}$
+as belonging to (i) the scope "hyper-parameter" and (ii) blocks 0 and 1 respectively.
+The squared-exponential kernel (SE) is defined in appendix A.
+
+\gpmem\ implements a memoization table, where all previously
+computed function evaluations are stored. We also initialize a \ac{GP}-prior that
+will serve as our statistical emulator.
+All value pairs stored in the memoization table are incorporated as observations of
+the \ac{GP}.
+The emulator allows us to make probabilistic predictions on function evaluations.
+We simply feed the regression input
+into the emulator and output a predictive posterior Gaussian distribution determined by the \ac{GP} and
+the memoization table.
+
+% Panel 2
+We can either define the function f that serves as as input for \gpmem\
+ natively in Venture
+(as shown in the second panel Fig. \ref{fig:gpmem_tutorial}) or we interleave Venture with foreign code. 
+This can be useful when $\ftt$ is computed with the help of outside resources.
+Before making any observations or calls to $\ftt$
+we can sample from the prior at the inputs from -20 to 20 using the emulator:
+    \begin{lstlisting}
+    assume (f_compute f_emu) =  gpmem( f, K))
+
+    sample f_emu ( array ( -20 , ..., 20 ))
+    \end{lstlisting}
+% Panel 3
+In the following panel of Fig. \ref{fig:gpmem_tutorial}, we probe the external function $\ftt$ at point 12.6 and memoize it's result by calling 
+   \begin{lstlisting}
+    predict f_compute (12.6).
+    \end{lstlisting}
+When we subsequently sample from the emulator, we now compute the \ac{GP} posterior which shifts from uncertainty to near certainty close to the input 12.6.
+
+% Panel 4
+We can repeat the process at a different point (probing point -6.4 in the fourth panel of Fig. \ref{fig:gpmem_tutorial}) to see that we gain certainty about another part of the curve. 
+
+% Panel 5
+We can add information to $\texttt{f}_\text{emu}$ about presumable value pairs of $\ftt$ without calling $\texttt{f}_\text{compute}$
+(fifth panel, Fig. \ref{fig:gpmem_tutorial}).
+If a friend tells us the value of $\ftt$ we can call observe to store this information in the incorporated observations for $\texttt{f}_\text{emu}$ only:
+    \begin{lstlisting}
+    observe f_emu( -3.1) = 2.60.
+    \end{lstlisting}
+We have this value pair now available for the computation of the \ac{GP} posterior. 
+For sampling with the emulator, the effect is the same as calling predict with the $\texttt{f}_\text{compute}$.
+However, we can imagine at least one scenario where such as distinction in the treatment of observations 
+is beneficial. Let us say we do not only have the real function available but also a domain expert with knowledge 
+about this function.
+This expert could tell us what the value is at a given input.
+Potentially, the value provided by the expert could disagree with the value computed with $\ftt$ for example 
+due to different levels of observation noise. 
+
+% Panel 6
+Finally, we can update our posterior by inferring the posterior over hyper-parameter values.
+We can take 50 \ac{MH} steps by calling that where we take an \ac{MH} steps for either of the two blocks for the scope "hyper-parameter": 
+   \begin{lstlisting}
+    infer mh( 'hyper-parameter, one, 50).
+    \end{lstlisting}
+The newly inferred hyper-parameters allow us now adequately reflect uncertainty about the curve given all incorporated observations (compare bottom panel on the right with the samples before inference, one panel above).
