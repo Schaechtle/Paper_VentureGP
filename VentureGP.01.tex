@@ -254,10 +254,10 @@ This paper describes the {\em Gaussian process memoizer}, a probabilistic progra
 \input{sections/gpmem.tex}
 
 \section{Applications}
-\gpmem\ is an elegant linguistic framework for function learning-related tasks.
-The technique allows language constructs from programming to help express models
-which would be cumbersome to express in statistics notation.
-We will now illustrate this with three example applications. 
+This paper illustrates the flexibility of \gpmem\ by showing how it can concisely encode three different applications of \ac{GP}s.
+The first is a standard example from hierarchical Bayesian statistics, where Bayesian inference over a hierarchical hyper-prior is used to provide a curve-fitting methodology that is robust to outliers.
+The second is a structure learning application from probabilistic artificial intelligence, where \ac{GP}s are used to discover qualitative structure in time series data.
+The third is a reinforcement learning application, where \ac{GP}s are used as part of a Thompson sampling formulation of Bayesian optimization for general real-valued objective functions with real inputs.
 
 \subsection{Nonlinear regression in the presence of outliers}
 \input{sections/hyperparameters.tex}
