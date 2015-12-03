@@ -79,7 +79,7 @@ This can be useful when $\ftt$ is computed with the help of outside resources.
 Before making any observations or calls to $\ftt$
 we can sample from the prior at the inputs from -20 to 20 using the emulator:
     \begin{lstlisting}
-    assume (f_compute f_emu) = gpmem(f, K))
+    assume (f_compute, f_emu) = gpmem(f, K))
 
     sample f_emu(array(-20, ..., 20))
     \end{lstlisting}
