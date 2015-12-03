@@ -53,9 +53,9 @@ We feed this function into \gpmem\ alongside
 a parameterised kernel $\mathbf{K}$. The hyper-parameters for this kernel are sampled from a 
 prior distribution which is depicted in the top right box. In Venture, we can express this as:
     \begin{lstlisting}
-    assume sf = tag( 'hyper-parameter, 0, gamma(1,1)) 
-    assume l  = tag( 'hyper-parameter, 1, gamma(1,1)) 
-    assume K  = make_squaredexp ( sf, l).
+    assume sf = tag(quote(hyper_parameter), 0, gamma(1, 1))
+    assume l  = tag(quote(hyper_parameter), 1, gamma(1, 1))
+    assume K  = make_squaredexp(sf, l).
     \end{lstlisting}
 Note that the hyper-priors over hyper-parameters follows a gamma distribution and we annotate $\texttt{sf}$ and $\texttt{l}$
 as belonging to (i) the scope "hyper-parameter" and (ii) blocks 0 and 1 respectively.
@@ -79,9 +79,9 @@ This can be useful when $\ftt$ is computed with the help of outside resources.
 Before making any observations or calls to $\ftt$
 we can sample from the prior at the inputs from -20 to 20 using the emulator:
     \begin{lstlisting}
-    assume (f_compute f_emu) =  gpmem( f, K))
+    assume (f_compute, f_emu) = gpmem(f, K))
 
-    sample f_emu ( array ( -20 , ..., 20 ))
+    sample f_emu(array(-20, ..., 20))
     \end{lstlisting}
 % Panel 3
 In the following panel of Fig. \ref{fig:gpmem_tutorial}, we probe the external function $\ftt$ at point 12.6 and memoize it's result by calling 

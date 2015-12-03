@@ -20,16 +20,16 @@
 // Shortcut to sample the emulator at a single point without packing
 // and unpacking arrays
 #\linenumber{12}#define emulate_pointwise = proc(x) {
-#\linenumber{13}#    run(sample(lookup(f_emulate(array(unquote(x))), 0)))
+#\linenumber{13}#  run(sample(lookup(f_emulate(array(unquote(x))), 0)))
 #\linenumber{14}#};
 
 // Main inference loop
 #\linenumber{15}#infer repeat(15, do(pass,
-    // Probe V at the point mc_argmax(emulate_pointwise)
-#\linenumber{16}#    predict(f_compute(unquote(mc_argmax(emulate_pointwise)))),
-    // Infer hyperparameters
-#\linenumber{17}#    mh(quote(hyper), one, 50)));
+  // Probe V at the point mc_argmax(emulate_pointwise)
+#\linenumber{16}#  predict(f_compute(unquote(mc_argmax(emulate_pointwise)))),
+  // Infer hyperparameters
+#\linenumber{17}#  mh(quote(hyper), one, 50)));
 \end{lstlisting}
-  
+
 \end{minipage}
-\end{mdframed}     
+\end{mdframed}

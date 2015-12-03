@@ -7,23 +7,22 @@
  \node[draw,right = 0.5cm of start,circle,minimum size=1.5cm] (K) {$\mathbf{K}_{\theta}$};
  %\node[below left of=f_K,xshift=-1.7cm,yshift=-0.1cm] (theta) {$\bm{\theta} \sim P(\bm{\theta})$};
  \node[draw,rectangle,below=1.2cm of start, text width = 8cm] (gpmem) {\centering\texttt{gpmem}\vspace{2mm}
- 
+
 \small$\text{memo table} = (\mathbf{x}_{past},\mathbf{y}_{past})$\vspace{1mm}
- 
- 
+
 \small$P(f_{emu}(x) \mid \mathbf{x}_{past},\mathbf{y}_{past})\sim \mathcal{N}(\mu(\mathbf{x}),\mathbf{K}_\theta\big(\mathbf{x},\mathbf{x})\big)$
  };
 %  \node[draw,rectangle,color=ForestGreen,below = .1ex of gpmem,minimum width=1.5cm, minimum height=0.4cm,yshift=0.9cm,xshift=0.3cm] (mark) {};
   \node[draw,rectangle,dashed,right=2cm of K, text width = 2.5cm] (math) {\footnotesize
  $\mathbf{K}_{\theta} = \text{SE}(x,x^\prime)$\vspace{1mm}
- 
+
  $\theta \;\;\,\,= \{sf,\ell \}$\vspace{1mm}
- 
+
  $sf\;\, \sim P(sf)$\vspace{1mm}
 
  $\ell\;\;\;\; \sim P(\ell)$\vspace{1mm}
- 
- 
+
+
 %\scriptnotesize
 %
 %%$\mu(\mathbf{x}) =\mu(\mathbf{x}) + \mathbf{K}_\theta(\mathbf{x},\mathbf{x}_{past})\mathbf{K}_\theta(\mathbf{x}_{past},\mathbf{x}_{past})^{-1}(\mathbf{y}_{past} - \mu(\mathbf{x}_{past}))$
@@ -34,7 +33,7 @@
 
 \begin{tabular}{l|l}\footnotesize
   \footnotesize$x$ & \footnotesize$f(x)$ \\ \hline
-  \footnotesize $x_1$  &\footnotesize$y_1$ \\ 
+  \footnotesize $x_1$  &\footnotesize$y_1$ \\
  \footnotesize  $x_2$  & \footnotesize$y_2$ \\
  \footnotesize$\cdots$ & \footnotesize $\cdots$
  \end{tabular}
@@ -72,11 +71,11 @@
  % \draw[thick,->,color=ForestGreen] (helper2) -- node[pos=0.5, sloped,above] {improves} (helper_emu);
    % \draw[thick,->,dashed,color=ForestGreen] (helper_resource) -- node[pos=0.5,above] {$f_{com}(x_2)=y_2$} (f_compute);
   %  \draw[thick,->,dashed,color=ForestGreen] (helper_resource) -- (resources);
-     \draw[thick,->,dashed] (x_hat) -- (f_emu); 
-     \draw[thick,->,dashed] (f_emu) -- (GaussianHat); 
+     \draw[thick,->,dashed] (x_hat) -- (f_emu);
+     \draw[thick,->,dashed] (f_emu) -- (GaussianHat);
  % \draw[thick,->] (theta) -- (gpmem);
-  
-   
+
+
 %\path[](f_emu) edge [in=90, out=50,thick] (emu_annotate)
 %    (emu_annotate) edge [->,in=310, out=270,thick]  (f_emu);
   % Note: If you have no branches, the 2nd pass is not needed
@@ -89,44 +88,44 @@
 & \\
 \hline
 \small\begin{lstlisting}[mathescape,escapechar=\#]
-define f = proc( x) {exp(-0.1*abs(x-2))) *
-		    10* cos(0.4*x) + 0.2}#\vspace{1mm}#    
-assume (f_compute f_emu) =  gpmem( f, K)#\vspace{1mm}#
-sample f_emu( array( -20, $\cdots$, 20)) 
+define f = proc(x) {
+    exp(-0.1*abs(x-2)) * 10 * cos(0.4*x) + 0.2}#\vspace{1mm}#
+assume (f_compute, f_emu) = gpmem(f, K)#\vspace{1mm}#
+sample f_emu(array(-20, $\cdots$, 20))
 
 \end{lstlisting}
 & \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_1.png}} \\ \hline
 % line 2
 \small\begin{lstlisting}[mathescape,escapechar=\#]
-predict f_compute( 12.6)
+predict f_compute(12.6)
 
-sample f_emu( array( -20, $\cdots$, 20)) 
+sample f_emu(array(-20, $\cdots$, 20))
 
 \end{lstlisting}
  &  \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_2.png}}  \\ \hline
-% line 3 
+% line 3
  \small\begin{lstlisting}[mathescape,escapechar=\#]
-predict f_compute( -6.4)
+predict f_compute(-6.4)
 
-sample f_emu( array( -20, $\cdots$, 20)) 
+sample f_emu(array(-20, $\cdots$, 20))
 
 \end{lstlisting}
  &  \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_3.png}}  \\ \hline
 % line 4
  \small\begin{lstlisting}[mathescape,escapechar=\#]
-observe f_emu( -3.1) = 2.60 
-observe f_emu( 7.8) = -7.60  
-observe f_emu( 0.0) =  10.19#\vspace{1mm}#
-sample f_emu( array( -20, $\cdots$, 20)) 
-  
+observe f_emu(-3.1) =  2.60
+observe f_emu(7.8)  = -7.60
+observe f_emu(0.0)  = 10.19#\vspace{1mm}#
+sample f_emu(array(-20, $\cdots$, 20))
+
 \end{lstlisting}
  &   \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_5.png}} \\ \hline
 % line 5
  \small\begin{lstlisting}[mathescape,escapechar=\#]
-infer mh(quote(hyper-parameter), one, 50)
+infer mh(quote(hyper_parameter), one, 50)
 
-sample f_emu( array( -20, $\cdots$, 20)) 
-  
+sample f_emu(array(-20, $\cdots$, 20))
+
 \end{lstlisting}
  &   \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_6.png}}
 \end{tabular}
