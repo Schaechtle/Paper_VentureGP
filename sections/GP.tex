@@ -13,7 +13,7 @@ We differentiate three different situations, of how  $f$ can be generated with a
 \begin{enumerate}
 \item $\fbf_*$ - we have not seen any training data yet.
     The \ac{GP} samples at any input vector $\xbf_*$ from the prior with
-     $\fbf_* \sim \mathcal{N}\bigg(0,K(\xbf_*,\xbf_*)\bigg)$;
+     $\fbf_* \sim \mathcal{N}\big(0,K(\xbf_*,\xbf_*)\big)$;
 \item $\fbf$ - the observed values for $\fbf:=f(\xbf)$. This is the target value of the value pairs supplied in 
 the training data; and
 \item $\hat{\fbf}$ - the predictive posterior distribution of test output $\hat\fbf := f(\hat\xbf)$ conditioned on training data $\fbf := f(\xbf)$.
@@ -129,6 +129,9 @@ and
 %This results in a computational complexity of $\mathcal{O}(n^3)$ in the number of data points for
 %sampling with a complexity of $n^3/6$ for (\ref{eq:chol_L}) an $n^2/2$ for (\ref{eq:alpha}). 
 This results in a computational complexity for sampling in the number of data points of $O(n^3/6)$ for (\ref{eq:chol_L}) an $O(n^2/2)$ for (\ref{eq:alpha}). 
+
+Above, we defined the \ac{GP} prior as $\fbf_* \sim \mathcal{N}\big(0,K(\xbf_*,\xbf_*)\big)$.
+We see that this prior is fully determined by its covariance function.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
