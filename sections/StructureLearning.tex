@@ -63,34 +63,104 @@ is as follows:
 
 \input{code/code_venstructure.tex}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%     Mauna result      %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We defined a simple space of covariance structures in a way that allows us to produce results coherent with 
-work presented in Automatic Statistician. We illustrate results in Fig.:wq
-\ref{fig:posterior} and \ref{fig:posterior_airline} using the Mauna Loa  CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) 
+work presented in Automatic Statistician. We will illustrate our results with two data sets.
 
-
-
-and the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Both datasets served as illustrations in the Automatic Statistician project. Previous work on automated kernel discovery~\citep{duvenaud2013structure} illustrated the Mauna Loa data using an RQ kernel.
-We resort to the white noise kernel instead of RQ (similar to \citep{lloyd2014automatic}).
-
+\myparagraph{Mauna Loa  CO$_2$ data}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
 \centering
 \input{figs/structure_posterior.tex}
 \caption{\small Posterior of structure and qualitative, human interpretable reading. We take the raw data (top), compute a posterior distribution on structures (red samples and bar plot).
 We take the peak of this distribution ($\text{LIN}+\text{PER}+\text{SE}+\text{WN}$) with the sampled parameters used to generate the samples for the second plot from the top and write it in functional form with parameters. We depict the human readable interpretation of the equation on the bottom.}\label{fig:posterior}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We illustrate results in Fig \ref{fig:posterior}. In Fig \ref{fig:posterior} (a) we depict the raw data. 
+We see mean centered CO$_2$ measurements of the Mauna Loa Observatory, an atmospheric
+baseline station on Mauna Loa, on the island of Hawaii. 
+A description of the data set  can be found in  \citealp[][chapter 5]{rasmussen2006gaussian}.  
+We use those raw data to compute a posterior on structure, parameters and \ac{GP}
+samples.
+The latter are shown in  Fig \ref{fig:posterior} (b)
+where we zoom in to show how the posterior captures the error bars
+adequately.
+This posterior of the \ac{GP} is generated with a random sample from the parameters
+of the peak of the distribution on structure (Fig \ref{fig:posterior} (c)).
+The distribution peaks at:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+\mathbf{K}=\text{LIN} + \text{PER} + \text{SE} + \text{WN}.
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We write this Kernel equation out in Fig \ref{fig:posterior} (d).
+This kernel structure has a natural language interpretation that we spell out in
+Fig \ref{fig:posterior} (e), explaining that 
+the posterior peaks at a kernel structure with four additive components.
+Each of which holds globally, that is there are no higher level, qualitative aspects
+of the data that vary with the input space. The additive components for this result are as follows:
+\begin{itemize}
+\item a linearly increasing function or trend; 
+\item a periodic function;
+\item a smooth function; and
+\item white noise.
+\end{itemize}
+ 
 
+
+
+Previous work on automated kernel discovery~\citep{duvenaud2013structure} illustrated the Mauna Loa data using an RQ kernel.
+We resort to the white noise kernel instead of RQ (similar to \citep{lloyd2014automatic}).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%     Airline result   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\myparagraph{Airline Data}
+The second data set (Fig. \ref{fig:posterior_airline}) we depict results for is  the airline 
+data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
 \centering
 \input{figs/structure_posterior_airline.tex}
 \caption{\small Posterior of structure and qualitative, human interpretable reading. We take the raw data (top), compute a posterior distribution on structures (red samples and bar plot).
 We take the peak of this distribution ($\text{LIN}+\text{PER} \times \text{SE}+\text{WN}$) with the sampled parameters used to generate the samples for the second plot from the top and write it in functional form with parameters. We depict the human readable interpretation of the equation on the bottom.}\label{fig:posterior_airline}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+We illustrate results for this data set in Fig \ref{fig:posterior_airline}. In Fig \ref{fig:posterior_airline} (a) we depict the raw data. 
+Again, the data is mean centered and we use it to 
+compute a posterior on structure, parameters and \ac{GP}
+samples.
+The latter are shown in  Fig \ref{fig:posterior_airline} (b).
+This posterior of the \ac{GP} is generated with a random sample from the parameters
+of the peak of the distribution on structure (Fig \ref{fig:posterior_airline} (c)).
+The distribution peaks at:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+\mathbf{K}=\text{LIN} +  \text{SE} \times \text{PER}+ \text{WN}.
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We write this Kernel equation out in Fig \ref{fig:posterior_airline} (d).
+This kernel structure has a natural language interpretation that we spell out in
+Fig \ref{fig:posterior_airline} (e), explaining that 
+the posterior peaks at a kernel structure with three additive components.
+Additive components hold globally, that is there are no higher level, qualitative aspects
+of the data that vary with the input space.
+The additive components are as follows: 
+\begin{itemize}
+\item a linearly increasing function or trend;
+\item a approximate periodic function; and
+\item  white noise.
+\end{itemize}
+Both datasets served as illustrations in the Automatic Statistician project.
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% Queries for time series %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \myparagraph{Querying time series}
@@ -149,7 +219,7 @@ question above to:
 \begin{quotation}
 Is there noise in the data? 
 \end{quotation}
-where we write the marginal posterior on qualative strcture for noise:
+where we write the marginal posterior on qualitative structure for noise:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{equation}
 P(\mathbf{K}_{\text{noise}}) = P(\text{LIN} \times \text{WN}\;\;{\large\lor}\;\; \text{WN}).
