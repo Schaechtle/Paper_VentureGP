@@ -316,7 +316,7 @@ with Thompson Sampling below (Listing \ref{alg:bayesopt}).
 \includegraphics[width=0.6\textwidth]{figs/bayesopt/iteration_vs_error.png}&\includegraphics[width=0.4\textwidth]{figs/bayesopt/legend.png}
 \put(-119,142){\scriptsize Drift Proposal}
 \put(-119,130){\scriptsize Uniform Proposal}
-\put(-119,123){\scriptsize Global Optimum}
+\put(-119,117){\scriptsize Global Optimum}
 \put(-119,105){\scriptsize Local Optima}
 \put(-119,85){\scriptsize Ground Truth}
 \put(-119,73){\scriptsize Posterior samples}
@@ -350,5 +350,23 @@ with Thompson Sampling below (Listing \ref{alg:bayesopt}).
 \put(-387,-78){\footnotesize$i = 11$}
 \put(-255,-78){\footnotesize$i = 12$}
 \put(-123,-78){\footnotesize$i = 13$}
-\caption{Top: the estimated optimum over time. Blue and Red represent optimization with uniform and Gaussian drift proposals. Black lines indicate the local optima of the true functions. Bottom: a sequence of actions. Depicted are iterations 7-12 with uniform proposals.}
+\caption{Top: the estimated optimum over time. Blue and Red represent optimization with uniform and Gaussian drift proposals. Black lines indicate the local optima of the true functions. Bottom: a sequence of actions. Depicted are iterations 7-12 with uniform proposals.}\label{fig:bopt_results}
 \end{figure}
+In Fig. \ref{fig:bopt_results} we show results for our implementation of Bayesian Optimization 
+with Thompson sampling. We compare two different proposal distributions, namely uniform proposals
+and Gaussian drift proposals. We see that in this experiment, Gaussian drift is starting near 
+the global optimum and drifts quickly towards it. (red curve, top panel of Fig. \ref{fig:bopt_results}).
+Uniform proposals take longer to find the global optimum (blue curve, top panel of Fig. \ref{fig:bopt_results})
+but we see that it can surpass the local optima of the curve\footnote{In fact, repeated experiments have
+shown that when the Gaussian drift proposals starts near a local optimum, it gets stuck there. Uniform
+proposals do not.}.
+The bottom panel of Fig. \ref{fig:bopt_results} depicts a sequence of actions using uniform proposals.
+The sequence illustrates the exploitation exploration trade-off that the implementation overcomes.
+We start with complete uncertainty ($i=2$).
+The Bayesian agent performs exploration until it gets a (wrong!) idea of where the optimum could be
+(exploiting the local optima $i=5$ to $i=10$).
+$i=11$ shows a change in tactic. The Bayesian agent, having exploited the local optima in previous
+steps, is now reducing uncertainty in area it knows nothing about, eventually finding the global
+optimum. 
+
+
