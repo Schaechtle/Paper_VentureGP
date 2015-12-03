@@ -64,12 +64,13 @@ is as follows:
 \input{code/code_venstructure.tex}
 
 We defined a simple space of covariance structures in a way that allows us to produce results coherent with 
-work presented in Automatic Statistician. We illustrate results in Fig. \ref{fig:posterior} and \ref{fig:posterior_airline} using the Mauna Loa  CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) and the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Both datasets served as illustrations in the Automatic Statistician project. Previous work on automated kernel discovery~\citep{duvenaud2013structure} illustrated the Mauna Loa data using an RQ kernel.
-We resort to the white noise kernel instead of RQ (similar to \citep{lloyd2014automatic}).
+work presented in Automatic Statistician. We illustrate results in Fig.:wq
+\ref{fig:posterior} and \ref{fig:posterior_airline} using the Mauna Loa  CO$_2$ data set (see \citealp{rasmussen2006gaussian} for a description) 
 
-In contrast to what previous work has presented, we compute a posterior on structures. This allows us to gain valuable insight into the data that was previously unavailable. 
-We can query the data for the probability of certain structures to hold true. For example, we could be interested in whether or not a trend is present in the data.
-We can also formulate queries using logical operators such as AND and OR. This provides us with a rich language to ask questions about our time series data and let the data speak for itself for finding the answers. We demonstrate this in Fig \ref{fig:query}.
+
+
+and the airline data set describing monthly totals of international airline passengers (\citealp{box2011time}, according to \citealp{duvenaud2013structure}). Both datasets served as illustrations in the Automatic Statistician project. Previous work on automated kernel discovery~\citep{duvenaud2013structure} illustrated the Mauna Loa data using an RQ kernel.
+We resort to the white noise kernel instead of RQ (similar to \citep{lloyd2014automatic}).
 
 \begin{figure}
 \centering
@@ -85,8 +86,100 @@ We take the peak of this distribution ($\text{LIN}+\text{PER}+\text{SE}+\text{WN
 We take the peak of this distribution ($\text{LIN}+\text{PER} \times \text{SE}+\text{WN}$) with the sampled parameters used to generate the samples for the second plot from the top and write it in functional form with parameters. We depict the human readable interpretation of the equation on the bottom.}\label{fig:posterior_airline}
 \end{figure}
 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\myparagraph{Querying time series}
+With our Bayesian approach to structure learning we can gain valuable insights
+into time series data that were previously unavailable.
+This is due to our ability to estimate posterior marginal probabilities over the kernel structure.
+Over this marginal, we define boolean search operations that allow us to query the data
+for the probability of certain structures to hold true globally.
+We write
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+\label{eq:bool_present}
+P(\mathbf{K}) = \frac{1}{N}
+\sum\limits_{n=1}^N f(\mathbf{K}_n)\;\;\text{where}\, f(\mathbf{K}_n) = \begin{cases}
+  1, & \text{if } \mathbf{K} \underset{global}{\in} \mathbf{K}_n, \\
+  0, & \text{otherwise}.
+\end{cases} 
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+to ask whether it is true that a global structure $\mathbf{K}$ is present.
+We can now ask simple questions, for example:
+\begin{quotation}
+Is there white noise in the data?
+\end{quotation}
+where we set $\mathbf{K} = $WN in (\ref{eq:bool_present}).
+We can also formulate more sophisticated search operations using Boolean operators such as AND ($\land$) and OR ($\lor$).
+The AND operator is defined as follows:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+P(\mathbf{K}_a \land \mathbf{K}_b)  = \frac{1}{N}
+\sum\limits_{n=1}^N f(\mathbf{K}_n)\;\;\text{where}\,f(\mathbf{K}_n) = \begin{cases}
+  1, & \text{if } \mathbf{K}_a\, \text{and}\, \mathbf{K}_b  \underset{global}{\in} \mathbf{K}_n, \\
+  0, & \text{otherwise}.
+\end{cases}
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+By estimating $P(\text{LIN} \land \text{WN})$ we can use this operator to ask questions such as 
+\begin{quotation}
+Is there a Linear component AND a white noise in the data? 
+\end{quotation}
+Finally, we define the logical OR as
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+P(\mathbf{K}_a \lor \mathbf{K}_b) = P(\mathbf{K}_a) + P(\mathbf{K}_b) - P(\mathbf{K}_a \land \mathbf{K}_b)
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+which allows us to ask questions about structures that are logically connected with OR, such as:
+\begin{quotation}
+Is there white noise or heteroskedastic noise?
+\end{quotation}
+by estimating $P(\text{LIN} \times \text{WN}\;\;{\large\lor}\;\; \text{WN})$.
+We know that noise can either be heteroskedastic or white,
+and we also know due to simple manipulations using kernel algebra
+that  $\text{LIN} \times \text{WN}$ and $\text{WN}$ are the only possible ways to construct noise with kernel composition, we see that we can generalize the 
+question above to:
+\begin{quotation}
+Is there noise in the data? 
+\end{quotation}
+where we write the marginal posterior on qualative strcture for noise:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}
+P(\mathbf{K}_{\text{noise}}) = P(\text{LIN} \times \text{WN}\;\;{\large\lor}\;\; \text{WN}).
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Note that this allows us to start with general queries and 
+subsequently formulate follow up queries that go into more detail.
+For example, we could start with a general query, such as:
+\begin{quotation}
+What is the probability of a trend, a recurring pattern {\bf and} noise in the data?
+\end{quotation}
+and then follow up with more detailed questions (Fig \ref{fig:query}).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
 \centering
 \input{figs/structureQuery.tex}
 \caption{We can query the data if some logical statements are probable to be true, for example, is it true that there is a trend?}\label{fig:query}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+This way of querying your data for their statistical implications is in stark contrast to what previous research in automatic kernel construction was able to provide.
+We could view our approach as a time series search engine which allows us to test whether or not certain structures can be found
+in an available time series.
+Another way to view this approach is as a new language to interact with the world.
+Real-world observations often come with time-stamps and in form
+of continuous valued sensor measurements.  
+We provide the toolbox to query such observations in a similar manner as
+one would query a knowledge base in a logic programming language.
+
+
+
+
+
+

@@ -1,26 +1,10 @@
 
 % \includegraphics[width=.153\textwidth]{figs/gpSamples/main.png}
 \begin{tikzpicture}
-% level 2
-\node[draw,rectangle, ,minimum width = \textwidth, minimum height = 5cm] (frame) {};
-\node[text width = 11.5cm,xshift=-1.1 cm] (mcmc) {\small$\;\;\;\; \;\;\;\; \;\;P(\mathbf{K})\approx \frac{1}{N}
-\sum\limits_{n=1}^N f(\mathbf{K}_n)\;\;\text{where}\, f(\mathbf{K}_n) = \begin{cases}
-  1, & \text{if } \mathbf{K} \underset{global}{\in} \mathbf{K}_n, \\
-  0, & \text{otherwise}.
-\end{cases}$ \vspace{3 mm}
 
-$P(\mathbf{K}_a \land \mathbf{K}_b) \approx\frac{1}{N}
-\sum\limits_{n=1}^N f(\mathbf{K}_n)\;\;\text{where}\,f(\mathbf{K}_n) = \begin{cases}
-  1, & \text{if } \mathbf{K}_a\, \text{and}\, \mathbf{K}_a  \underset{global}{\in} \mathbf{K}_n, \\
-  0, & \text{otherwise}.
-\end{cases}$\vspace{3 mm}
 
-$P(\mathbf{K}_a \lor \mathbf{K}_b) = P(\mathbf{K}_a) + P(\mathbf{K}_b) - P(\mathbf{K}_a \land \mathbf{K}_b)$
-
-};
-\node[right =0.cm of mcmc] (barplot) {\includegraphics[height=3cm]{figs/barplot.png}};
-% level 2
-\node[below =1.cm of frame] (hyp) {\normalsize \color{blue} What is the probability of a trend, a recurring pattern {\bf and} noise in the data?};
+% level 1
+\node (hyp) {\normalsize \color{blue} What is the probability of a trend, a recurring pattern {\bf and} noise in the data?};
 \node[below = -0.2cm of hyp] (hyp_form) {$P\big((\text{LIN}\lor\text{LIN}\times\text{SE})\land
 (\text{PER}\lor\text{PER}\times\text{SE}\lor\text{PER}\times\text{LIN})\land
 (\text{WN}\lor\text{LIN}\times\text{WN})\big) = 0.36$};
@@ -68,7 +52,7 @@ $P(\mathbf{K}_a \lor \mathbf{K}_b) = P(\mathbf{K}_a) + P(\mathbf{K}_b) - P(\math
 \node[below = -0.2cm of perlin_form] (seper_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/perlin.png}};
 
 
-\draw[->] (frame) -- (hyp);
+
 
 
 \draw[->] (hyp_form) -- (trend);
