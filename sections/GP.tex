@@ -137,7 +137,10 @@ We see that this prior is fully determined by its covariance function.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Covariance Functions}
 The covariance function (or kernel) of a \ac{GP} governs high-level properties of the observed data such as linearity, periodicity and smoothness.
-It comes with few free parameters that we call hyper-parameters.
+It comes with few free parameters that we call hyper-parameters which we refer to as $\theta$.
+We write the parameterized covariance function as $\mathbf{K}_{\theta}(\xbf,\xbf)$ and the
+covariance matrix determined by a parameterized covariance function as $\mathbf{K}_{\theta}$.
+
 Adjusting the hyper-parameters changes non-qualitative attributes such as length
 scales while preserving the qualitative properties of the distribution.
 These high-level properties are compositional via addition and multiplication of different covariance functions. An addition models a global interaction, that is an interaction of two high-level components that is qualitatively not dependent on the input space. An example for this a periodic function with a linear trend.
