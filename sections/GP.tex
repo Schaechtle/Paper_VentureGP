@@ -3,8 +3,9 @@
 a regression relationship.
 Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
 
-The collection of random variables $\br{f(x)}$ (indexed by $x$) represents the
-values of the function $f$ at each location $x$.
+The collection of random variables $\br{f(x_i)}$ (indexed by $i$) represents the
+values of the function $f$ at each location $x_i$.
+We drop the index in the following for readability.
 We write $f \sim \ac{GP}(m,k)$, where $m$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
 That is, $m(x)$ is the prior mean of the random variable $f(x)$, and $k(x,x')$ is the prior covariance of the random variables $f(x)$ and $f(x')$.
 Throughout, we write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that is, the covariance between the random vectors $\{f(x)\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in \xbf'}$.
