@@ -136,27 +136,81 @@ We see that this prior is fully determined by its covariance function.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Covariance Functions}
-The covariance function (or kernel) of a \ac{GP} governs high-level properties of the observed data such as linearity, periodicity and smoothness.
-It comes with few free parameters that we call hyper-parameters which we refer to as $\theta$.
-We write the parameterized covariance function as $\mathbf{K}_{\theta}(\xbf,\xbf)$ and the
-covariance matrix determined by a parameterized covariance function as $\mathbf{K}_{\theta}$.
-
-Adjusting the hyper-parameters changes non-qualitative attributes such as length
-scales while preserving the qualitative properties of the distribution.
-These high-level properties are compositional via addition and multiplication of different covariance functions. An addition models a global interaction, that is an interaction of two high-level components that is qualitatively not dependent on the input space. An example for this a periodic function with a linear trend.
-A multiplication models a local interaction of two components. 
-An example for this is a periodic function with a linearly increasing amplitude. We demonstrate kernel composition with local interactions in the tutorial in Fig. \ref{fig:composition_tutorial}. 
-
-
+The covariance function (or kernel) of a \ac{GP} governs high-level properties of the observed data such as smoothness or linearity. A linear covariance can be written as:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}\label{eq:LIN1}
+    \text{LIN} =   \sigma_1^2(x x^\prime).
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+We can also express periodicity:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}\label{eq:PER1}
+    \text{PER} =  \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg). 
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+By changing these properties we get completely different prior behavior for sampling $\fbf_*$ from a
+\ac{GP} with a linear kernel
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\[
+\fbf_* \sim \mathcal{N}\big(0,\text{LIN}(\xbf,\xbf)\big)
+\]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+as compared to sampling from the prior predictive with a periodic kernel (as depicted in 
+Fig. \ref{fig:composition_tutorial} (c) and (d))
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\[
+\fbf_* \sim \mathcal{N}\big(0,\text{PER}(\xbf,\xbf)\big).
+\]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
 \input{figs/composition/composition.tex}
 \caption{We depict kernel composition. 
-(a) shows raw data (black) generated with a sine function with linearly growing amplitude (blue). 
+(a) shows raw data (black) generated with a sine function with linearly growing amplitude (blue).
+This data is used for all the plots (c-h). 
 (b) shows the linear and the periodic base kernel as well as a composition of both. 
-The multiplication of the two kernels indicates local interaction. The local interaction we account for in this case is the growing amplitude (a). (c-e) show the parameterized kernels that we introduced in (b).
-The parameters are sampled from the posterior distribution on parameters for a \ac{GP} with kernel $\mathbf{K}=\text{LIN} \times \text{PER}$ where the data points from (a) are observed.
-(f-h) show samples from the prior where the parametrization from (c-e) is used, that is, before any data points are observed.
-(i-k) show samples from the posterior, after the data has been observed. Note that the same data is used for all of the plots.}
+The multiplication of the two kernels indicates local interaction. The local interaction we account for in this case is the growing amplitude (a). For each column (c-h) $\bm{\theta}$ is different.(c-e) show samples from the prior
+prior predictive $\fbf_*$ where random parameters are used, that is, we sample before any data points are observed.
+(f-h) show samples from the predictive posterior $\hat\fbf$, after the data has been observed.}
 \label{fig:composition_tutorial}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+These high-level properties are compositional via addition and multiplication of different covariance functions. 
+That means that we can also combine these properties.
+By using multiplication of kernels we can model a local interaction of two components, for example 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{equation}\label{eq:LINxPER}
+    \text{LIN} \times \text{PER} =  \sigma_1^2(x x^\prime)\, \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg) 
+\end{equation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+This results in a combination of the higher level properties of linearity and  periodicity.
+In Fig \ref{fig:composition_tutorial} (e) we depict samples for $\fbf_*$ that are periodic
+with linearly increasing amplitude.
+We consider this a local interaction because the actual interaction depends on the similarity
+of two data points.
+An addition of covariance functions models a global interaction, that is an interaction of two high-level components that is qualitatively not dependent on the input space. An example for this a periodic function with a linear
+trend.
+
+Covariance functions come with  free parameters that we call hyper-parameters which we will
+refer to as $\bm{\theta}$.
+For each kernel type, each $\bm{\theta}$ is different, that is, in (\ref{eq:LIN1}) we have $\theta=\{\sigma_1\}$,
+in (\ref{eq:PER1}) we have $\bm{\theta}=\{\sigma_2,p,\ell\}$ and in 
+(\ref{eq:LINxPER}) we have $\bm{\theta}=\{\sigma_1,\sigma_2,p,\ell\}$.
+Adjusting these hyper-parameters changes lower level qualitative attributes such as length
+scales ($\ell$) while preserving the higher level qualitative properties of the distribution
+such as linearity.
+We write the parameterized covariance function as $\mathbf{K}_{\bm{\theta}}(\xbf,\xbf)$ and the
+covariance matrix determined by a parameterized covariance function as $\mathbf{K}_{\bm{\theta}}$.
+
+When we observe the data, that is we condition on the input-output pairs $\{\xbf,\fbf\}$ we can sample from the 
+predictive posterior $P(\hat\fbf \mid \fbf)$ given $\mathbf{K}_{\bm{\theta}}$ and respectively $\bm{\hat{\mu}}$ and $\hat{\mathbf{K}}_{\bm{\theta}}$.
+If we choose suitable parameters, for example by performing inference, we can capture the underlying dynamics of the data well (see Fig. \ref{fig:composition_tutorial} (f-h)) while sampling $\hat{\fbf}$.
+Note that goodness of fit is not only limited to the parameters. A too simple qualitative structure
+implies unsuitable behaviour, as for example in (Fig. \ref{fig:composition_tutorial} (g)) where additional 
+recurring spikes are introduced to account for the changing amplitude of the true function that 
+generated the data.
+
+
+
+
 
