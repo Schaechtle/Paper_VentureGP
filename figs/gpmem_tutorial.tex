@@ -8,9 +8,9 @@
  %\node[below left of=f_K,xshift=-1.7cm,yshift=-0.1cm] (theta) {$\bm{\theta} \sim P(\bm{\theta})$};
  \node[draw,rectangle,below=1.2cm of start, text width = 8cm] (gpmem) {\centering\texttt{gpmem}\vspace{2mm}
 
-\small$\text{memo table} = (\mathbf{x}_{past},\mathbf{y}_{past})$\vspace{1mm}
+\small$\text{memo table} = (\mathbf{x}_{past},\fbf)$\vspace{1mm}
 
-\small$P(f_{emu}(x) \mid \mathbf{x}_{past},\mathbf{y}_{past})\sim \mathcal{N}(\mu(\mathbf{x}),\mathbf{K}_\theta\big(\mathbf{x},\mathbf{x})\big)$
+\small$P(f_{emu}(x) \mid \mathbf{x}_{past},\fbf)\sim \mathcal{N}(\mu(\mathbf{x}),\mathbf{K}_\theta\big(\mathbf{x},\mathbf{x})\big)$
  };
 %  \node[draw,rectangle,color=ForestGreen,below = .1ex of gpmem,minimum width=1.5cm, minimum height=0.4cm,yshift=0.9cm,xshift=0.3cm] (mark) {};
   \node[draw,rectangle,dashed,right=2cm of K, text width = 3.5cm] (math) {\footnotesize
@@ -33,8 +33,8 @@
 
 \begin{tabular}{l|l}\footnotesize
   \footnotesize$x$ & \footnotesize$f(x)$ \\ \hline
-  \footnotesize $x_1$  &\footnotesize$y_1$ \\
- \footnotesize  $x_2$  & \footnotesize$y_2$ \\
+  \footnotesize $x_1$  &\footnotesize$f_1$ \\
+ \footnotesize  $x_2$  & \footnotesize$f_2$ \\
  \footnotesize$\cdots$ & \footnotesize $\cdots$
  \end{tabular}
  $\;\;\;\;$
