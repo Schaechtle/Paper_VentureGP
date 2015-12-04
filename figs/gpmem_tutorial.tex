@@ -13,14 +13,14 @@
 \small$P(f_{emu}(x) \mid \mathbf{x}_{past},\mathbf{y}_{past})\sim \mathcal{N}(\mu(\mathbf{x}),\mathbf{K}_\theta\big(\mathbf{x},\mathbf{x})\big)$
  };
 %  \node[draw,rectangle,color=ForestGreen,below = .1ex of gpmem,minimum width=1.5cm, minimum height=0.4cm,yshift=0.9cm,xshift=0.3cm] (mark) {};
-  \node[draw,rectangle,dashed,right=2cm of K, text width = 2.5cm] (math) {\footnotesize
- $\mathbf{K}_{\theta} = \text{SE}(x,x^\prime)$\vspace{1mm}
+  \node[draw,rectangle,dashed,right=2cm of K, text width = 3.5cm] (math) {\footnotesize
+ $\text{SE}\,= \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})$\vspace{1mm}
 
- $\theta \;\;\,\,= \{sf,\ell \}$\vspace{1mm}
+ $\theta \;\;\,\,= \{\sigma,\ell \} \rightarrow$ Scope\vspace{1mm}
 
- $sf\;\, \sim P(sf)$\vspace{1mm}
+ $\sigma\;\;\; \sim P(\sigma)\, \rightarrow$ Block 0\vspace{1mm}
 
- $\ell\;\;\;\; \sim P(\ell)$\vspace{1mm}
+ $\ell\;\;\;\, \sim P(\ell)\;\, \rightarrow$ Block 1\vspace{1mm}
 
 
 %\scriptnotesize

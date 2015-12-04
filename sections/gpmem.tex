@@ -56,15 +56,13 @@ $\ftt$ is the aforementioned function which can be evaluated using resources tha
 from outside of Venture.  
 We feed this function into \gpmem\ alongside
 a parameterised kernel $\mathbf{K}$. The hyper-parameters for this kernel are sampled from a 
-prior distribution which is depicted in the top right box. In Venture, we can express this as:
-    \begin{lstlisting}
-    assume sf = tag(quote(hyper_parameter), 0, gamma(1, 1))
-    assume l  = tag(quote(hyper_parameter), 1, gamma(1, 1))
-    assume K  = make_squaredexp(sf, l).
-    \end{lstlisting}
-Note that the hyper-priors over hyper-parameters follows a gamma distribution and we annotate $\texttt{sf}$ and $\texttt{l}$
-as belonging to (i) the scope "hyper-parameter" and (ii) blocks 0 and 1 respectively.
-The squared-exponential kernel (SE) is defined in appendix A.
+prior distribution which is depicted in the top right box. 
+We use a squared exponential covariance function:
+\[
+\text{SE} = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})
+\]
+Note that we annotate $\bm{\theta}=\{\texttt{sf},\texttt{l}\}$ for subsequent
+inference as belonging to (i) the scope "hyper-parameter" and (ii) blocks 0 and 1 respectively.
 
 \gpmem\ implements a memoization table, where all previously
 computed function evaluations are stored. We also initialize a \ac{GP}-prior that
