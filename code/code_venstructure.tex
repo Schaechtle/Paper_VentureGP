@@ -35,10 +35,9 @@ Learning},escapechar=\#]
 #\linenumber{19}#  predict f_compute(get_data_xs(n))
 
 // PERFORMING INFERENCE
-#\linenumber{20}#infer repeat(200, do(
+#\linenumber{20}#infer repeat(2000, do(
 #\linenumber{21}#  mh(quote(grammar), one, 1),
-#\linenumber{22}#  for kernel in K:
-#\linenumber{23}#    mh(quote(parameters$_{\text{kernel}}$), one, 1)))
+#\linenumber{22}#  mh(quote(parameters), one, 2)))
 \end{lstlisting}
 
 \end{minipage}
