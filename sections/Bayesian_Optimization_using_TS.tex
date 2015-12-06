@@ -4,10 +4,10 @@ Thompson sampling~\cite{thompson1933likelihood} is a widely used Bayesian
 framework for addressing the trade-off between exploration and exploitation in
 multi-armed (or continuum-armed) bandit problems.  
 We cast the multi-armed bandit problem as a one-state Markov
-decision process, and describe how Thompson sampling can be used to choose
-actions for that \ac{MDP}.
+decision process (MDP), and describe how Thompson sampling can be used to choose
+actions for that MDP.
 
-Here, an agent is to take a sequence of actions $a_1, a_2,
+The MDP is as follows: An agent is to take a sequence of actions $a_1, a_2,
 \ldots$ from a (possibly infinite) set of possible actions $\Acal$.  After each
 action, a reward $r \in \R$ is received, according to an unknown conditional
 distribution $P_\true\pn{r \mvert a}$.  The agent's goal is to maximize the
@@ -156,7 +156,7 @@ $\argmax_{\texttt{a}} \Ebkt{\texttt{(func a)}}$.
 \end{figure}
 \end{comment}
 \myparagraph{A Mathematical Specification}\label{sec:math-spec}
-Our mathematical specification assert the following properties:
+We now describe a particular case of Thompson sampling with the following properties:
 \begin{itemize}
   \item The regression function has a Gaussian process prior.
   \item The actions $a_1,a_2,\ldots \in \Acal$ are chosen by a Metropolis-like search
@@ -174,9 +174,10 @@ $K$ is a computable (symmetric, positive-semidefinite) function $\Acal \times
 where $R_a$ represents the reward for action $a$.  Computationally, we represent
 a context as a data structure
 \[ \ttheta = (\theta, \abf_\past, \rbf_\past) = (\mu_\prior, K_\prior, \eta, \abf_\past, \rbf_\past), \]
-where $\mu_\prior$ is a procedure to be used as the prior mean function. w.l.o.g. we set $\mu_\prior \equiv 0$.
+where $\mu_\prior$ is a procedure to be used as the prior mean function and
 $K_\prior$ is a procedure to be used as the prior covariance function, parameterized by 
 $\eta$.
+We set $\mu_\prior \equiv 0$.
 
 The posterior mean and covariance for such a context $\ttheta$ are gotten by the
 usual conditioning formulas (assuming, for ease of exposition as above, that the
