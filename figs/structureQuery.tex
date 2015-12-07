@@ -9,7 +9,7 @@
 (\text{PER}\lor\text{PER}\times\text{SE}\lor\text{PER}\times\text{LIN})\land
 (\text{WN}\lor\text{LIN}\times\text{WN})\big) = 0.36$};
 
-%level 3
+%level 2
 \node[below =.5cm of hyp_form , xshift=-3cm] (trend) {\color{blue} Is there a trend?};
 \node[below = -0.2cm of trend] (trend_form) {$P(\text{LIN}\lor\text{LIN}\times\text{SE}) = 0.65$};
 \node[below = -0.2cm of trend_form] (trend_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/trend.png}};
@@ -18,8 +18,8 @@
 \node[below = -0.2cm of noise] (noise_form) {$P(\text{WN}\lor\text{LIN}\times\text{WN}) = 0.75$};
 \node[below = -0.2cm of noise_form] (noise_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/noise.png}};
 
-% level 4
-\node[below =.5cm of trend_png , xshift=-2cm] (linear_trend) {\color{blue} A linear trend?};
+% level 3
+\node[below =.5cm of trend_png , xshift=-2.5cm] (linear_trend) {\color{blue} A linear trend?};
 \node[below = -0.2cm of linear_trend] (linear_trend_form) {$P(\text{LIN}) = 0.63$};
 \node[below = -0.2cm of linear_trend_form] (linear_trend_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/lin.png}};
 
@@ -31,24 +31,24 @@
 \node[below = -0.2cm of het_noise] (het_noise_form) {$P(\text{LIN}\times\text{WN}) = 0$};
 \node[below = -0.2cm of het_noise_form] (het_noise_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/linwn.png}};
 
-\node[below =.5cm of noise_png, xshift=2cm] (white_noise) {\color{blue} White  noise? };
+\node[below =.5cm of noise_png, xshift=2.5cm] (white_noise) {\color{blue} White  noise? };
 \node[below = -0.2cm of white_noise] (white_noise_form) {$P(\text{WN}) = 0.75$};
 \node[below = -0.2cm of white_noise_form] (white_noise_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/wn.png}};
 
-% level 5
-\node[below =6.2cm of hyp_form] (recurring) {\color{blue} Is there repeating structure?};
+% level 4
+\node[below =6.8cm of hyp_form] (recurring) {\color{blue} Is there repeating structure?};
 \node[below = -0.2cm of recurring] (recurring_form) {$P(\text{PER}\lor\text{PER}\times\text{SE}\lor\text{PER}\times\text{LIN}) = 0.73$};
 \node[below = -0.2cm of recurring_form] (recurring_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/recurring.png}};
 %\draw[->,dashed] (barplot) -- (mcmc);
 
-% level 6
+% level 5
 \node[below =.5cm of recurring_png] (seper_form) {$\text{PER}\times\text{SE}=0.34$};
 \node[below = -0.2cm of seper_form] (seper_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/seper.png}};
 
-\node[below =.5cm of recurring_png, xshift=-3cm] (per_form) {$\text{PER}=0.32$};
+\node[below =.5cm of recurring_png, xshift=-3.5cm] (per_form) {$\text{PER}=0.32$};
 \node[below = -0.2cm of per_form] (per_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/per.png}};
 
-\node[below =.5cm of recurring_png,xshift=3cm] (perlin_form) {$\text{PER}\times\text{LIN}=0.07$};
+\node[below =.5cm of recurring_png,xshift=3.5cm] (perlin_form) {$\text{PER}\times\text{LIN}=0.07$};
 \node[below = -0.2cm of perlin_form] (seper_png) {\includegraphics[width=.15\textwidth]{figs/gpSamples/perlin.png}};
 
 
