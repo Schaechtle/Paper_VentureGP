@@ -4,15 +4,17 @@
 \belowcaptionskip=-10pt
 \begin{lstlisting}[mathescape,label=alg:structureVent,basicstyle=\selectfont\ttfamily,numbers=none,caption={Structure
 Learning},escapechar=\#]
-// GRAMMAR FOR KERNEL STRUCTURE
-#\linenumber{1}#assume kernels = list(se, wn, lin, per, rq) // defined as above
+// Initialize the set of base kernels 
+#\linenumber{1}#assume kernels = list(se, wn, lin, per) // defined as above
 
-// prior on the number of kernels
-#\linenumber{2}#assume p_number_k = uniform_structure(n)
+// Assign prior on the number of kernels. e.g., P(n=1)=0.5, P(n=2)=...
+#\linenumber{2}#assume prior_num_kernels = uniform_structure(n)
+
+// Generate a random subset of possible base kernels
 #\linenumber{3}#assume subset_kernels = tag("grammar", 0,
-#\linenumber{4}#                            subset(kernels, p_number_k))
+#\linenumber{4}#                            subset(kernels, prior_num_kernels))
 
-// kernel composition
+// Construct kernel composition
 #\linenumber{5}#assume composition = proc(l) {
 #\linenumber{6}#  if (size(l) <= 1) {
 #\linenumber{7}#    first(l)
@@ -27,15 +29,15 @@ Learning},escapechar=\#]
 
 #\linenumber{16}#assume K = tag("grammar", 1, composition(subset_kernels))
 
-// APPLY GPMEM
+// Apply gpmem 
 #\linenumber{17}#assume (f_compute, f_emu) = gpmem(f_look_up, K)
 
 // Probe all data points
 #\linenumber{18}#for n ... N
 #\linenumber{19}#  predict f_compute(get_data_xs(n))
 
-// PERFORMING INFERENCE
-#\linenumber{20}#infer repeat(2000, do(
+// Perform inference
+#\linenumber{20}#infer repeat(200, do(
 #\linenumber{21}#  mh("grammar", one, 1),
 #\linenumber{22}#  mh("parameters", one, 2)))
 \end{lstlisting}
