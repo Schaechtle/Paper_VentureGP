@@ -95,8 +95,11 @@ work presented in Automatic Statistician. We will illustrate our results with tw
 \begin{figure}
 \centering
 \input{figs/structure_posterior.tex}
-\caption{\small Posterior of structure and qualitative, human interpretable reading. We take the raw data (top), compute a posterior distribution on structures (red samples and bar plot).
-We take the peak of this distribution ($\text{LIN}+\text{PER}+\text{SE}+\text{WN}$) with the sampled parameters used to generate the samples for the second plot from the top and write it in functional form with parameters. We depict the human readable interpretation of the equation on the bottom.}\label{fig:posterior}
+\caption{\small Structure Learning. Starting with raw data (a), we fit a \ac{GP}
+(b) and compute the posterior distribution on structures (c). We take a sample
+of the peak of this distribution ($\text{LIN}+\text{PER}+\text{SE}+\text{WN}$)
+including its parameters and write it in functional form (d). We depict the
+human readable interpretation (e). We used (d) to plot (b).}\label{fig:posterior}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We illustrate results in Fig \ref{fig:posterior}. In Fig \ref{fig:posterior} (a) we depict the raw data. 
@@ -146,8 +149,11 @@ data set describing monthly totals of international airline passengers (\citealp
 \begin{figure}
 \centering
 \input{figs/structure_posterior_airline.tex}
-\caption{\small Posterior of structure and qualitative, human interpretable reading. We take the raw data (top), compute a posterior distribution on structures (red samples and bar plot).
-We take the peak of this distribution ($\text{LIN}+\text{PER} \times \text{SE}+\text{WN}$) with the sampled parameters used to generate the samples for the second plot from the top and write it in functional form with parameters. We depict the human readable interpretation of the equation on the bottom.}\label{fig:posterior_airline}
+\caption{\small Structure Learning. Starting with raw data (a), we fit a \ac{GP}
+(b) and compute the posterior distribution on structures (c). We take a sample
+of the peak of this distribution ($\text{LIN}+\text{PER} \times \text{SE}+\text{WN}$)
+including its parameters and write it in functional form (d). We depict the
+human readable interpretation (e). We used (d) to plot (b).}\label{fig:posterior_airline}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
