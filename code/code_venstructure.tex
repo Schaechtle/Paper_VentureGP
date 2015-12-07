@@ -9,7 +9,7 @@ Learning},escapechar=\#]
 
 // prior on the number of kernels
 #\linenumber{2}#assume p_number_k = uniform_structure(n)
-#\linenumber{3}#assume subset_kernels = tag(quote(grammar), 0,
+#\linenumber{3}#assume subset_kernels = tag("grammar", 0,
 #\linenumber{4}#                            subset(kernels, p_number_k))
 
 // kernel composition
@@ -25,7 +25,7 @@ Learning},escapechar=\#]
 #\linenumber{14}#  }
 #\linenumber{15}#}
 
-#\linenumber{16}#assume K = tag(quote(grammar), 1, composition(subset_kernels))
+#\linenumber{16}#assume K = tag("grammar", 1, composition(subset_kernels))
 
 // APPLY GPMEM
 #\linenumber{17}#assume (f_compute, f_emu) = gpmem(f_look_up, K)
@@ -36,8 +36,8 @@ Learning},escapechar=\#]
 
 // PERFORMING INFERENCE
 #\linenumber{20}#infer repeat(2000, do(
-#\linenumber{21}#  mh(quote(grammar), one, 1),
-#\linenumber{22}#  mh(quote(parameters), one, 2)))
+#\linenumber{21}#  mh("grammar", one, 1),
+#\linenumber{22}#  mh("parameters", one, 2)))
 \end{lstlisting}
 
 \end{minipage}

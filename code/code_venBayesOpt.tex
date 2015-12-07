@@ -3,8 +3,8 @@
 \small
 \belowcaptionskip=-10pt
 \begin{lstlisting}[caption={Bayesian optimization using \gpmem},mathescape,numbers=none,label=alg:bayesopt,escapechar=\#]
-#\linenumber{1}#assume sf = tag(quote(hyper), 0, uniform_continuous(0, 10))
-#\linenumber{2}#assume l = tag(quote(hyper), 1, uniform_continuous(0, 10))
+#\linenumber{1}#assume sf = tag("hyper", 0, uniform_continuous(0, 10))
+#\linenumber{2}#assume l = tag("hyper", 1, uniform_continuous(0, 10))
 #\linenumber{3}#assume se = make_squaredexp(sf, l)
 #\linenumber{4}#assume blackbox_f = get_bayesopt_blackbox()
 #\linenumber{5}#assume (f_compute, f_emulate) = gpmem(blackbox_f, se)
@@ -28,7 +28,7 @@
   // Probe V at the point mc_argmax(emulate_pointwise)
 #\linenumber{16}#  predict(f_compute(unquote(mc_argmax(emulate_pointwise)))),
   // Infer hyperparameters
-#\linenumber{17}#  mh(quote(hyper), one, 50)));
+#\linenumber{17}#  mh("hyper", one, 50)));
 \end{lstlisting}
 
 \end{minipage}
