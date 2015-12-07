@@ -51,7 +51,7 @@ $f(\xtt_1),\ldots,f(\xtt_k)$ will in general be dependent.
 % Panel 1
 We explain how \gpmem, the statistical memoizer with \ac{GP}-prior, works using a simple tutorial
 (Fig. \ref{fig:gpmem_tutorial}). 
-The top panel of this figure sketches the schematic of \gpmem.
+The top panel (Fig. \ref{fig:gpmem_tutorial}, (a)) of this figure sketches the schematic of \gpmem.
 $\ftt$ is the external process that we memoize. It can be evaluated using resources that potentially come
 from outside of Venture.  
 We feed this function into \gpmem\ alongside
@@ -88,7 +88,7 @@ the memoization table.
 % Panel 2
 We can either define the function f that serves as as input for \gpmem\
  natively in Venture
-(as shown in the second panel Fig. \ref{fig:gpmem_tutorial}) or we interleave Venture with foreign code. 
+(as shown in the Fig. \ref{fig:gpmem_tutorial} (b)) or we interleave Venture with foreign code. 
 This can be useful when $\ftt$ is computed with the help of outside resources.
 Before making any observations or calls to $\ftt$
 we can sample from the prior at the inputs from -20 to 20 using the emulator:
@@ -114,7 +114,7 @@ where the second line corresponds to:
 \Bigg).
 \]
 % Panel 3
-In the following panel of Fig. \ref{fig:gpmem_tutorial}, we probe the external function $\ftt$ at point 12.6 and memoize it's result by calling 
+In Fig. \ref{fig:gpmem_tutorial} (c), we probe the external function $\ftt$ at point 12.6 and memoize it's result by calling 
    \begin{lstlisting}
     predict f_compute (12.6).
     \end{lstlisting}
@@ -122,11 +122,12 @@ When we subsequently sample from the emulator, that is compute the $\hat\fbf$ at
 $\hat\xbf= \bmat{-20, \cdots, 20}^\top$. We see how the posterior which shifts from uncertainty to near certainty close to the input 12.6.
 
 % Panel 4
-We can repeat the process at a different point (probing point -6.4 in the fourth panel of Fig. \ref{fig:gpmem_tutorial}) to see that we gain certainty about another part of the curve. 
+We can repeat the process at a different point (probing point -6.4 in Fig.
+\ref{fig:gpmem_tutorial} (d)) to see that we gain certainty about another part of the curve. 
 
 % Panel 5
 We can add information to $\texttt{f}_\text{emu}$ about presumable value pairs of $\ftt$ without calling $\texttt{f}_\text{compute}$
-(fifth panel, Fig. \ref{fig:gpmem_tutorial}).
+(Fig. \ref{fig:gpmem_tutorial} (e)).
 If a friend tells us the value of $\ftt$ we can call observe to store this information in the incorporated observations for $\texttt{f}_\text{emu}$ only:
     \begin{lstlisting}
     observe f_emu( -3.1) = 2.60.
@@ -146,4 +147,7 @@ We can take 50 \ac{MH} steps by calling that where we take an \ac{MH} steps for 
    \begin{lstlisting}
     infer mh( 'hyper-parameter, one, 50).
     \end{lstlisting}
-The newly inferred hyper-parameters allow us now adequately reflect uncertainty about the curve given all incorporated observations (compare bottom panel on the right with the samples before inference, one panel above).
+The newly inferred hyper-parameters allow us now adequately reflect uncertainty
+about the curve given all incorporated observations (compare
+Fig. \ref{fig:gpmem_tutorial}, bottom panel (f) on  the right with the samples
+before inference, one panel above (e)).
