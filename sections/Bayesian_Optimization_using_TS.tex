@@ -1,4 +1,4 @@
-The final application demonstrating the power of \gpmem\ demonstates its use in Bayesian optimization. We introduce Thompson sampling, the basic solution strategy
+The final application demonstrating the power of \gpmem\ illustrates its use in Bayesian optimization. We introduce Thompson sampling, the basic solution strategy
 underlying the Bayesian optimization with \gpmem.
 Thompson sampling~\cite{thompson1933likelihood} is a widely used Bayesian
 framework for addressing the trade-off between exploration and exploitation in
@@ -18,11 +18,11 @@ is a believed model of the conditional distributions $\{P\pn{r \mvert a}\}_{a
 \in \Acal}$, or at least, a believed statistic of these conditional
 distributions which is sufficient for deciding an action $a$.  If actions are
 chosen so as to maximize expected reward, then one such sufficient statistic is
-the believed conditional mean $V\pn{a \mvert \ttheta} = \Ebkt{r \mvert
+the believed conditional mean $V \pn{a \mvert \ttheta} = \Ebkt{r \mvert
 a;\ttheta}$, which can be viewed as a believed value function.  For
 consistency with what follows, we will assume our context $\ttheta$ takes the
-form $(\theta, \abf_\past, \rbf_\past)$ where $\abf_\past$ is the vector of past
-actions, $\rbf_\past$ is the vector of their rewards, and $\theta$ (the
+form $(\thetabf, \abf, \rbf)$ where $\abf$ is the vector of past
+actions, $\rbf$ is the vector of their rewards, and $\bm{\theta}$ (the
 ``semicontext'') contains any other information that is included in the context.
 
 In this setup, Thompson sampling has the following steps:
@@ -31,20 +31,20 @@ In this setup, Thompson sampling has the following steps:
   Repeat as long as desired:
   \begin{enumerate}
     \item\label{itm:thompson-step-sample} {\bf Sample.} Sample a semicontext
-      $\theta \sim P(\theta)$.
+      $\thetabf \sim P(\thetabf)$.
     \item\label{itm:thompson-step-search} {\bf Search (and act).} Choose an
       action $a \in \Acal$ which (approximately) maximizes $V\pn{a \mvert
-      \ttheta} = \Ebkt{r \mvert a; \ttheta} = \Ebkt{r \mvert a;\,\theta,
-      \abf_\past, \rbf_\past}$.
+      \ttheta} = \Ebkt{r \mvert a; \ttheta} = \Ebkt{r \mvert a;\,\thetabf,
+      \abf, \rbf}$.
     \item {\bf Update.} Let $r_\true$ be the reward received for action $a$.
-      Update the believed distribution on $\theta$, i.e., $P(\theta) \gets
-      P_\rmnew(\theta)$ where $P_\rmnew(\theta) = P\pn{\theta \mvert a \mapsto
+      Update the believed distribution on $\thetabf$, i.e., $P(\thetabf) \gets
+      P_\rmnew(\thetabf)$ where $P_\rmnew(\thetabf) = P\pn{\thetabf \mvert a \mapsto
       r_\true}$.
   \end{enumerate}
   \caption{Thompson sampling.}
   \label{alg:thompson}
 \end{algorithm}
-Note that when $\Ebkt{r|a;\ttheta}$ (under the sampled value of $\theta$ for
+Note that when $\Ebkt{r|a;\ttheta}$ (under the sampled value of $\thetabf$ for
 some points $a$) is far from the true value $\Ebkt[P_\true]{r \mvert a}$, the
 chosen action $a$ may be far from optimal, but the information gained by probing
 action $a$ will improve the belief $\ttheta$.  This amounts to ``exploration.''
@@ -74,7 +74,7 @@ exploit by choosing actions in regions it knows to have high value.
 
 Typically, when Thompson sampling is implemented, the search over contexts
 $\ttheta \in \Theta$ is limited by the choice of representation.  In
-traditional programming environments, $\theta$ often consists of a few
+traditional programming environments, $\thetabf$ often consists of a few
 numerical parameters for a family of distributions of a fixed functional
 form.  With work, a mixture of a few functional forms is possible; but
 without probabilistic programming machinery, implementing a rich context
@@ -95,8 +95,8 @@ statistical memoizer, as in Listing \ref{lst:thompson-mem-em} (see also Figure
 \ref{fig:slide1}).  Here and in what follows, to simplify the treatment, we
 assume the true reward function is deterministic, i.e., for each fixed $a$, the
 conditional distribution $P_\true\pn{r \mvert a}$ is a delta distribution.  We
-thus treat the notations $a,r,\abf_\past,\rbf_\past$ as synonyms for
-$x,y,\xbf_\past,\ybf_\past$, respectively, differing only in that they carry the
+thus treat the notations $a,r,\abf,\rbf$ as synonyms for
+$x,f,\xbf,\fbf$, respectively, differing only in that they carry the
 connotations of ``action'' and ``reward.''
 
 \begin{mdframed}
@@ -142,7 +142,7 @@ $\argmax_{\texttt{a}} \Ebkt{\texttt{(func a)}}$.
     Top: Diagrammatic representation of Thompson sampling using the statistical
     memoizer $\mm$.  The emulator $\ftt_\emu$ is used to choose a point
     $\xtt_\rmnext$ to acquire; the acquired data are incorporated into the memo
-    table and the parameters $\theta$ are updated according to this new
+    table and the parameters $\thetabf$ are updated according to this new
     information.
     Middle: Mathematical specification of the statistical emulator $\ftt_\emu$.
     Bottom: Depiction of the state of the emulator after zero, one, and two
@@ -167,52 +167,31 @@ We now describe a particular case of Thompson sampling with the following proper
 
 In this version of Thompson sampling, the contexts $\ttheta$ are Gaussian
 processes over the action space $\Acal = [-20, 20] \subseteq \R$.  That is,
-\[ V \sim \GP(\mu, K), \]
-where the mean $\mu$ is a computable function $\Acal \to \R$ and the covariance
-$K$ is a computable (symmetric, positive-semidefinite) function $\Acal \times
+\[ V \sim \mathcal{GP}\big(\mubf(a), \Kbf(a,a)\big), \]
+where the mean $\mubf$ is a computable function $\Acal \to \R$ and the covariance
+$\Kbf$ is a computable (symmetric, positive-semidefinite) function $\Acal \times
 \Acal \to \R$.  This represents a Gaussian process $\br{R_a}_{a \in \Acal}$,
-where $R_a$ represents the reward for action $a$.  Computationally, we represent
+where $R_a$ represents the reward for action $a$. We write past actions as
+$\abf$ and past rewards as $\rbf$. Computationally, we represent
 a context as a data structure
-\[ \ttheta = (\theta, \abf_\past, \rbf_\past) = (\mu_\prior, K_\prior, \eta, \abf_\past, \rbf_\past), \]
-where $\mu_\prior$ is a procedure to be used as the prior mean function and
-$K_\prior$ is a procedure to be used as the prior covariance function, parameterized by 
-$\eta$.
-We set $\mu_\prior \equiv 0$.
+\[ \ttheta = (\thetabf, \abf, \rbf) = (\bm{\mu}, \Kbf,\thetabf, \abf, \rbf), \]
+where $\mubf$ is a procedure to be used as the prior mean function and
+$\Kbf$ is a procedure to be used as the prior covariance function, parameterized by 
+$\thetabf$.
+As above set $\bm{\mu} \equiv 0$.
 
-The posterior mean and covariance for such a context $\ttheta$ are gotten by the
-usual conditioning formulas (assuming, for ease of exposition as above, that the
-prior mean is zero):\footnote{
-  Here, for vectors $\abf = \pn{a_i}_{i=1}^{n}$ and $\abf' =
-  \pn{a'_i}_{i=1}^{n'}$, $\mu(\abf)$ denotes the vector
-  $\pn{\mu(a_i)}_{i=1}^{n}$ and $K(\abf,\abf')$ denotes the matrix
-  $\begin{bmatrix} K(a_i, a'_j) \end{bmatrix}_{1 \leq i \leq n, 1 \leq j
-  \leq n'}$.
-}
-\begin{align*}
-  \mu(\abf)
-  &= \mu\pn{\abf \mvert \abf_\past, \rbf_\past} \\
-  &= K_\prior(\abf, \abf_\past)
-     \,K_\prior(\abf_\past, \abf_\past)^{-1}
-     \,\rbf_\past \\
-  K(\abf, \abf)
-  &= K\pn{\abf, \abf \mvert \abf_\past, \rbf_\past} \\
-  &= K_\prior(\abf, \abf)
-     - K_\prior(\abf, \abf_\past)
-       \,K_\prior(\abf_\past, \abf_\past)^{-1}
-       \,K_\prior(\abf_\past, \abf).
-\end{align*}
 Note that the context space $\Theta$ is not a finite-dimensional parametric
-family, since the vectors $\abf_\past$ and $\rbf_\past$ grow as more samples are
+family, since the vectors $\abf$ and $\rbf$ grow as more samples are
 taken.  $\Theta$ is, however, representable as a computational
 procedure together with parameters and past samples, as we do in the
-representation $\ttheta = (\mu_\prior, K_\prior, \eta, \abf_\past, \rbf_\past)$.
+representation $\ttheta = (\mubf, \Kbf, \eta, \abf, \rbf)$.
 
 We combine the Update and Sample steps of Algorithm \ref{alg:thompson} by
 running a Metropolis--Hastings (MH) sampler whose stationary distribution is the
-posterior $P\pn{\theta \mvert \abf_\past, \rbf_\past}$.  The functional forms of
-$\mu_\prior$ and $K_\prior$ are fixed in our case, so inference is only done
-over the parameters $\eta = \br{\sigma,\ell}$; hence we equivalently write
-$P\pn{\sigma,\ell \mvert \abf_\past, \rbf_\past}$ for the stationary
+posterior $P\pn{\thetabf \mvert \abf, \rbf}$.  The functional forms of
+$\mubf$ and $\Kbf$ are fixed in our case, so inference is only done
+over the parameters $\thetabf = \br{\sigma,\ell}$; hence we equivalently write
+$P\pn{\sigma,\ell \mvert \abf, \rbf}$ for the stationary
 distribution.  We make MH proposals to one variable at a time, using the prior
 as proposal distribution:
 \[
@@ -233,9 +212,9 @@ The MH acceptance probability for such a proposal is
     }
   \cdot
   \frac{
-    P\pn{\abf_\past,\rbf_\past \mvert \sigma',\ell'}
+    P\pn{\abf,\rbf \mvert \sigma',\ell'}
     }{
-    P\pn{\abf_\past,\rbf_\past \mvert \sigma,\ell}
+    P\pn{\abf,\rbf \mvert \sigma,\ell}
     }}
 \]
 Because the priors on $\sigma$ and $\ell$ are uniform in our case, the term
@@ -244,21 +223,21 @@ involving $Q_\proposal$ equals $1$ and we have simply
   P_\accept\pn{\sigma',\ell' \mvert \sigma,\ell}
   &=
   \min\br{1,\ \frac{
-    P\pn{\abf_\past,\rbf_\past \mvert \sigma',\ell'}
+    P\pn{\abf,\rbf \mvert \sigma',\ell'}
     }{
-    P\pn{\abf_\past,\rbf_\past \mvert \sigma,\ell}
+    P\pn{\abf,\rbf \mvert \sigma,\ell}
     }} \\[2mm]
   &=
   \min\bigg\{1,\ \exp\bigg( -\frac12\bigg(
-    \rbf_\past^T K_\prior\pn{\abf_\past, \abf_\past \mvert \sigma', \ell'}^{-1} \rbf_\past \\
+    \rbf^T \Kbf\pn{\abf, \abf \mvert \sigma', \ell'}^{-1} \rbf \\
   & \qquad\qquad\qquad\qquad\qquad -
-    \rbf_\past^T K_\prior\pn{\abf_\past, \abf_\past \mvert \sigma, \ell}^{-1} \rbf_\past
+    \rbf^T \Kbf\pn{\abf, \abf \mvert \sigma, \ell}^{-1} \rbf
   \bigg)\bigg)\bigg\}.
 \end{align*}
 The proposal and acceptance/rejection process described above define a
 transition operator $\tau_\update$ which is iterated a specified number of
 times; the resulting state of the MH Markov chain is taken as the sampled
-semicontext $\theta$ in Step \ref{itm:thompson-step-sample} of Algorithm
+semicontext $\thetabf$ in Step \ref{itm:thompson-step-sample} of Algorithm
 \ref{alg:thompson}.
 
 For Step \ref{itm:thompson-step-search} (Search) of Thompson sampling, we
@@ -273,11 +252,11 @@ probability of such a proposal is
 \[ P_\accept\pn{a' \mvert a} = \min\br{1,\ \exp\pn{-E\pn{a' \mvert a}}}, \]
 where the energy function $E\pn{\bullet \mvert a}$ is given by a Monte Carlo
 estimate of the difference in value from the current action:
-\[ E\pn{a' \mvert a} = -\frac1s \pn{\muhat(a') - \muhat(a)} \]
+\[ E\pn{a' \mvert a} = -\frac1s \pn{\widetilde{\mu}(a') - \widetilde{\mu}(a)} \]
 where
-\[ \muhat(a) = \frac{1}{N_\avg} \sum_{i=1}^{N_\avg} \widetilde{r}_{i,a} \]
+\[ \widetilde{\mu}(a) = \frac{1}{N_\avg} \sum_{i=1}^{N_\avg} \widetilde{r}_{i,a} \]
 and
-\[ \widetilde{r}_{i,a} \sim \Ncal(\mu(a), K(a,a)) \]
+\[ \widetilde{r}_{i,a}=\hat{f} \sim \Ncal(\hat\mubf, \hat\Kbf)) \]
 and $\br{\widetilde{r}_{i,a}}_{i=1}^{N_\avg}$ are i.i.d.\ for a fixed $a$.
 Here the temperature parameter $s \geq 0$ and the population size $N_\avg$ are
 specified ahead of time.  Proposals of estimated value higher than that of the current action are
@@ -288,9 +267,9 @@ The rate of the decay is determined by the temperature parameter $s$,
 where high temperature corresponds to generous acceptance probabilities.
 For $s=0$, all proposals of lower value are rejected; for $s=\infty$, all
 proposals are accepted.
-For points $a$ at which the posterior mean $\mu(a)$ is low but the
-posterior variance $K(a,a)$ is high, it is possible (especially when
-$N_\avg$ is small) to draw a ``wild'' value of $\muhat(a)$, resulting in a
+For points $a$ at which the posterior mean $\hat\mubf$ is low but the
+posterior variance $\hat\Kbf$ is high, it is possible (especially when
+$N_\avg$ is small) to draw a ``wild'' value of $\widetilde{\mu}(a)$, resulting in a
 favorable acceptance probability.
 
 
