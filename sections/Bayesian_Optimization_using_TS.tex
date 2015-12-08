@@ -59,7 +59,46 @@ exploit by choosing actions in regions it knows to have high value.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\linewidth]{figs/slide2.pdf}
+\begin{overpic}[width=1.05\textwidth]{figs/slide2.pdf}
+\put(150,300){{\parbox{0.4\linewidth}{%
+    \tiny
+    \begin{align*}
+	E\pn{a' \mvert a} &= -\frac1s \pn{\widetilde{\mu}(a') -
+	\widetilde{\mu}(a)} \\
+	\widetilde{\mu}(a) &= \frac{1}{N_\avg} \sum_{i=1}^{N_\avg}
+	\widetilde{r}_{i,a}i\\ 
+	\widetilde{r}_{i,a}=\hat{f} &\sim \Ncal(\hat\mubf, \hat\Kbf\mid
+\sigma,\ell,\abf,\rbf)\\ 
+	Q_\proposal\pn{a' \mvert a} &\sim \Ncal(a,\,\propstd^2)
+    \end{align*}}}}
+\put(118,326){$\tau_\search$:}
+\put(62,50){{\parbox{0.4\linewidth}{%
+    \tiny
+    \begin{align*}
+  P(\sigma,\ell \mid \abf,\rbf) &\propto \exp \big \{ {-\frac{1}{2}}\rbf^\top
+\Kbf(\abf,\abf)^{-1}\rbf \big \}\\
+  Q_\proposal\pn{\sigma',\ell \mvert \sigma,\ell} &= P(\sigma')\\
+  Q_\proposal\pn{\sigma,\ell' \mvert \sigma,\ell} &= P(\ell')\\
+  P_\accept\pn{\sigma',\ell' \mvert \sigma,\ell,\abf,\rbf}
+  &=
+   \frac{
+    P\pn{\sigma}P\pn{\ell}
+    }{
+    P\pn{\sigma'}P\pn{\ell'}
+    } 
+   \exp\bigg \{ {-\frac12}\big(
+    \rbf^T \Kbf\pn{\abf, \abf \mvert \sigma', \ell'}^{{-1}} \rbf - 
+    \rbf^T \Kbf\pn{\abf, \abf \mvert \sigma, \ell}^{{-1}} \rbf
+  \big)\bigg \}\\
+   K(\abf,\abf)&=\text{SE}=\bigg[\sigma^2 \exp \big \{{-\frac{a_1 -
+a_2)^2}{2\ell}}\big \}\bigg]_{a_1,a_2 \in \abf}
+    \end{align*}}}}
+\put(65,107){$\tau_\update$:}
+\put(252,65){\bigg \} \footnotesize MH}
+\put(250,85){ \} \footnotesize True posterior }
+%\put(105,107){\footnotesize True Posterior}
+%\put(105,90){\footnotesize MH:}
+\end{overpic}
   \caption{
     Two possible actions (in green) for an iteration of Thompson sampling.  The
     believed distribution on the value function $V$ is depicted in red.  In this
