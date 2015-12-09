@@ -268,13 +268,26 @@ and then follow up with more detailed questions (Fig \ref{fig:query}).
 \begin{figure}
 \centering
 \input{figs/structureQuery.tex}
-\caption{We can query the data to see if some logical statements are probable to be
-true. We start at the top with a fairly general question. We do this with the
-help of the logical operators defined above. We then ask more specific follow-up
-questions, for example, is it true that there is noise in the data? If we find it probable
-that there is noise than we can drill even deeper asking whether or not the data
-supports the hypothesis that there is
-heteroskedastic noise.}\label{fig:query}
+\caption{{\bf Querying structural motifs in in time series using posterior inference
+over kernel structure.} The kernel structure serves as a way to formulate
+natural language questions about the data (blue). The initial question of interest
+(top) is a fairly
+general one: "What is the probability of a trend, a recurring
+pattern and noise in the data?" Below the natural language version of this
+question, the same question is formulated as an inference problem (black) over the
+marginal probability on kernels with Boolean operators AND ($\land$) and OR ($\lor$). 
+To gain  a deeper understanding of specific motifs in the time series more specific queries can
+be written.
+On the right, a query asks whether there is noise in the data (blue) by computing the disjunction of the marginal
+of a global white noise kernel and a multiplication between a linear and a white
+noise kernel (black). Samples from the predictive prior $\fbf_*$ of such kernels give an
+indication of the qualitative aspects that a kernel structure implies (coloured curves below
+the marginal). 
+If the probability that there is noise in the data is high then it makes sense
+to drill even deeper asking more detailed questions. With regards to noise, this
+translates to querying whether or not the data supports the hypothesis that there is
+heteroskedastic noise or white noise. Queries for motifs of repeating structure
+are shown in the middle of the tree, queries related to trends on the left.}\label{fig:query}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 This way of querying your data for their statistical implications is in stark contrast to what previous research in automatic kernel construction was able to provide.
