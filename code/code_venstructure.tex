@@ -5,14 +5,14 @@
 \begin{lstlisting}[mathescape,label=alg:structureVent,basicstyle=\selectfont\ttfamily,numbers=none,caption={Structure
 Learning},escapechar=\#]
 // Initialize the set of base kernels 
-#\linenumber{1}#assume kernels = list(se, wn, lin, per) // defined as above
+#\linenumber{1}#assume kernels = list(se, wn, lin, per); // defined as above
 
 // Assign prior on the number of kernels. e.g., P(n=1)=0.5, P(n=2)=...
-#\linenumber{2}#assume prior_num_kernels = uniform_structure(n)
+#\linenumber{2}#assume prior_num_kernels = uniform_structure(n);
 
 // Generate a random subset of possible base kernels
 #\linenumber{3}#assume subset_kernels = tag("grammar", 0,
-#\linenumber{4}#                            subset(kernels, prior_num_kernels))
+#\linenumber{4}#                            subset(kernels, prior_num_kernels));
 
 // Construct kernel composition
 #\linenumber{5}#assume composition = proc(l) {
@@ -25,21 +25,21 @@ Learning},escapechar=\#]
 #\linenumber{12}#       mult_funcs(first(l), composition(rest(l)))
 #\linenumber{13}#    }
 #\linenumber{14}#  }
-#\linenumber{15}#}
+#\linenumber{15}#};
 
-#\linenumber{16}#assume K = tag("grammar", 1, composition(subset_kernels))
+#\linenumber{16}#assume K = tag("grammar", 1, composition(subset_kernels));
 
 // Apply gpmem 
-#\linenumber{17}#assume (f_compute, f_emu) = gpmem(f_look_up, K)
+#\linenumber{17}#assume (f_compute, f_emu) = gpmem(f_look_up, K);
 
 // Probe all data points
 #\linenumber{18}#for n ... N
-#\linenumber{19}#  predict f_compute(get_data_xs(n))
+#\linenumber{19}#  predict f_compute(get_data_xs(n));
 
 // Perform inference
 #\linenumber{20}#infer repeat(200, do(
 #\linenumber{21}#  mh("grammar", one, 1),
-#\linenumber{22}#  mh("parameters", one, 2)))
+#\linenumber{22}#  mh("parameters", one, 2)));
 \end{lstlisting}
 
 \end{minipage}
