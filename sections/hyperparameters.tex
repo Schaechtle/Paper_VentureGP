@@ -15,11 +15,13 @@ We can apply \gpmem\ for regression in a hierarchical Bayesian setting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In a Bayesian treatment of  hyper-parameter learning for \ac{GP}s,
 we can write the posterior probability of the hyper-parameters of a GP  (Fig.
-\ref{fig:neal_tutorial}, (a)) given covariance function $\mathbf{K}$ as:
+\ref{fig:neal_tutorial}, (a)) given covariance function $\Kbf_{\thetabf}$ as:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{equation}
 \label{eq:hyperProbability}
-P(\bm{\theta}=\{sf,\ell,\sigma\} \mid \mathbf{D,K}) = \frac{P(\mathbf{D} \mid \bm{\theta}, \mathbf{K})P(\bm{\theta} \mid  \mathbf{K})}{P(\mathbf{D} \mid \mathbf{K})}
+P(\thetabf=\{sf,\ell,\sigma\} \mid \mathbf{D},\Kbf_{\thetabf} ) = \frac{P(\mathbf{D} \mid
+\thetabf, \Kbf_{\thetabf})P(\thetabf \mid \Kbf_{\thetabf} )}{P(\mathbf{D} \mid
+\Kbf_{\thetabf})}
 \end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 where $\mathbf{D} = \{\xbf, \fbf\}$ is a training data set. Since we can apply
@@ -77,7 +79,7 @@ the data points we have available in the data set (black).
 
 We can incorporate observations using both \texttt{observe} and \texttt{predict} (Fig. \ref{fig:neal_tutorial} (e)).
 When we subsequently sample $\hat\fbf$ from the emulator with
-$\mathcal{N}(\hat{\bm{\mu}},\hat\Kbf)$, we can see that the \ac{GP} posterior incorporates knowledge 
+$\mathcal{N}(\hat{\bm{\mu}},\hat\Kbf_{\thetabf})$, we can see that the \ac{GP} posterior incorporates knowledge 
 about the $\texttt{data}$. Yet, the hyper-parameters $\texttt{sf,l}$ and $\texttt{sigma}$ are still
 random, so the emulator does not capture the true underlying dynamics
 ($f_\text{true}$) of the \texttt{data} correctly. 

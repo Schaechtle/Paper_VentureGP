@@ -3,11 +3,11 @@
 \small
 \belowcaptionskip=-10pt
 \begin{lstlisting}[caption={Bayesian optimization using \gpmem},mathescape,numbers=none,label=alg:bayesopt,escapechar=\#]
-#\linenumber{1}#assume sf = tag("hyper", 0, uniform_continuous(0, 10))
-#\linenumber{2}#assume l = tag("hyper", 1, uniform_continuous(0, 10))
-#\linenumber{3}#assume se = make_squaredexp(sf, l)
-#\linenumber{4}#assume blackbox_f = get_bayesopt_blackbox()
-#\linenumber{5}#assume (f_compute, f_emulate) = gpmem(blackbox_f, se)
+#\linenumber{1}#assume sf = tag("hyper", 0, uniform_continuous(0, 10));
+#\linenumber{2}#assume l = tag("hyper", 1, uniform_continuous(0, 10));
+#\linenumber{3}#assume se = make_squaredexp(sf, l);
+#\linenumber{4}#assume blackbox_f = get_bayesopt_blackbox();
+#\linenumber{5}#assume (f_compute, f_emulate) = gpmem(blackbox_f, se);
 
 // A naive estimate of the argmax of the given function
 #\linenumber{6}#define mc_argmax = proc(func) {

@@ -33,8 +33,8 @@ Learning},escapechar=\#]
 #\linenumber{17}#assume (f_compute, f_emu) = gpmem(f_look_up, K);
 
 // Probe all data points
-#\linenumber{18}#for n ... N
-#\linenumber{19}#  predict f_compute(get_data_xs(n));
+#\linenumber{18}#for (n = 0; n < size(data); n++): 
+#\linenumber{19}# predict f_compute(first(lookup(data, n)));
 
 // Perform inference
 #\linenumber{20}#infer repeat(200, do(
