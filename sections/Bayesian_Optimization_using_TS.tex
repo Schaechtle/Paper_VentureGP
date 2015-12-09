@@ -155,7 +155,7 @@ Note that the context space $\Theta$ is not a finite-dimensional parametric
 family, since the vectors $\abf$ and $\rbf$ grow as more samples are
 taken.  $\Theta$ is, however, representable as a computational
 procedure together with parameters and past samples, as we do in the
-representation $\ttheta = (\mubf, \Kbf, \eta, \abf, \rbf)$.
+representation $\ttheta = (\mubf, \Kbf, \thetabf, \abf, \rbf)$.
 
 We combine the Update and Sample steps of Algorithm \ref{alg:thompson} by
 running a Metropolis--Hastings (MH) sampler whose stationary distribution is the
@@ -229,6 +229,7 @@ where
 and
 \[ \widetilde{r}_{i,a}=\hat{f} \sim \Ncal(\hat\mubf, \hat\Kbf)) \]
 and $\br{\widetilde{r}_{i,a}}_{i=1}^{N_\avg}$ are i.i.d.\ for a fixed $a$.
+(In the above, $\hat\mubf$ and $\hat\Kbf$ are the mean and variance of a posterior sample at the single point $\hat\xbf = (a)$.)
 Here the temperature parameter $s \geq 0$ and the population size $N_\avg$ are
 specified ahead of time.  Proposals of estimated value higher than that of the current action are
 always accepted, while proposals of estimated value lower than that of the
