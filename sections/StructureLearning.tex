@@ -9,10 +9,12 @@ using a stochastic grammar  (see Fig. \ref{fig:schema}).
 \begin{figure}
 \centering
 \input{figs/schematic.tex}
-\caption{(a) Graphical description of Bayesian GP structure learning. A
-stochastic grammar generates samples of kernels that are used as input for
-\gpmem. We supply a set of base kernels that serve as hypothesis space as well
-as a distribution of the possible size of the composite kernel. We observe value pairs of unstructured time series data on the bottom of the schematic. We can also generate predictions for future points in time. (b) An example of composite kernel structure. We use addition and multiplication to combine base kernels.
+\caption{\small(a) Graphical schematic of Bayesian GP structure learning. A set of
+base kernels with priors on there hyper-parameters serve as hypothesis space.
+Along with a distribution of the possible size of the composite kernel, this is
+supplied as input to the stochastic grammar. The stochastic grammar generates
+first a subset of the base kernels and then a composite structure which serves as input for
+\gpmem.  We observe value pairs of unstructured time series data on the bottom of the schematic. We can also generate predictions for future points in time. (b) An example of composite kernel structure. We use addition and multiplication to combine base kernels.
 Base kernels and compositional kernels are shown in (c) alongside the natural language interpretation of the structure.}\label{fig:schema}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

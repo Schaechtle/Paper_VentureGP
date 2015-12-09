@@ -16,23 +16,34 @@
  \node[left=-0.2cm of start] (base_kernels) {\small$\{\Kbf_{\bm{\theta}^1}^1,\cdots,\Kbf_{\bm{\theta}^m}^m\}$};
  \node[above=0.7cm of base_kernels] (theta) {\small$\bm{\theta}^* \sim P(\bm{\theta}^*)$};
 \node[right=0.5cm of start] (n) {$P(n)$};
- \node[draw,rectangle, below=1cm of start, text width =4.8cm] (grammar) {\centering
-Stochastic Grammar \\
-\begin{flushleft}
-\footnotesize$ n\;\; \sim P(n),\;\;\;\;\; n \leq m$ \\
+ \node[draw,rectangle, below=1cm of start, text width =6.0cm, text 
+height=4.1cm,align=center] (grammar)
+{};
 
-\footnotesize$S \;\;\sim P(S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\} \mid n)$\\
 
-\footnotesize$\bm{\Omega}\,\; \sim P(\bm{\Omega} \mid S,n)$\\
+ \node[draw,dashed,rectangle, below=-3.8cm of grammar, text width
+=4.7cm,align=center] (subset) {
+$\;\;\;\;\;\;\;\;\;\;\;\;$Subset SP % I can't believe that this is the simpliest way to
+% get spacing right 
+{\raggedright
+\footnotesize$ n\; \sim P(n),\;\;\;\;\; n \leq m$ \\
 
-\footnotesize$\Kbf_{\bm{\theta}} \sim
-P(\Kbf_{\bm{\theta}} \mid \bm{\Omega},S,n),\;\,\bm{\theta}\subseteq\bm{\theta}^*$
-\end{flushleft}
+\footnotesize$S \; \sim P(S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\} \mid n)$
+}
+};
+ \node[draw,rectangle,dashed, below=0.7cm of subset, text width
+=4.35cm,align=center]
+(composition_procedure) {
+$\;$Composition Procedure\\ % I can't believe that this is the simpliest way to
+% get spacing right 
+{\raggedright
+\footnotesize$\bm{\Omega}\;\; \sim P(\bm{\Omega} \mid S,n)$ \\
 
+\footnotesize$\Kbf_{\bm{\theta}} \sim P(\Kbf_{\bm{\theta}} \mid \bm{\Omega},S,n),\;\,\bm{\theta}\subseteq\bm{\theta}^*$
+}
 };
 
-
- 
+\node[above=0.0cm of subset]{\centering \bf Stochastic Grammar}; 
 
  \node[draw,rectangle,below=1cm of grammar] (gpmem) {\texttt{gpmem}};
 
@@ -55,6 +66,7 @@ P(\Kbf_{\bm{\theta}} \mid \bm{\Omega},S,n),\;\,\bm{\theta}\subseteq\bm{\theta}^*
   \draw[thick,->] (gpmem) -- (f);
  \draw[thick,->] (x) -- (f);
  \draw[thick,->] (f) -- (y);
+ \draw[thick,dashed,->] (subset) -- node[right]{\footnotesize $\;S$} (composition_procedure);
   % Note: If you have no branches, the 2nd pass is not needed
 \end{tikzpicture}\vspace{2mm}
 \caption{} 
@@ -123,12 +135,12 @@ P(\Kbf_{\bm{\theta}} \mid \bm{\Omega},S,n),\;\,\bm{\theta}\subseteq\bm{\theta}^*
 
 \begin{subfigure}[b]{0.99\textwidth}\centering
 \begin{tabular}{cccc}
-\multicolumn{4}{c}{\bf Base Components} \rule{0pt}{6ex} \\ 
+\multicolumn{4}{c}{\bf Base Components} \rule{0pt}{3ex} \\ 
 \small LIN: Linearity &\small PER: Periodicity &\small SE: Smoothness &\small WN: White Noise \rule{0pt}{2ex} \\
 \includegraphics[height=2cm]{figs/kernel/kernelLIN.png} & \includegraphics[height=2cm]{figs/kernel/kernelPER.png} & \includegraphics[height=2cm]{figs/kernel/kernelSE.png} & \includegraphics[height=2cm]{figs/kernel/kernelWN.png}\\
 \end{tabular}
 \begin{tabular}{cccc}
-\multicolumn{4}{c}{\bf Composite Structure} \rule{0pt}{4ex}  \\ 
+\multicolumn{4}{c}{\bf Composite Structure} \rule{0pt}{0ex}  \\ 
 \small LIN + PER: &\small LIN $\times$ PER: &\small SE $\times$ PER: &\small LIN $\times$ LIN: \rule{0pt}{2ex} \\
 \small Periodicity with Trend &\small Growing Amplitude &\small Local Periodicity&\small Quadratic \rule{0pt}{2ex} \\
 \includegraphics[height=2cm]{figs/kernel/kernelLINplusPER.png} & \includegraphics[height=2cm]{figs/kernel/kernelLINtimesPER.png} & \includegraphics[height=2cm]{figs/kernel/kernelSEplusPER.png}& \includegraphics[height=2cm]{figs/kernel/kernelLINtimesLIN.png}\\
