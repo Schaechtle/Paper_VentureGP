@@ -8,12 +8,13 @@ values of the function $f$ at each location $x_i$.
 We drop the index in the following for readability.
 We write $f \sim \ac{GP}(m,k)$, where $m$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
 That is, $m(x)$ is the prior mean of the random variable $f(x)$, and $k(x,x')$ is the prior covariance of the random variables $f(x)$ and $f(x')$.
-Throughout, we write $\mathbf{K}(\xbf,\xbf^\prime)$ for the prior covariance matrix determined by $\xbf$ and $\xbf^\prime$, that is, the covariance between the random vectors $\{f(x)\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in \xbf'}$.
+Throughout, we write $\Ktheta(\xbf,\xbf^\prime)$ for the prior covariance
+matrix determined by a set of hyper-parameters $\thetabf$, $\xbf$ and $\xbf^\prime$, that is, the covariance between the random vectors $\{f(x)\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in \xbf'}$.
 We differentiate three different situations, of how  $f$ can be generated with a \ac{GP}:
 \begin{enumerate}
 \item $\fbf_*$ - we have not seen any training data yet.
     The \ac{GP} samples at any input vector $\xbf_*$ from the prior with
-     $\fbf_* \sim \mathcal{N}\big(0,K(\xbf_*,\xbf_*)\big)$;
+     $\fbf_* \sim \mathcal{N}\big(0,\Ktheta(\xbf_*,\xbf_*)\big)$;
 \item $\fbf$ - the observed values for $\fbf:=f(\xbf)$. This is the target value of the value pairs supplied in 
 the training data; and
 \item $\hat{\fbf}$ - the predictive posterior distribution of test output $\hat\fbf := f(\hat\xbf)$ conditioned on training data $\fbf := f(\xbf)$.
@@ -22,13 +23,13 @@ the training data; and
 The predictive posterior can be computed by first forming the joint density when both training and test data are treated as randomly chosen from the prior, then fixing the value of $\fbf$ to a constant.  To start, let
 \[
   \Sigma := \bmat{
-    K(\xbf, \xbf)     & K(\xbf, \hat\xbf)     \\
-    K(\hat\xbf, \xbf) & K(\hat\xbf, \hat\xbf)
+    \Ktheta(\xbf, \xbf)     & \Ktheta(\xbf, \hat\xbf)     \\
+    \Ktheta(\hat\xbf, \xbf) & \Ktheta(\hat\xbf, \hat\xbf)
   }
   \text{ and }
   \Sigma^{-1} =: \bmat{
-    M_{11} & M_{12} \\
-    M_{21} & M_{22}
+    \Mbf_{11} & \Mbf_{12} \\
+    \Mbf_{21} & \Mbf_{22}
   }.
 \]
 We then have
@@ -38,7 +39,7 @@ We then have
   \exp\br{
     -\frac12
     \bmat{\fbf^\top & \hat\fbf^\top}
-    \bmat{M_{11} & M_{12} \\ M_{21} & M_{22}}
+    \bmat{\Mbf_{11} & \Mbf_{12} \\ \Mbf_{21} & \Mbf_{22}}
     \bmat{\fbf \\ \hat\fbf}
   }.
 \]
@@ -49,68 +50,75 @@ Treating $\fbf$ as a fixed constant, we obtain
   P(\fbf, \hat\fbf)
   \propto
   \exp\br{
-    -\frac12 \hat\fbf^\top M_{22} \hat\fbf
+    -\frac12 \hat\fbf^\top \Mbf_{22} \hat\fbf
     - \hbf^\top \hat\fbf
   },
 \]
 where $\hbf = M_{21} \fbf$ is a constant vector.  Thus $P(\hat\fbf | \fbf)$ is Gaussian,
 \begin{equation}\label{eq:pred_posterior}
-  P\pn{\hat\fbf \mvert \fbf} \sim \Ncal(\hat\mubf, \hat\Kbf),
+  P\pn{\hat\fbf \mvert \fbf} \sim \Ncal(\hat\mubf, \hat\Kbf_{\thetabf}),
 \end{equation}
-with covariance matrix $\hat\Kbf = M_{22}^{-1}$.  To find its mean $\hat\mubf$, we note that $P_{\hat\fbf|\fbf}(\hat\fbf + \hat\mubf)$ is Gaussian with the same covariance as $P(\hat\fbf | \fbf)$, but its exponent has no linear term:
+with covariance matrix $\hat\Kbf_{\thetabf} = \Mbf_{22}^{-1}$.  To find its mean $\hat\mubf$, we note that $P_{\hat\fbf|\fbf}(\hat\fbf + \hat\mubf)$ is Gaussian with the same covariance as $P(\hat\fbf | \fbf)$, but its exponent has no linear term:
 \begin{align*}
   P_{\hat\fbf|\fbf} \pn{\hat\fbf + \hat\mubf \mvert \fbf}
   &\propto
   \exp\br{
-    -\frac12 (\hat\fbf + \hat\mubf)^\top M_{22} (\hat\fbf + \hat\mubf)
+    -\frac12 (\hat\fbf + \hat\mubf)^\top \Mbf_{22} (\hat\fbf + \hat\mubf)
     - \hbf^\top (\hat\fbf + \hat\mubf)
   } \\
   &\propto
   \exp\br{
-    -\frac12 \hat\fbf^\top M_{22} \hat\fbf
-    - \underbrace{(\hbf + M_{22} \hat\mubf)^\top}_{\text{must be $0$}} \hat\fbf
+    -\frac12 \hat\fbf^\top \Mbf_{22} \hat\fbf
+    - \underbrace{(\hbf + \Mbf_{22} \hat\mubf)^\top}_{\text{must be $0$}} \hat\fbf
   }.
 \end{align*}
-Thus $\hbf = -M_{22} \hat\mubf$ and $\hat\mubf = -M_{22}^{-1} \hbf = -M_{22}^{-1} M_{21} \fbf$.
+Thus $\hbf = -\Mbf_{22} \hat\mubf$ and $\hat\mubf = -\Mbf_{22}^{-1} \hbf =
+-\Mbf_{22}^{-1} \Mbf_{21} \fbf$.
 
 The partioned inverse equations (\citealp*{barnett1979matrix} following \citealp*{mackay1998introduction}) give
 \begin{align*}
-  M_{22}^{-1} &= K(\hat\xbf,\hat\xbf) - K(\hat\xbf,\xbf) K(\xbf,\xbf)^{-1} K(\xbf,\hat\xbf), \\
-  M_{21} &= -M_{22} K(\hat\xbf,\xbf) K(\xbf,\xbf)^{-1}.
+  \Mbf_{22} &= \big(\Ktheta(\hat\xbf,\hat\xbf) - \Ktheta(\hat\xbf,\xbf) \Ktheta(\xbf,\xbf)^{-1}
+\Ktheta(\xbf,\hat\xbf)\big)^{-1}, \\
+  \Mbf_{21} &= -\Mbf_{22} \Ktheta(\hat\xbf,\xbf) \Ktheta(\xbf,\xbf)^{-1}.
 \end{align*}
 Substituting these in the above gives
 \begin{align}
-  \hat\Kbf &= K(\hat\xbf,\hat\xbf) - K(\hat\xbf,\xbf) K(\xbf,\xbf)^{-1} K(\xbf,\hat\xbf),\label{eq:K_hat} \\
-  \hat\mubf &= K(\hat\xbf,\xbf) K(\xbf,\xbf)^{-1}\fbf.\label{eq:mu_hat}
+  \hat\Kbf_{\thetabf} &= \Ktheta(\hat\xbf,\hat\xbf) - \Ktheta(\hat\xbf,\xbf)
+\Ktheta(\xbf,\xbf)^{-1} \Ktheta(\xbf,\hat\xbf),\label{eq:K_hat} \\
+  \hat\mubf &= \Ktheta(\hat\xbf,\xbf) \Ktheta(\xbf,\xbf)^{-1}\fbf.\label{eq:mu_hat}
 \end{align}
-Together, $\hat\mubf$ and $\hat\Kbf$ determine the computation of the predictive posterior
+Together, $\hat\mubf$ and $\hat\Kbf_{\thetabf}$ determine the computation of the predictive posterior
 with unseen input data (\ref{eq:pred_posterior}).
 
-Often one assumes the observed regression output is noisily measured, that is, one only sees the values of $\ybf_\noisy = \mathbf{f}+ \wbf$ where $\wbf$ is Gaussian white noise with variance $\sigma_\noise^2$. This noise term can be absorbed into the covariance matrix $\mathbf{K}(\mathbf{x},\mathbf{x})$ which in the following, we will write as $\mathbf{K}$ for readability. The log-likelihood of a \ac{GP} can then be written as:
+Often one assumes the observed regression output is noisily measured, that is,
+one only sees the values of $\ybf_\noisy = \mathbf{f}+ \wbf$ where $\wbf$ is
+Gaussian white noise with variance $\sigma_\noise^2$. This noise term can be
+absorbed into the covariance matrix $\Ktheta(\mathbf{x},\mathbf{x})$ which in the
+following, we will write as $\Ktheta$ for readability. The log-likelihood of a \ac{GP} can then be written as:
 \begin{equation}
 \label{eq:gplogdens}
 \log P(\mathbf{f} \mid \xbf) =
 -\frac12 \ybf^\top 
-\mathbf{K}^{-1} \ybf
-- \frac12\log \abs{\mathbf{K}}
+\Ktheta^{-1} \ybf
+- \frac12\log \abs{\Ktheta}
 - \frac{n}{2}\log 2\pi
 \end{equation}
 where $n$ is the number of data points.
 Both log-likelihood and predictive posterior can be computed efficiently using a \ac{SP} in Venture~\citep{mansinghka2014venture}
 with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian}. 
 We write the Cholesky factorization as 
-$\mathbf{L} \coloneqq \text{chol}(\mathbf{K})$ when
+$\mathbf{L} \coloneqq \text{chol}(\Ktheta)$ when
 :
 \begin{equation}
-\mathbf{K} = LL^\top
+\Ktheta = LL^\top
 \end{equation}
 where L is a lower triangular matrix. This allows us to compute the inverse of a covariance matrix as
 \begin{equation}
-\mathbf{K}^{-1} = (\mathbf{L}^{-1})^\top (\mathbf{L}^{-1})
+\Ktheta^{-1} = (\mathbf{L}^{-1})^\top (\mathbf{L}^{-1})
 \end{equation}
 and its determinant as 
 \begin{equation}
-det(\mathbf{K}) = det(\mathbf{L})^2
+det(\Ktheta) = det(\mathbf{L})^2
 \end{equation}
 We compute (\ref{eq:gplogdens}) as
 \begin{equation}
@@ -119,7 +127,7 @@ We compute (\ref{eq:gplogdens}) as
 where 
 \begin{equation}
 \label{eq:chol_L}
-\mathbf{L} \coloneqq \text{chol}(\mathbf{K})
+\mathbf{L} \coloneqq \text{chol}(\Ktheta)
 \end{equation}
 and 
 \begin{equation}
@@ -130,7 +138,7 @@ and
 %sampling with a complexity of $n^3/6$ for (\ref{eq:chol_L}) an $n^2/2$ for (\ref{eq:alpha}). 
 This results in a computational complexity for sampling in the number of data points of $O(n^3/6)$ for (\ref{eq:chol_L}) an $O(n^2/2)$ for (\ref{eq:alpha}). 
 
-Above, we defined the \ac{GP} prior as $\fbf_* \sim \mathcal{N}\big(0,K(\xbf_*,\xbf_*)\big)$.
+Above, we defined the \ac{GP} prior as $\fbf_* \sim \mathcal{N}\big(0,\Ktheta(\xbf_*,\xbf_*)\big)$.
 We see that this prior is fully determined by its covariance function.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -193,7 +201,7 @@ trend.
 
 Covariance functions come with  free parameters that we call hyper-parameters which we will
 refer to as $\bm{\theta}$.
-For each kernel type, each $\bm{\theta}$ is different, that is, in (\ref{eq:LIN1}) we have $\theta=\{\sigma_1\}$,
+For each kernel type, each $\bm{\theta}$ is different, that is, in (\ref{eq:LIN1}) we have $\thetabf=\{\sigma_1\}$,
 in (\ref{eq:PER1}) we have $\bm{\theta}=\{\sigma_2,p,\ell\}$ and in 
 (\ref{eq:LINxPER}) we have $\bm{\theta}=\{\sigma_1,\sigma_2,p,\ell\}$.
 Adjusting these hyper-parameters changes lower level qualitative attributes such as length
