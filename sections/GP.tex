@@ -1,30 +1,51 @@
-\ac{GP}s are a Bayesian method for regression. We consider the regression input to be real-valued scalars $x_i$ and the regression output as the value of a function $f$ at $x_i$. The complete training data will be denoted by column vectors $\mathbf{x}$ and $\mathbf{f}$. Unseen test data is denoted with $\mathbf{\hat{x}}$ and $\mathbf{\hat{f}}$.
+\ac{GP}s are a Bayesian method for regression. We consider the regression input
+to be real-valued scalars $x_i$ and the regression output $f(x_i)=y_i$ as the value of a
+function $f$ at $x_i$. The complete training data will be denoted by column
+vectors $\mathbf{x}$ and $\mathbf{y}$. Unseen test input is denoted with
+$\xprime$.
 \ac{GP}s present a non-parametric way to express prior knowledge on the space of all possible functions $f$ modeling
 a regression relationship.
 Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian distribution.
 
-The collection of random variables $\br{f(x_i)}$ (indexed by $i$) represents the
+The collection of random variables $\br{f(x_i)=y_i}$ (indexed by $i$) represents the
 values of the function $f$ at each location $x_i$.
-We drop the index in the following for readability.
-We write $f \sim \ac{GP}(m,k)$, where $m$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
-That is, $m(x)$ is the prior mean of the random variable $f(x)$, and $k(x,x')$ is the prior covariance of the random variables $f(x)$ and $f(x')$.
-Throughout, we write $\Ktheta(\xbf,\xbf^\prime)$ for the prior covariance
-matrix determined by a set of hyper-parameters $\thetabf$, $\xbf$ and $\xbf^\prime$, that is, the covariance between the random vectors $\{f(x)\}_{x \in \xbf}$ and $\{f(x')\}_{x' \in \xbf'}$.
-We differentiate three different situations, of how  $f$ can be generated with a \ac{GP}:
+We write $f \sim \mathcal{GP}(m,k \mid \thetabf_\text{mean},\thetabf)$, where $m$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
+That is, $m(x_i \mid \thetabf_\text{mean})$ is the prior mean of the random variable $y_i$, and
+$k(x_i,x_j \midtheta)$ is the prior covariance of the random variables $y_i$
+and $y_j$. The output of both mean and covariance function are conditioned on a
+few free hyper-parameters parameterizing $k$ and $m$. We refer to these
+hyper-parameters as $\thetabf$ and
+$\thetabf_\text{mean}$
+respectively.
+To simplify the calculation below, we will assume the prior mean $m$ is identically zero; once the derivation is done, this assumption can be easily relaxed via translation.
+We use upper case
+italic $K(\xbf,\xprime \midtheta )$ for a function that returns a matrix of dimension $I \times J$
+with entries $k(x_i,x_j \midtheta )$ and with $x_i \in \xbf$ and $x_j \in
+\xprime$ where $I$ and $J$ indicate the length of the column vectors $\xbf$ and
+$\xprime$.
+Throughout, we write $\Kbf_{(\thetabf,\xbf,\xprime)}$ for the prior covariance
+matrix that results from computing  $K(\xbf,\xprime \midtheta )$. In the
+following, we will sometimes drop the subscript $\xbf,\xprime$, writing
+only $\Ktheta$, for clarity. Note that we do this only in cases when both
+input vectors are identical and correspond to training input $\xbf$.
+We differentiate two different situations leading to different ways samples can be generated with
+this setup:
 \begin{enumerate}
-\item $\fbf_*$ - we have not seen any training data yet.
-    The \ac{GP} samples at any input vector $\xbf_*$ from the prior with
-     $\fbf_* \sim \mathcal{N}\big(0,\Ktheta(\xbf_*,\xbf_*)\big)$;
-\item $\fbf$ - the observed values for $\fbf:=f(\xbf)$. This is the target value of the value pairs supplied in 
-the training data; and
-\item $\hat{\fbf}$ - the predictive posterior distribution of test output $\hat\fbf := f(\hat\xbf)$ conditioned on training data $\fbf := f(\xbf)$.
-\end{enumerate}We now compute the predictive posterior distribution of test output $\hat\fbf := f(\hat\xbf)$ conditioned on training data $\fbf := f(\xbf)$.  (Here $\xbf$ and $\hat\xbf$ are known constant vectors, and we are conditioning on an observed value of $\fbf$.)  To simplify the calculation, we will assume the prior mean $m$ is identically zero; once the derivation is done, this assumption can be easily relaxed via translation.
+\item ${\yprime}$ - the predictive posterior sample from a distribution
+conditioned on observed input $\xbf$ with observed output $\ybf$ and conditioned on
+$\thetabf$.
+\item $\ystar$ - a sample from the predictive prior. We will describe
+situations, where the \ac{GP} has not seen any data $\xbf,\ybf$ yet. In this
+case, we sample from a Gaussian distribution with 
+     $\ystar \sim \mathcal{N}\big(0,K(\xstar, \xstar \midtheta
+)\big)$; where the symbol $*$ indicates that no data has been observed yet. 
+\end{enumerate}
 
-The predictive posterior can be computed by first forming the joint density when both training and test data are treated as randomly chosen from the prior, then fixing the value of $\fbf$ to a constant.  To start, let
+We now show how to compute the predictive posterior distribution of test output $\yprime := f(\xprime)$ conditioned on training data $\ybf := f(\xbf)$.  (Here $\xbf$ and $\xprime$ are known constant vectors, and we are conditioning on an observed value of $\ybf$.) The predictive posterior can be computed by first forming the joint density when both training and test data are treated as randomly chosen from the prior, then fixing the value of $\ybf$ to a constant.  To start, let
 \[
   \Sigma := \bmat{
-    \Ktheta(\xbf, \xbf)     & \Ktheta(\xbf, \hat\xbf)     \\
-    \Ktheta(\hat\xbf, \xbf) & \Ktheta(\hat\xbf, \hat\xbf)
+    K(\xbf, \xbf \midtheta )     & K(\xbf, \xprime \midtheta )     \\
+    K(\xprime, \xbf \midtheta ) & K(\xprime, \xprime \midtheta )
   }
   \text{ and }
   \Sigma^{-1} =: \bmat{
@@ -34,70 +55,74 @@ The predictive posterior can be computed by first forming the joint density when
 \]
 We then have
 \[
-  P(\fbf, \hat\fbf)
+  P(\ybf, \yprime \midtheta )
   \propto
   \exp\br{
     -\frac12
-    \bmat{\fbf^\top & \hat\fbf^\top}
+    \bmat{\ybf^\top & \yprimetop}
     \bmat{\Mbf_{11} & \Mbf_{12} \\ \Mbf_{21} & \Mbf_{22}}
-    \bmat{\fbf \\ \hat\fbf}
+    \bmat{\ybf \\ \yprime}
   }.
 \]
-Treating $\fbf$ as a fixed constant, we obtain
+Treating $\ybf$ as a fixed constant, we obtain
 \[
-  P\pn{\hat\fbf \mvert \fbf}
+  P\pn{\yprime \mvert \ybf,\thetabf}
   \propto
-  P(\fbf, \hat\fbf)
+  P(\ybf, \yprime \midtheta )
   \propto
   \exp\br{
-    -\frac12 \hat\fbf^\top \Mbf_{22} \hat\fbf
-    - \hbf^\top \hat\fbf
+    -\frac12 \yprimetop \Mbf_{22} \yprime
+    - \hbf^\top \yprime
   },
 \]
-where $\hbf = M_{21} \fbf$ is a constant vector.  Thus $P(\hat\fbf | \fbf)$ is Gaussian,
+where $\hbf = M_{21} \ybf$ is a constant vector.  Thus $P(\yprime | \ybf,
+\thetabf)$ is Gaussian,
 \begin{equation}\label{eq:pred_posterior}
-  P\pn{\hat\fbf \mvert \fbf} \sim \Ncal(\hat\mubf, \hat\Kbf_{\thetabf}),
+  P\pn{\yprime \mvert \ybf, \thetabf} \sim \Ncal(\mupost,
+\Kbf_{\thetabf}^\text{post}),
 \end{equation}
-with covariance matrix $\hat\Kbf_{\thetabf} = \Mbf_{22}^{-1}$.  To find its mean $\hat\mubf$, we note that $P_{\hat\fbf|\fbf}(\hat\fbf + \hat\mubf)$ is Gaussian with the same covariance as $P(\hat\fbf | \fbf)$, but its exponent has no linear term:
+with covariance matrix $\Kpost = \Mbf_{22}^{-1}$.  To find its mean $\mupost$,
+we note that $P_{\yprime|\ybf,\thetabf}(\yprime + \mupost)$ is Gaussian with
+the same covariance as $P(\yprime | \ybf,\thetabf)$, but its exponent has no linear term:
 \begin{align*}
-  P_{\hat\fbf|\fbf} \pn{\hat\fbf + \hat\mubf \mvert \fbf}
+  P_{\yprime|\ybf,\thetabf} \pn{\yprime + \mupost \mvert \ybf,\thetabf}
   &\propto
   \exp\br{
-    -\frac12 (\hat\fbf + \hat\mubf)^\top \Mbf_{22} (\hat\fbf + \hat\mubf)
-    - \hbf^\top (\hat\fbf + \hat\mubf)
+    -\frac12 (\yprime + \mupost)^\top \Mbf_{22} (\yprime + \mupost)
+    - \hbf^\top (\yprime + \mupost)
   } \\
   &\propto
   \exp\br{
-    -\frac12 \hat\fbf^\top \Mbf_{22} \hat\fbf
-    - \underbrace{(\hbf + \Mbf_{22} \hat\mubf)^\top}_{\text{must be $0$}} \hat\fbf
+    -\frac12 \yprime\top \Mbf_{22} \yprime
+    - \underbrace{(\hbf + \Mbf_{22} \mupost)^\top}_{\text{must be $0$}} \yprime
   }.
 \end{align*}
-Thus $\hbf = -\Mbf_{22} \hat\mubf$ and $\hat\mubf = -\Mbf_{22}^{-1} \hbf =
--\Mbf_{22}^{-1} \Mbf_{21} \fbf$.
+Thus $\hbf = -\Mbf_{22} \mupost$ and $\mupost = -\Mbf_{22}^{-1} \hbf =
+-\Mbf_{22}^{-1} \Mbf_{21} \ybf$.
 
 The partioned inverse equations (\citealp*{barnett1979matrix} following \citealp*{mackay1998introduction}) give
 \begin{align*}
-  \Mbf_{22} &= \big(\Ktheta(\hat\xbf,\hat\xbf) - \Ktheta(\hat\xbf,\xbf) \Ktheta(\xbf,\xbf)^{-1}
-\Ktheta(\xbf,\hat\xbf)\big)^{-1}, \\
-  \Mbf_{21} &= -\Mbf_{22} \Ktheta(\hat\xbf,\xbf) \Ktheta(\xbf,\xbf)^{-1}.
+  \Mbf_{22} &= \big(K(\xprime,\xprime \midtheta ) - K(\xprime,\xbf \midtheta ) K(\xbf,\xbf \midtheta )^{-1}
+K(\xbf,\xprime \midtheta )\big)^{-1}, \\
+  \Mbf_{21} &= -\Mbf_{22} K(\xprime,\xbf \midtheta ) K(\xbf,\xbf \midtheta )^{-1}.
 \end{align*}
 Substituting these in the above gives
 \begin{align}
-  \hat\Kbf_{\thetabf} &= \Ktheta(\hat\xbf,\hat\xbf) - \Ktheta(\hat\xbf,\xbf)
-\Ktheta(\xbf,\xbf)^{-1} \Ktheta(\xbf,\hat\xbf),\label{eq:K_hat} \\
-  \hat\mubf &= \Ktheta(\hat\xbf,\xbf) \Ktheta(\xbf,\xbf)^{-1}\fbf.\label{eq:mu_hat}
+  \Kpost &= K(\xprime,\xprime \midtheta ) - K(\xprime,\xbf \midtheta )
+K(\xbf,\xbf \midtheta )^{-1} K(\xbf,\xprime \midtheta ),\label{eq:K_hat} \\
+  \mupost &= K(\xprime,\xbf \midtheta ) K(\xbf,\xbf \midtheta )^{-1}\ybf.\label{eq:mu_hat}
 \end{align}
-Together, $\hat\mubf$ and $\hat\Kbf_{\thetabf}$ determine the computation of the predictive posterior
+Together, $\mupost$ and $\Kpost$ determine the computation of the predictive posterior
 with unseen input data (\ref{eq:pred_posterior}).
 
 Often one assumes the observed regression output is noisily measured, that is,
-one only sees the values of $\ybf_\noisy = \mathbf{f}+ \wbf$ where $\wbf$ is
+one only sees the values of $\ybf_\noisy = \ybf + \wbf$ where $\wbf$ is
 Gaussian white noise with variance $\sigma_\noise^2$. This noise term can be
-absorbed into the covariance matrix $\Ktheta(\mathbf{x},\mathbf{x})$ which in the
-following, we will write as $\Ktheta$ for readability. The log-likelihood of a \ac{GP} can then be written as:
+absorbed into the covariance function $K(\xbf,\xbf \midtheta)$.
+The log-likelihood of a \ac{GP} can then be written as:
 \begin{equation}
 \label{eq:gplogdens}
-\log P(\mathbf{f} \mid \xbf) =
+\log P(\ybf \mid \xbf,\thetabf) =
 -\frac12 \ybf^\top 
 \Ktheta^{-1} \ybf
 - \frac12\log \abs{\Ktheta}
@@ -122,7 +147,7 @@ det(\Ktheta) = det(\mathbf{L})^2
 \end{equation}
 We compute (\ref{eq:gplogdens}) as
 \begin{equation}
-\log(P(\mathbf{f}\mid \mathbf{x})\coloneqq - \frac{1}{2} \mathbf{f}^\top \bm{\alpha} - \sum_i \log \mathbf{L}_{ii} - \frac{n}{2} \log 2 \pi
+\log(P(\ybf \mid \xbf, \thetabf)\coloneqq - \frac{1}{2} \ybf^\top \bm{\alpha} - \sum_i \log \mathbf{L}_{ii} - \frac{n}{2} \log 2 \pi
 \end{equation}
 where 
 \begin{equation}
@@ -132,42 +157,45 @@ where
 and 
 \begin{equation}
 \label{eq:alpha}
-\bm{\alpha} \coloneqq  \mathbf{L}^\top \backslash(\mathbf{L} \backslash \mathbf{f}). 
+\bm{\alpha} \coloneqq  \mathbf{L}^\top \backslash(\mathbf{L} \backslash \ybf). 
 \end{equation}
 %This results in a computational complexity of $\mathcal{O}(n^3)$ in the number of data points for
 %sampling with a complexity of $n^3/6$ for (\ref{eq:chol_L}) an $n^2/2$ for (\ref{eq:alpha}). 
 This results in a computational complexity for sampling in the number of data points of $O(n^3/6)$ for (\ref{eq:chol_L}) an $O(n^2/2)$ for (\ref{eq:alpha}). 
 
-Above, we defined the \ac{GP} prior as $\fbf_* \sim \mathcal{N}\big(0,\Ktheta(\xbf_*,\xbf_*)\big)$.
+Above, we defined the \ac{GP} prior as $\ystar \sim
+\mathcal{N}\big(0,K(\xbf_*,\xbf_* \midtheta )\big)$.
 We see that this prior is fully determined by its covariance function.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Covariance Functions}
-The covariance function (or kernel) of a \ac{GP} governs high-level properties of the observed data such as smoothness or linearity. A linear covariance can be written as:
+The covariance function (or kernel) of a \ac{GP} governs high-level properties
+of the observed data such as smoothness or linearity. The high-level properties
+are indicated with superscript on functions.  A linear covariance can be written as:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{equation}\label{eq:LIN1}
-    \text{LIN} =   \sigma_1^2(x x^\prime).
+    \klin =   \sigma_1^2(x x^\prime).
 \end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We can also express periodicity:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{equation}\label{eq:PER1}
-    \text{PER} =  \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg). 
+    \kper =  \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg). 
 \end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-By changing these properties we get completely different prior behavior for sampling $\fbf_*$ from a
+By changing these properties we get completely different prior behavior for sampling $\ystar$ from a
 \ac{GP} with a linear kernel
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \[
-\fbf_* \sim \mathcal{N}\big(0,\text{LIN}(\xbf,\xbf)\big)
+\ystar \sim \mathcal{N}\big(0,\Klin(\xstar,\xstar \mid \sigma_1 )\big)
 \]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 as compared to sampling from the prior predictive with a periodic kernel (as depicted in 
 Fig. \ref{fig:composition_tutorial} (c) and (d))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \[
-\fbf_* \sim \mathcal{N}\big(0,\text{PER}(\xbf,\xbf)\big).
+\ystar \sim \mathcal{N}\big(0,\Kper(\xstar,\xstar \mid \sigma_2, \ell )\big).
 \]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -178,8 +206,8 @@ Fig. \ref{fig:composition_tutorial} (c) and (d))
 This data is used for all the plots (c-h). 
 (b) shows the linear and the periodic base kernel as well as a composition of both. 
 The multiplication of the two kernels indicates local interaction. The local interaction we account for in this case is the growing amplitude (a). For each column (c-h) $\bm{\theta}$ is different.(c-e) show samples from the prior
-prior predictive $\fbf_*$ where random parameters are used, that is, we sample before any data points are observed.
-(f-h) show samples from the predictive posterior $\hat\fbf$, after the data has been observed.}
+prior predictive $\ystar$ where random parameters are used, that is, we sample before any data points are observed.
+(f-h) show samples from the predictive posterior $\yprime$, after the data has been observed.}
 \label{fig:composition_tutorial}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -188,31 +216,27 @@ That means that we can also combine these properties.
 By using multiplication of kernels we can model a local interaction of two components, for example 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{equation}\label{eq:LINxPER}
-    \text{LIN} \times \text{PER} =  \sigma_1^2(x x^\prime)\, \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg) 
+    \klin \times \kper =  \sigma_1^2(x x^\prime)\, \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg) 
 \end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 This results in a combination of the higher level properties of linearity and  periodicity.
-In Fig \ref{fig:composition_tutorial} (e) we depict samples for $\fbf_*$ that are periodic
+In Fig \ref{fig:composition_tutorial} (e) we depict samples for $\ystar$ that are periodic
 with linearly increasing amplitude.
 We consider this a local interaction because the actual interaction depends on the similarity
 of two data points.
 An addition of covariance functions models a global interaction, that is an interaction of two high-level components that is qualitatively not dependent on the input space. An example for this a periodic function with a linear
 trend.
 
-Covariance functions come with  free parameters that we call hyper-parameters which we will
-refer to as $\bm{\theta}$.
 For each kernel type, each $\bm{\theta}$ is different, that is, in (\ref{eq:LIN1}) we have $\thetabf=\{\sigma_1\}$,
 in (\ref{eq:PER1}) we have $\bm{\theta}=\{\sigma_2,p,\ell\}$ and in 
 (\ref{eq:LINxPER}) we have $\bm{\theta}=\{\sigma_1,\sigma_2,p,\ell\}$.
 Adjusting these hyper-parameters changes lower level qualitative attributes such as length
 scales ($\ell$) while preserving the higher level qualitative properties of the distribution
 such as linearity.
-We write the parameterized covariance function as $\mathbf{K}_{\bm{\theta}}(\xbf,\xbf)$ and the
-covariance matrix determined by a parameterized covariance function as $\mathbf{K}_{\bm{\theta}}$.
 
-When we observe the data, that is we condition on the input-output pairs $\{\xbf,\fbf\}$ we can sample from the 
-predictive posterior $P(\hat\fbf \mid \fbf)$ given $\mathbf{K}_{\bm{\theta}}$ and respectively $\bm{\hat{\mu}}$ and $\hat{\mathbf{K}}_{\bm{\theta}}$.
-If we choose suitable parameters, for example by performing inference, we can capture the underlying dynamics of the data well (see Fig. \ref{fig:composition_tutorial} (f-h)) while sampling $\hat{\fbf}$.
+If we choose suitable hyper-parameters, for example by performing inference, we
+can capture the underlying dynamics of the data well (see Fig.
+\ref{fig:composition_tutorial} (f-h)) while sampling $\yprime$.
 Note that goodness of fit is not only limited to the parameters. A too simple qualitative structure
 implies unsuitable behaviour, as for example in (Fig. \ref{fig:composition_tutorial} (g)) where additional 
 recurring spikes are introduced to account for the changing amplitude of the true function that 
