@@ -10,7 +10,7 @@ using a stochastic grammar  (see Fig. \ref{fig:schema}).
 \centering
 \input{figs/schematic.tex}
 \caption{\small(a) Graphical schematic of Bayesian GP structure learning. A set of
-base kernels with priors on there hyper-parameters serve as hypothesis space.
+base kernels (BK) with priors on there hyper-parameters serve as hypothesis space.
 Along with a distribution of the possible size of the composite kernel, this is
 supplied as input to the stochastic grammar. The stochastic grammar generates
 first a subset of the base kernels and then a composite structure which serves as input for
@@ -22,7 +22,7 @@ This allows us to read an unstructured time series and automatically output a hi
 qualitative description of it. The stochastic grammar takes two inputs:
 \begin{enumerate}
     \item a set of base kernels 
-    $\{\Kbf_{\bm{\theta}^1}^1,\cdots,\Kbf_{\bm{\theta}^m}^m\}$
+    $\text{BK}=\{\Kbf_{\bm{\theta}^1}^1,\cdots,\Kbf_{\bm{\theta}^m}^m\}$
     of size $m$, including their corresponding parametrization
     $\thetabf^*=\{\thetabf^1,\cdots,\thetabf^m\}$ (Fig. \ref{fig:schema} (a) and (b)); and
     \item a prior distribution on the number $n \leq m$ that determines how many of the base kernels are used for
@@ -42,13 +42,14 @@ the set of supplied base kernels. We write
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \[
 S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\}
-\sim P(S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\} \mid n) 
+\sim P(S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\} \mid
+\text{BK}, n) 
 \]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 with
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \[
-P(S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\}\mid n) = \frac{n!}{ \mid S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\}\mid !}.
+P(S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\}\mid \text{BK}, n) = \frac{n!}{ \mid S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\}\mid !}.
 \]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

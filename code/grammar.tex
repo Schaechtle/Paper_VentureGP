@@ -1,0 +1,28 @@
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[mathescape,label=alg:grammar,basicstyle=\selectfont\ttfamily,numbers=none,caption={
+Stochastic Grammar},escapechar=\#]
+#\linenumber{1}#// Select a random subset of the set possible primitive kernels (BK)
+#\linenumber{2}#assume primitive_kernel_selection = tag("grammar", 0,
+#\linenumber{3}#	    select_primitive_kernels(BK, probability_number_kernels));
+#\linenumber{4}#// Construct kernel composition with a composer procedure
+#\linenumber{5}#assume kernel_composer = proc(l) {
+#\linenumber{6}#  if (size(l) <= 1) {
+#\linenumber{7}#    first(l)
+#\linenumber{8}#  } else {
+#\linenumber{9}#       if (bernoulli()) {
+#\linenumber{10}#            add_funcs(first(l),  kernel_composer(rest(l)))
+#\linenumber{11}#       } else {
+#\linenumber{12}#            mult_funcs(first(l), kernel_composer(rest(l)))
+#\linenumber{13}#    }
+#\linenumber{14}#  }
+#\linenumber{15}#};
+#\linenumber{16}#
+#\linenumber{17}#assume K = tag("grammar", 1,
+	        	kernel_composer(primitive_kernel_selection));
+\end{lstlisting}
+
+\end{minipage}
+\end{mdframed}

@@ -1,0 +1,20 @@
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[mathescape,label=alg:structureVent,basicstyle=\selectfont\ttfamily,numbers=none,caption={\gpmem\
+inference for structure
+learning: },escapechar=\#]
+#\linenumber{1}#// Apply gpmem 
+#\linenumber{2}#assume (f_compute, f_emu) = gpmem(f_look_up, K);
+#\linenumber{3}#// Probe all data points
+#\linenumber{4}#for (n = 0; n < size(data); n++) { 
+#\linenumber{5}# predict f_compute(first(lookup(data, n)))};
+#\linenumber{6}#// Perform inference
+#\linenumber{7}#infer repeat(200, do(
+#\linenumber{8}#  mh("grammar", one, 1),
+#\linenumber{9}#  mh("hyper-parameters", one, 2)));
+\end{lstlisting}
+
+\end{minipage}
+\end{mdframed}

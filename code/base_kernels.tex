@@ -1,0 +1,31 @@
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[mathescape,label=alg:base_kernels,basicstyle=\selectfont\ttfamily,numbers=none,caption={Initialize
+Base Kernels BK and $P(n)$},escapechar=\#]
+#\linenumber{1}# // Initialize hyper-parameters
+#\linenumber{2}#assume theta_1 = tag("hyper-parameters", 1, gamma(5,1));
+#\linenumber{3}#assume theta_2 = tag("hyper-parameters", 2, gamma(5,1));
+#\linenumber{4}#assume theta_3 = tag("hyper-parameters", 3, gamma(5,1));
+#\linenumber{5}#assume theta_4 = tag("hyper-parameters", 4, gamma(5,1));
+#\linenumber{6}#assume theta_5 = tag("hyper-parameters", 5, gamma(5,1));
+#\linenumber{7}#assume theta_6 = tag("hyper-parameters", 6, gamma(5,1));
+#\linenumber{8}#assume theta_7 = tag("hyper-parameters", 7, gamma(5,1));
+#\linenumber{9}#
+#\linenumber{11}# // Make kernels
+#\linenumber{12}#assume lin = apply_function(make_linear, theta_1);
+#\linenumber{13}#assume per = apply_function(make_periodic, theta_2, theta_3, theta_4);
+#\linenumber{14}#assume se  = apply_function(make_squaredexp, theta_5, theta_6);
+#\linenumber{15}#assume wn  = apply_function(make_noise, theta_7);
+#\linenumber{16}#
+#\linenumber{17}#// Initialize the set of primitive base kernels BK 
+#\linenumber{18}#assume BK = list(lin, per, se, wn);
+#\linenumber{19}#
+#\linenumber{20}#// Assign uniform prior probability to the number of kernels that will
+#\linenumber{21}#// be selected, e.g., if size(BK)=2, P(n=1)=0.5, P(n=2)=0.5
+#\linenumber{22}#assume probability_number_kernels =fill(size(BK),1/size(BK));
+\end{lstlisting}
+\end{minipage}
+\end{mdframed}
+

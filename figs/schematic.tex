@@ -13,7 +13,7 @@
 \begin{subfigure}[b]{0.49\textwidth}\centering
 \begin{tikzpicture}[thick]
  \node[] (start) {};
- \node[left=-0.2cm of start] (base_kernels) {\small$\{\Kbf_{\bm{\theta}^1}^1,\cdots,\Kbf_{\bm{\theta}^m}^m\}$};
+ \node[left=-0.2cm of start] (base_kernels) {\small$\text{BK}=\{\Kbf_{\bm{\theta}^1}^1,\cdots,\Kbf_{\bm{\theta}^m}^m\}$};
  \node[above=0.7cm of base_kernels] (theta) {\small$\bm{\theta}^* \sim P(\bm{\theta}^*)$};
 \node[right=0.5cm of start] (n) {$P(n)$};
  \node[draw,rectangle, below=1cm of start, text width =6.0cm, text 
@@ -22,13 +22,14 @@ height=4.1cm,align=center] (grammar)
 
 
  \node[draw,dashed,rectangle, below=-3.8cm of grammar, text width
-=4.7cm,align=center] (subset) {
+=5.3cm,align=center] (subset) {
 $\;\;\;\;\;\;\;\;\;\;\;\;$Subset SP % I can't believe that this is the simpliest way to
 % get spacing right 
 {\raggedright
 \footnotesize$ n\; \sim P(n),\;\;\;\;\; n \leq m$ \\
 
-\footnotesize$S \; \sim P(S = \{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\} \mid n)$
+\footnotesize$S  \sim P(S =
+\{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\} \mid \text{BK}, n)$
 }
 };
  \node[draw,rectangle,dashed, below=0.7cm of subset, text width
@@ -135,7 +136,7 @@ $\;$Composition Procedure\\ % I can't believe that this is the simpliest way to
 
 \begin{subfigure}[b]{0.99\textwidth}\centering
 \begin{tabular}{cccc}
-\multicolumn{4}{c}{\bf Base Components} \rule{0pt}{3ex} \\ 
+\multicolumn{4}{c}{{\bf Base Kernels} (BK)} \rule{0pt}{3ex} \\ 
 \small LIN: Linearity &\small PER: Periodicity &\small SE: Smoothness &\small WN: White Noise \rule{0pt}{2ex} \\
 \includegraphics[height=2cm]{figs/kernel/kernelLIN.png} & \includegraphics[height=2cm]{figs/kernel/kernelPER.png} & \includegraphics[height=2cm]{figs/kernel/kernelSE.png} & \includegraphics[height=2cm]{figs/kernel/kernelWN.png}\\
 \end{tabular}

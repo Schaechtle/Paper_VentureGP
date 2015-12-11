@@ -67,20 +67,21 @@ Note that we annotate $\bm{\theta}=\{\texttt{sf},\texttt{l}\}$ for subsequent
 inference as belonging to (i) the scope "hyper-parameter" and (ii) blocks 0 and 1 respectively.
 
 \gpmem\ implements a memoization table, where all previously
-computed function evaluations are stored. We also initialize a \ac{GP}-prior that
+computed function evaluations ($\{\xbf,\fbf\}$) are stored. We also initialize a \ac{GP}-prior that
 will serve as our statistical emulator:
 \[
-P(f_{emu}(x) \mid \mathbf{x}_{past},\fbf)\sim \mathcal{N}(\mu(\mathbf{x}),\mathbf{K}_\theta\big(\mathbf{x},\mathbf{x})\big)
+P(f_{emu}(x) \mid \xbf,\fbf)\sim
+\mathcal{N}(\mu(\mathbf{x}),\Ktheta\big(\mathbf{x},\mathbf{x})\big)
 \]
 where 
 \[
-P(f_{emu}(x) \mid \mathbf{x}_{past},\fbf) = \hat\fbf 
+P(f_{emu}(x) \mid \mathbf{x},\fbf) = \hat\fbf 
 \]
-under the traditional \ac{GP} perspective\footnote{Note that we write $\fbf_*$ instead of $\hat\fbf$ if $\xbf_{past}=\{\}$ and $\fbf=\{\}$.}.
-All value pairs stored in the memoization table ($\text{memo table} = (\mathbf{x}_{past},\fbf)$) are incorporated as observations of
+under the traditional \ac{GP} perspective\footnote{Note that we write $\fbf_*$ instead of $\hat\fbf$ if $\xbf=\{\}$ and $\fbf=\{\}$.}.
+All value pairs stored in the memoization table ($\text{memo table} = (\xbf,\fbf)$) are incorporated as observations of
 the \ac{GP}.
 The emulator allows us to make probabilistic predictions on function evaluations, estimating
-$P(\hat\fbf\mid \fbf)$ with $\mathcal{N}(\hat{\bm{\mu}},\hat\Kbf)$.
+$P(\hat\fbf\mid \fbf)$ with $\mathcal{N}(\hat{\bm{\mu}},\hat\Kbf_{\thetabf})$.
 We simply feed the regression input
 into the emulator and output a predictive posterior Gaussian distribution determined by the \ac{GP} and
 the memoization table.
@@ -93,13 +94,13 @@ This can be useful when $\ftt$ is computed with the help of outside resources.
 Before making any observations or calls to $\ftt$
 we can sample from the prior at the inputs from -20 to 20 using the emulator:
     \begin{lstlisting}
-    assume (f_compute, f_emu) = gpmem(f, K))
+    assume (f_compute, f_emu) = gpmem(f, K));
 
-    sample f_emu(array(-20, ..., 20))
+    sample f_emu(array(-20, ..., 20));
     \end{lstlisting}
 where the second line corresponds to:
 \[ 
-\fbf_* \sim \mathcal{N}\Bigg(0,K\bigg(
+\fbf_* \sim \mathcal{N}\Bigg(0,\Ktheta\bigg(
 \bmat{
 -20 \\
 \cdots \\
@@ -116,7 +117,7 @@ where the second line corresponds to:
 % Panel 3
 In Fig. \ref{fig:gpmem_tutorial} (c), we probe the external function $\ftt$ at point 12.6 and memoize it's result by calling 
    \begin{lstlisting}
-    predict f_compute (12.6).
+    predict f_compute (12.6);
     \end{lstlisting}
 When we subsequently sample from the emulator, that is compute the $\hat\fbf$ at the input
 $\hat\xbf= \bmat{-20, \cdots, 20}^\top$. We see how the posterior which shifts from uncertainty to near certainty close to the input 12.6.
@@ -130,7 +131,7 @@ We can add information to $\texttt{f}_\text{emu}$ about presumable value pairs o
 (Fig. \ref{fig:gpmem_tutorial} (e)).
 If a friend tells us the value of $\ftt$ we can call observe to store this information in the incorporated observations for $\texttt{f}_\text{emu}$ only:
     \begin{lstlisting}
-    observe f_emu( -3.1) = 2.60.
+    observe f_emu( -3.1) = 2.60;
     \end{lstlisting}
 We have this value pair now available for the computation $\hat\fbf$. 
 For sampling with the emulator, the effect is the same as calling predict with the $\texttt{f}_\text{compute}$.
@@ -145,7 +146,7 @@ due to different levels of observation noise.
 Finally, we can update our posterior by inferring the posterior over hyper-parameter values $\thetabf$.
 We can take 50 \ac{MH} steps by calling that where we take an \ac{MH} steps for either of the two blocks for the scope "hyper-parameter": 
    \begin{lstlisting}
-    infer mh( 'hyper-parameter, one, 50).
+    infer mh( "hyper-parameter", one, 50);
     \end{lstlisting}
 The newly inferred hyper-parameters allow us now adequately reflect uncertainty
 about the curve given all incorporated observations (compare
