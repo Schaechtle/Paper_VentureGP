@@ -12,10 +12,9 @@
 
 \begin{subfigure}[b]{0.49\textwidth}\centering
 \begin{tikzpicture}[thick]
- \node[] (start) {};
- \node[left=-0.2cm of start] (base_kernels) {\small$\text{BK}=\{\Kbf_{\bm{\theta}^1}^1,\cdots,\Kbf_{\bm{\theta}^m}^m\}$};
+
+ \node[] (base_kernels) {\small$\text{BK}=\{k_{\bm{\theta}^1}^1,\cdots,k_{\bm{\theta}^m}^m\}$};
  \node[above=0.7cm of base_kernels] (theta) {\small$\bm{\theta}^* \sim P(\bm{\theta}^*)$};
-\node[right=0.5cm of start] (n) {$P(n)$};
  \node[draw,rectangle, below=1cm of start, text width =6.0cm, text 
 height=4.1cm,align=center] (grammar)
 {};
@@ -23,24 +22,22 @@ height=4.1cm,align=center] (grammar)
 
  \node[draw,dashed,rectangle, below=-3.8cm of grammar, text width
 =5.3cm,align=center] (subset) {
-$\;\;\;\;\;\;\;\;\;\;\;\;$Subset SP % I can't believe that this is the simpliest way to
+$\;$Select Primitive Kernels\\% I can't believe that this is the simpliest way to
 % get spacing right 
 {\raggedright
-\footnotesize$ n\; \sim P(n),\;\;\;\;\; n \leq m$ \\
-
-\footnotesize$S  \sim P(S =
-\{\Kbf_{\bm{\theta}^i}^i,\cdots,\Kbf_{\bm{\theta}^n}^n\} \mid \text{BK}, n)$
+\footnotesize$\Sbf  \sim P(\Sbf =
+\{k_{\bm{\theta}^i}^i,\cdots,k_{\bm{\theta}^n}^n\} \mid \text{BK})$
 }
 };
  \node[draw,rectangle,dashed, below=0.7cm of subset, text width
 =4.35cm,align=center]
 (composition_procedure) {
-$\;$Composition Procedure\\ % I can't believe that this is the simpliest way to
+$\;$Kernel Composer\\ % I can't believe that this is the simpliest way to
 % get spacing right 
 {\raggedright
-\footnotesize$\bm{\Omega}\;\; \sim P(\bm{\Omega} \mid S,n)$ \\
+\footnotesize$\;\;\;\bm{\Omega} \sim P(\bm{\Omega} \mid \Sbf)$ \\
 
-\footnotesize$\Kbf_{\bm{\theta}} \sim P(\Kbf_{\bm{\theta}} \mid \bm{\Omega},S,n),\;\,\bm{\theta}\subseteq\bm{\theta}^*$
+\footnotesize$k_{\bm{\theta}} \sim P(\Krv \mid \bm{\Omega},\Sbf),\;\,\bm{\theta}\subseteq\bm{\theta}^*$
 }
 };
 
@@ -49,11 +46,11 @@ $\;$Composition Procedure\\ % I can't believe that this is the simpliest way to
  \node[draw,rectangle,below=1cm of grammar] (gpmem) {\texttt{gpmem}};
 
  \node[draw,rectangle,below=1cm of gpmem] (f) {Data Generation};
-\node[left of=f,xshift=-1.5cm] (x) {$\mathbf{t}$};
-\node[right of=f,xshift=1.5cm] (y) {$\mathbf{f}$};
+\node[left of=f,xshift=-1.5cm] (x) {$\xbf$};
+\node[right of=f,xshift=1.5cm] (y) {$\ybf$};
 
  \node[below=0.1cm  of grammar,xshift=0.5cm] (k)
-{\small$\Kbf_{\bm{\theta}}$};
+{\small $k_{\thetabf}$};
 
 
 \node[below=0.1cm  of gpmem,xshift=0.6cm] (gp) {
@@ -61,13 +58,14 @@ $\;$Composition Procedure\\ % I can't believe that this is the simpliest way to
 
 % 1st pass: draw arrows
   \draw[thick,->] (base_kernels) -- (grammar);
-  \draw[thick,->] (n) -- (grammar);
+ 
   \draw[thick,->] (theta) -- (base_kernels);
   \draw[thick,->] (grammar) -- (gpmem);
   \draw[thick,->] (gpmem) -- (f);
  \draw[thick,->] (x) -- (f);
  \draw[thick,->] (f) -- (y);
- \draw[thick,dashed,->] (subset) -- node[right]{\footnotesize $\;S$} (composition_procedure);
+ \draw[thick,dashed,->] (subset) -- node[right]{\footnotesize $\;\Sbf \subseteq
+\text{BK}$} (composition_procedure);
   % Note: If you have no branches, the 2nd pass is not needed
 \end{tikzpicture}\vspace{2mm}
 \caption{} 
@@ -88,7 +86,7 @@ $\;$Composition Procedure\\ % I can't believe that this is the simpliest way to
             }
             child {
                 node[end, label=right:
-                    {SE$_{\theta^4}$}] {}
+                    {LIN$_{\theta^4}$}] {}
                 edge from parent
                 node[above] {}
                 node[below]  {}
@@ -112,14 +110,14 @@ $\;$Composition Procedure\\ % I can't believe that this is the simpliest way to
         node[operator] {\small $\times$}        
         child {
                 node[end, label=right:
-                    {PER$_{\theta^2}$}] {}
+                    {SE$_{\theta^2}$}] {}
                 edge from parent
                 node[above] {}
                 node[below]  {}
             }
             child {
                 node[end, label=right:
-                    {LIN$_{\theta^1}$}] {}
+                    {SE$_{\theta^1}$}] {}
                 edge from parent
                 node[above] {}
                 node[below]  {}
@@ -128,8 +126,29 @@ $\;$Composition Procedure\\ % I can't believe that this is the simpliest way to
             node[above] {}
             node[below]  {}
     };
-\node[xshift=-0.7cm] (K) {$\mathbf{K}_{\bm{\theta}}=$}; 
- \node[xshift=2.6cm,below =2.4cm of K] (Keq) {$\mathbf{K}_{\bm{\theta}}=\text{LIN}_{\theta^1} \times \text{PER}_{\theta^2}+\text{WN}_{\theta^3} + \text{SE}_{\theta^4} \times ( \cdots )$};
+
+
+\node[xshift=-1.4cm] (K) {$k_{\thetabf}=$}; 
+ \node[xshift=1.6cm,below =2.4cm of K] (Keq)
+{$\text{Struct}(k_{\thetabf})=\text{SE}_{\theta^{1,2}} +\text{WN}_{\theta^3} + \text{LIN}_{\theta^4} \times ( \cdots )$};
+\node[draw,rectangel,font=\tiny,text width = 6.7 cm, yshift=3.1cm] (simplification) {
+SE $\times$ SE $\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\,\rightarrow$ SE\\
+$\{$SE, PER, C, WN$\} \times$ WN $\;\;\;\;\,\rightarrow$ WN\\
+$\{$SE, PER, C, WN, LIN$\} \times$ C $\rightarrow$ $\{$SE, PER, C, WN, LIN$\}$\\
+LIN $+$ LIN $\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\rightarrow$ LIN\\
+PER $+$ LIN $ \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\,\rightarrow$ LIN $+$ PER, $\cdots$\\
+PER $\times$ LIN $\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\,\rightarrow$ LIN $\times$ PER,$\cdots$\\
+};
+\node[above=0.0cm of simplification](simplification_with){Simplificaton 
+ with Struct()};
+\node[yshift=-0.3cm](helper){};
+\node[yshift=-2.7cm](helper2){};
+\node[draw, rectangle, above=1.2cm of
+simplification_with](interpretation){$\klin \rightarrow \text{LIN}$};
+\node[above=0.0cm of interpretation](interpretation_with){Interpretation 
+ with Struct()};
+\draw[thick,->] (interpretation) -- (simplification_with);
+\draw[thick,dashed,->] (helper) -- (helper2);
 \end{tikzpicture}
 \caption{} 
 \end{subfigure}

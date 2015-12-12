@@ -62,21 +62,45 @@ defaultpen(fontsize(11));
 \newcommand{\noisy}{{\textrm{noisy}}}
 \newcommand{\noise}{{\textrm{noise}}}
 
-\newcommand{\Acal}{\mathcal{A}}
+\newcommand{\Acal}{\mathcal{X}}
 \newcommand{\R}{\mathbb{R}}
-
-\newcommand{\abf}{\mathbf{a}}
+\newcommand{\xprime}{\mathbf{x}^\prime}
+\newcommand{\yprime}{\mathbf{y}^\prime}
+\newcommand{\yprimetop}{\mathbf{y}^{\prime \top}}
+\newcommand{\xstar}{\mathbf{x}^*}
+\newcommand{\ystar}{\mathbf{y}^*}
+\newcommand{\abf}{\mathbf{x}}
+\newcommand{\tbf}{\mathbf{t}}
 \newcommand{\fbf}{\mathbf{f}}
 \newcommand{\hbf}{\mathbf{h}}
-\newcommand{\rbf}{\mathbf{r}}
+\newcommand{\rbf}{\mathbf{y}}
 \newcommand{\wbf}{\mathbf{w}}
 \newcommand{\xbf}{\mathbf{x}}
+\newcommand{\Mbf}{\mathbf{M}}
 \newcommand{\ybf}{\mathbf{y}}
 \newcommand{\Kbf}{\mathbf{K}}
+\newcommand{\Sbf}{\mathbf{S}}
 \newcommand{\Ktheta}{\mathbf{K}_{\bm{\theta}}}
+\newcommand{\ktheta}{k_{\bm{\theta}}}
+\newcommand{\Kpost}{\mathbf{K}_{\bm{\theta}}^\text{post}}
+\newcommand{\mupost}{\bm{\mu}_{\bm{\theta}}^\text{post}}
 \newcommand{\thetabf}{\bm{\theta}}
+\newcommand{\midtheta}{\mid \bm{\theta}}
 \newcommand{\Ibf}{\mathbf{I}}
 \newcommand{\mubf}{\bm{\mu}}
+\newcommand{\Krv}{\bm{\mathcal{K}}}
+\newcommand{\Klin}{K^\text{linear}}
+\newcommand{\Kper}{K^\text{periodic}}
+\newcommand{\klin}{k^\text{linear}}
+\newcommand{\kwn}{k^\text{wn}}
+\newcommand{\kper}{k^\text{periodic}}
+\newcommand{\kse}{k^\text{se}}
+\newcommand{\Kse}{K^\text{se}}
+\newcommand{\Ksrv}{\bm{\mathcal{K}}_\text{Struct}}
+\newcommand{\Struct}{\text{Struct}}
+%k\newcommand{\kper}{k^\text{periodic}}
+
+
 
 \newcommand{\pn}[1]{\left( #1 \right)}
 \newcommand{\bkt}[1]{\left[ #1 \right]}
@@ -203,6 +227,10 @@ defaultpen(fontsize(11));
 
 \ShortHeadings{Probabilistic Programming with Gaussian Process Memoization}{}
 \firstpageno{1}
+\usepackage{lineno}
+\linenumbers
+\setlength\linenumbersep{5pt}
+\renewcommand\linenumberfont{\normalfont\tiny\sffamily\color{gray}}
 
 
 \begin{document}
@@ -293,8 +321,13 @@ The third is a reinforcement learning application, where \ac{GP}s are used as pa
 \subsection*{B Covariance Simplification}
 \input{sections/Appendix_Simplification.tex}
 
-\subsection*{C Glossary}
-\input{sections/glossary.tex}
+\subsection*{C The Struct-Operator}
+\input{sections/Appendix_Struct.tex}
+
+\subsection*{D Squared Exponential Kernel in Venture}
+\input{sections/Appendix_SE_kernel.tex}
+%\subsection*{E Glossary}
+%\input{sections/glossary.tex}
 %\subsection*{C Additional Structure Learning Results}
 %\input{sections/Appendix_Structure_Results.tex}
 

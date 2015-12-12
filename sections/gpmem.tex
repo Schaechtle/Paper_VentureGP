@@ -44,7 +44,9 @@ $f(\xtt_1),\ldots,f(\xtt_k)$ will in general be dependent.
   This can be expensive (top left).
   Every probe is memoized and improves the emulator. Below the schematic we see the evolution
   of \gpmem's state of believe of the world given certain Venture
-  directives. On the right, we depict the true function (blue), samples from the emulator (red) and incorporated observations (black).}
+  directives. On the right, we depict the true function (blue), samples from the
+emulator (red) and incorporated observations (black). We omid code for the
+hyper-parameters and \texttt{kse}, it can be found in Appendix D.}
 \label{fig:gpmem_tutorial}
 \end{figure}
 
@@ -55,11 +57,11 @@ The top panel (Fig. \ref{fig:gpmem_tutorial}, (a)) of this figure sketches the s
 $\ftt$ is the external process that we memoize. It can be evaluated using resources that potentially come
 from outside of Venture.  
 We feed this function into \gpmem\ alongside
-a parameterised kernel $\Ktheta$.  
+a parameterised kernel $k$.  
 In this example, we make the qualitative assumption of $f$ being smooth, and define
-$\Ktheta$ to be a squared-exponential covariance function:
+$k$ to be a squared-exponential covariance function:
 \[
-\Ktheta = \text{SE} = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2}).
+k = \kse = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2}).
 \]
 The hyper-parameters $\thetabf$ for this kernel are sampled from a 
 prior distribution which is depicted in the top right box.
@@ -67,21 +69,19 @@ Note that we annotate $\bm{\theta}=\{\texttt{sf},\texttt{l}\}$ for subsequent
 inference as belonging to (i) the scope "hyper-parameter" and (ii) blocks 0 and 1 respectively.
 
 \gpmem\ implements a memoization table, where all previously
-computed function evaluations ($\{\xbf,\fbf\}$) are stored. We also initialize a \ac{GP}-prior that
+computed function evaluations ($\{\xbf,\ybf\}$) are stored. We also initialize a \ac{GP}-prior that
 will serve as our statistical emulator:
 \[
-P(f_{emu}(x) \mid \xbf,\fbf)\sim
-\mathcal{N}(\mu(\mathbf{x}),\Ktheta\big(\mathbf{x},\mathbf{x})\big)
+P(f_{emu}(x) \mid \xbf,\ybf,\thetabf)\sim
+\mathcal{N}\big(\mupost,\Kpost)\big)
 \]
 where 
 \[
-P(f_{emu}(x) \mid \mathbf{x},\fbf) = \hat\fbf 
+P(f_{emu}(x) \mid \mathbf{x},\ybf,\thetabf) = \yprime 
 \]
-under the traditional \ac{GP} perspective\footnote{Note that we write $\fbf_*$ instead of $\hat\fbf$ if $\xbf=\{\}$ and $\fbf=\{\}$.}.
-All value pairs stored in the memoization table ($\text{memo table} = (\xbf,\fbf)$) are incorporated as observations of
+under the traditional \ac{GP} perspective.
+All value pairs stored in the memoization table ($\text{memo table} = (\xbf,\ybf)$) are incorporated as observations of
 the \ac{GP}.
-The emulator allows us to make probabilistic predictions on function evaluations, estimating
-$P(\hat\fbf\mid \fbf)$ with $\mathcal{N}(\hat{\bm{\mu}},\hat\Kbf_{\thetabf})$.
 We simply feed the regression input
 into the emulator and output a predictive posterior Gaussian distribution determined by the \ac{GP} and
 the memoization table.
@@ -94,13 +94,13 @@ This can be useful when $\ftt$ is computed with the help of outside resources.
 Before making any observations or calls to $\ftt$
 we can sample from the prior at the inputs from -20 to 20 using the emulator:
     \begin{lstlisting}
-    assume (f_compute, f_emu) = gpmem(f, K));
+    assume (f_compute, f_emu) = gpmem(f, kse));
 
     sample f_emu(array(-20, ..., 20));
     \end{lstlisting}
 where the second line corresponds to:
 \[ 
-\fbf_* \sim \mathcal{N}\Bigg(0,\Ktheta\bigg(
+\ystar \sim \mathcal{N}\Bigg(0,\Kse\bigg(
 \bmat{
 -20 \\
 \cdots \\
@@ -111,6 +111,7 @@ where the second line corresponds to:
 \cdots \\
 20
 }
+\mid \thetabf=\{\sigma,\ell\}
 \bigg)
 \Bigg).
 \]
@@ -119,8 +120,8 @@ In Fig. \ref{fig:gpmem_tutorial} (c), we probe the external function $\ftt$ at p
    \begin{lstlisting}
     predict f_compute (12.6);
     \end{lstlisting}
-When we subsequently sample from the emulator, that is compute the $\hat\fbf$ at the input
-$\hat\xbf= \bmat{-20, \cdots, 20}^\top$. We see how the posterior which shifts from uncertainty to near certainty close to the input 12.6.
+When we subsequently sample from the emulator, that is compute the $\yprime$ at the input
+$\xprime= \bmat{-20, \cdots, 20}^\top$. We see how the posterior which shifts from uncertainty to near certainty close to the input 12.6.
 
 % Panel 4
 We can repeat the process at a different point (probing point -6.4 in Fig.
@@ -133,7 +134,7 @@ If a friend tells us the value of $\ftt$ we can call observe to store this infor
     \begin{lstlisting}
     observe f_emu( -3.1) = 2.60;
     \end{lstlisting}
-We have this value pair now available for the computation $\hat\fbf$. 
+We have this value pair now available for the computation $\yprime$. 
 For sampling with the emulator, the effect is the same as calling predict with the $\texttt{f}_\text{compute}$.
 However, we can imagine at least one scenario where such as distinction in the treatment of observations 
 is beneficial. Let us say we do not only have the real function available but also a domain expert with knowledge 

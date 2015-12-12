@@ -9,15 +9,16 @@ Formally, a GP is an infinite-dimensional extension of the multivariate Gaussian
 
 The collection of random variables $\br{f(x_i)=y_i}$ (indexed by $i$) represents the
 values of the function $f$ at each location $x_i$.
-We write $f \sim \mathcal{GP}(m,k \mid \thetabf_\text{mean},\thetabf)$, where $m$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
-That is, $m(x_i \mid \thetabf_\text{mean})$ is the prior mean of the random variable $y_i$, and
+We write $f \sim \mathcal{GP}(\mu,k \mid \thetabf_\text{mean},\thetabf)$, where
+$\mu$ is the {\em mean function} and $k$ is the {\em covariance function} or {\em kernel}.
+That is, $\mu(x_i \mid \thetabf_\text{mean})$ is the prior mean of the random variable $y_i$, and
 $k(x_i,x_j \midtheta)$ is the prior covariance of the random variables $y_i$
 and $y_j$. The output of both mean and covariance function are conditioned on a
-few free hyper-parameters parameterizing $k$ and $m$. We refer to these
+few free hyper-parameters parameterizing $k$ and $\mu$. We refer to these
 hyper-parameters as $\thetabf$ and
 $\thetabf_\text{mean}$
 respectively.
-To simplify the calculation below, we will assume the prior mean $m$ is identically zero; once the derivation is done, this assumption can be easily relaxed via translation.
+To simplify the calculation below, we will assume the prior mean $\mu$ is identically zero; once the derivation is done, this assumption can be easily relaxed via translation.
 We use upper case
 italic $K(\xbf,\xprime \midtheta )$ for a function that returns a matrix of dimension $I \times J$
 with entries $k(x_i,x_j \midtheta )$ and with $x_i \in \xbf$ and $x_j \in

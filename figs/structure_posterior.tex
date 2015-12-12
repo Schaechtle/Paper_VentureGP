@@ -12,9 +12,13 @@
 \node[draw,rectangle,color=red,dashed,left = 3.8cm of zoom, minimum width =
 1.5cm, minimum height = 1.2cm,yshift=0.0cm] (zoom_in) {};
 \node[below = 1.2cm of post_param_helper_2] (posterior) {\includegraphics[width=0.6\textwidth]{figs/mauna_structure.png}};
+\node[below=-0.7cm of posterior,xshift=0.3cm] (xlabel) {\footnotesize
+$\Ksrv$};
+\node[left =-0.5cm of posterior,yshift=1.3cm] (ylabel) {\rotatebox{90}{\footnotesize
+$P(\Ksrv \mid \xbf,\ybf, \thetabf)$}};
 
 \node[draw,rectangle,below = 1.2cm of posterior] (formula_param_1) {\color{black}\small
-$\Ktheta= 2.7^2(x x^\prime) + 5.6^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/3.7}{6.4^2} \bigg)
+$\ktheta= 2.7^2(x x^\prime) + 5.6^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/3.7}{6.4^2} \bigg)
 + 0.4^2 \exp(-\frac{(x-x^\prime)^2}{2 \times 6.3^2}) +  1.9^2 \delta_{x,x^\prime} \label{eq:WN}$ };
 
 
@@ -40,17 +44,18 @@ The posterior peaks at a kernel structure with four additive components. Additiv
 %\draw[->,dashed] (mark_structure) -- (paragraph_helper);
 %\draw[->,dashed] (formula_helper_2) -- (formula);
 
-\draw[->] (data) -- node[right]{\small $\hat \fbf \sim
-\mathcal{N}(\hat{\bm{\mu}},\hat\Kbf)$} (post_param_helper_1);
-\draw[->] (post_param_helper_2) -- node[right]{\small Marginal on Structure} (posterior);
+\draw[->] (data) -- node[right]{\small $\yprime \sim
+\mathcal{N}(\mupost,\Kpost)$} (post_param_helper_1);
+\draw[->] (post_param_helper_2) -- node[left]{\small }node[right]{\small Marginal on
+Structure: $P(\Ksrv \mid \xbf,\ybf, \thetabf)$} (posterior);
 \draw[->] (formula_helper_2) -- node[right] {\small
 $\bm{\theta}=\{2.7,5.6,3.7,6.4,0.4,6.3,1.9\}$} (formula_param_1);
-\draw[-] (mark_structure) -- node[left, yshift=-0.3cm] {\small $\Ktheta$} (formula_helper);
+\draw[-] (mark_structure) -- node[left, yshift=-0.3cm] {\small $\ktheta$} (formula_helper);
 \draw[-] (formula_helper) --(formula_helper_2);
 \draw[->] (formula_param_1) -- node[right]{\small Qualitative Interpretation} (paragraph);
 
 \draw[->,dashed,red] (zoom_in) --node[above]{\small\color{red}Zoom in:}
-node[below]{\small\color{red}adequate error bars}(zoom);
+(zoom);
 
 %\draw[->,line width=1pt,double distance=2pt] (data) -- (post_param);
 % starting from the bottom to aligm with caption 

@@ -15,16 +15,17 @@ We can apply \gpmem\ for regression in a hierarchical Bayesian setting
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 In a Bayesian treatment of  hyper-parameter learning for \ac{GP}s,
 we can write the posterior probability of the hyper-parameters of a GP  (Fig.
-\ref{fig:neal_tutorial}, (a)) given covariance function $\Kbf_{\thetabf}$ as:
+\ref{fig:neal_tutorial}, (a)) given covariance function $\Krv=k$ as:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{equation}
 \label{eq:hyperProbability}
-P(\thetabf=\{sf,\ell,\sigma\} \mid \mathbf{D},\Kbf_{\thetabf} ) = \frac{P(\mathbf{D} \mid
-\thetabf, \Kbf_{\thetabf})P(\thetabf \mid \Kbf_{\thetabf} )}{P(\mathbf{D} \mid
-\Kbf_{\thetabf})}
+P(\thetabf=\{sf,\ell,\sigma\} \mid \mathbf{D},\Krv ) = \frac{P(\mathbf{D} \mid
+\thetabf, \Krv)P(\thetabf \mid \Krv) }{P(\mathbf{D} \mid
+\Krv)}
 \end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-where $\mathbf{D} = \{\xbf, \fbf\}$ is a training data set. Since we can apply
+where $\mathbf{D} = \{\xbf, \ybf\}$ is a training data set and $\Krv$ is treated
+as a random variable over covariance functions. Since we can apply
 \gpmem\ to any process or procedure, it can be used in situations where only a data
 set is available via a look-up function $\texttt{f\_look\_up}$.
 In fact, we demonstrate \gpmem's application to regression using an example where
@@ -43,7 +44,7 @@ We synthetically generate outliers by setting $\sigma = 0.1$ in $95\%$ of the ca
 Instead of accessing the $f_\text{true}$ directly, we are accessing the $\texttt{data}$ in form of
 a a two dimensional $\texttt{array}$ with $\texttt{f\_look\_up}$.
 
-We parameterize $\Kbf_{\bm{\theta}}$ with $\bm{\theta}=\{sf,\ell,\sigma\}$.
+We set $\Krv = k^{\text{se}+\text{wn}}$ and parameterize it with $\bm{\theta}=\{sf,\ell,\sigma\}$.
 For these hyper-parameters, Neals work suggests a hierarchical system for
 for hyper-parameterization.
 Here, we draw hyper-parameters from $\Gamma$ distributions:
@@ -63,30 +64,31 @@ and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
 We model this in Venture as illustrated in Fig. \ref{fig:neal_tutorial} (c),
 using the build-in \ac{SP} $\texttt{gamma}$. Note that we omit the prior distributions of (\ref{eq:hyper-alpha}) due limited space in the tutorial.
 
-In Fig. \ref{fig:neal_tutorial}, panel (d), we see that $\mathbf{K}_{\bm{\theta}}$
+In Fig. \ref{fig:neal_tutorial}, panel (d), we see that $k^{\text{se}+\text{wn}}$
 is defined as a composite covariance function. It is the sum ($\texttt{add\_funcs}$) of
-an SE kernel ($\texttt{make\_squaredexp}$) and a white noise (WN, Appendix A)
+an squared exponential kernel ($\texttt{make\_squaredexp}$) and a white noise
+($\kwn$, Appendix A)
 kernel which is implemented with $\texttt{make\_whitenoise}$\footnote{Note
 that in Neal's work \citeyearpar{neal1997monte} the sum of an SE
 plus a constant kernel is used. We use a WN kernel for illustrative purposes
 instead.}. 
 We then initialize \gpmem\ feeding it with $\texttt{composite\_covariance}$ and the data
 look-up function $\texttt{f\_look\_up}$. 
-We sample from the prior $\fbf_*$ with random parameters $\texttt{sf,l}$ and $\texttt{sigma}$ and 
+We sample from the prior $\ystar$ with random parameters $\texttt{sf,l}$ and $\texttt{sigma}$ and 
 without any observations available.
 We depict those samples on the right (red), alongside the true function that generated the data (blue) and
 the data points we have available in the data set (black).
 
 We can incorporate observations using both \texttt{observe} and \texttt{predict} (Fig. \ref{fig:neal_tutorial} (e)).
-When we subsequently sample $\hat\fbf$ from the emulator with
-$\mathcal{N}(\hat{\bm{\mu}},\hat\Kbf_{\thetabf})$, we can see that the \ac{GP} posterior incorporates knowledge 
+When we subsequently sample $\yprime$ from the emulator with
+$\mathcal{N}(\mupost,\Kpost)$, we can see that the \ac{GP} posterior incorporates knowledge 
 about the $\texttt{data}$. Yet, the hyper-parameters $\texttt{sf,l}$ and $\texttt{sigma}$ are still
 random, so the emulator does not capture the true underlying dynamics
 ($f_\text{true}$) of the \texttt{data} correctly. 
 
 Next, we demonstrate how we can capture these underlying dynamics within only
 100  nested \ac{MH} steps on the hyper-parameters to get a good approximation
-for their posterior $\hat\fbf$ (Fig. \ref{fig:neal_tutorial} (f)).
+for their posterior $\yprime$ (Fig. \ref{fig:neal_tutorial} (f)).
 We say nested because we first take two sweeps in the scope
 $\texttt{hyperhyper}$ which characterizes (\ref{eq:hyper-alpha}) and then one
 sweep on the scope $\texttt{hyper}$ which characterizes (\ref{eq:hyper-ell}).

@@ -8,27 +8,27 @@
 #\linenumber{3}#assume se = make_squaredexp(sf, l);
 #\linenumber{4}#assume blackbox_f = get_bayesopt_blackbox();
 #\linenumber{5}#assume (f_compute, f_emulate) = gpmem(blackbox_f, se);
-
-// A naive estimate of the argmax of the given function
-#\linenumber{6}#define mc_argmax = proc(func) {
-#\linenumber{7}#  candidate_xs = mapv(proc(i) {uniform_continuous(-20, 20)},
-#\linenumber{8}#                      arange(20));
-#\linenumber{9}#  candidate_ys = mapv(func, candidate_xs);
-#\linenumber{10}#  lookup(candidate_xs, argmax_of_array(candidate_ys))
-#\linenumber{11}#};
-
-// Shortcut to sample the emulator at a single point without packing
-// and unpacking arrays
-#\linenumber{12}#define emulate_pointwise = proc(x) {
-#\linenumber{13}#  run(sample(lookup(f_emulate(array(unquote(x))), 0)))
-#\linenumber{14}#};
-
-// Main inference loop
-#\linenumber{15}#infer repeat(15, do(pass,
-  // Probe V at the point mc_argmax(emulate_pointwise)
-#\linenumber{16}#  predict(f_compute(unquote(mc_argmax(emulate_pointwise)))),
-  // Infer hyperparameters
-#\linenumber{17}#  mh("hyper", one, 50)));
+#\linenumber{6}#
+#\linenumber{7}#// A naive estimate of the argmax of the given function
+#\linenumber{8}#define mc_argmax = proc(func) {
+#\linenumber{9}#  candidate_xs = mapv(proc(i) {uniform_continuous(-20, 20)},
+#\linenumber{10}#                      arange(20));
+#\linenumber{11}#  candidate_ys = mapv(func, candidate_xs);
+#\linenumber{12}#  lookup(candidate_xs, argmax_of_array(candidate_ys))
+#\linenumber{13}#};
+#\linenumber{14}#
+#\linenumber{15}#// Shortcut to sample the emulator at a single point without packing
+#\linenumber{16}#// and unpacking arrays
+#\linenumber{17}#define emulate_pointwise = proc(x) {
+#\linenumber{18}#  run(sample(lookup(f_emulate(array(unquote(x))), 0)))
+#\linenumber{19}#};
+#\linenumber{20}#
+#\linenumber{21}#// Main inference loop
+#\linenumber{22}#infer repeat(15, do(pass,
+#\linenumber{23}#  // Probe V at the point mc_argmax(emulate_pointwise)
+#\linenumber{24}#  predict(f_compute(unquote(mc_argmax(emulate_pointwise)))),
+#\linenumber{25}#  // Infer hyperparameters
+#\linenumber{26}#  mh("hyper", one, 50)));
 \end{lstlisting}
 
 \end{minipage}

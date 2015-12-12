@@ -1,9 +1,16 @@
 
 \begin{tabular}{l l}
- $x$ 			& Scalar   \\
- $X$ 			& Random variable   \\
- $\mathbf{x}$		& Column vector    \\
- $\mathbf{X}$		& Matrix    \\
+ $x,x_i$ 			& Scalar,possibly index with i   \\
+$f \sim \ac{GP}(m,K)$   & function $f$ distributed as a Gaussian Process with
+mean function f and covariance function K \\
+ $\xbf$			& Column vector, training data: regression input    \\
+ $\ybf$			& Column vector, training data: regression output    \\
+ $\xprime$		& Column vector, unseen test input: regression input    \\
+$\xstar$         & Column vector, unseen test
+input: regression input before any data has been observed    \\
+$\ystar$		& Column vector, sample from the predictive prior
+conditioned on $\thetabf$ and unsee test input $\xstar$ \\
+ $\Kbf_theta$		& Matrix    \\
  $\mathcal{D}$		& Data matrix \\
  $\mathbb{E}$		& Expectation    \\
  $\mathcal{N}$		& (Multivariate-) Gaussian \\

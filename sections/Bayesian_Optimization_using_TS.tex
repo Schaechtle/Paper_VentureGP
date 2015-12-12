@@ -7,19 +7,19 @@ We cast the multi-armed bandit problem as a one-state Markov
 decision process (MDP), and describe how Thompson sampling can be used to choose
 actions for that MDP.
 
-The MDP is as follows: An agent is to take a sequence of actions $a_1, a_2,
+The MDP is as follows: An agent is to take a sequence of actions $x_1, x_2,
 \ldots$ from a (possibly infinite) set of possible actions $\Acal$.  After each
-action, a reward $r \in \R$ is received, according to an unknown conditional
-distribution $P_\true\pn{r \mvert a}$.  The agent's goal is to maximize the
+action, a reward $y \in \R$ is received, according to an unknown conditional
+distribution $P_\true\pn{y \mvert x}$.  The agent's goal is to maximize the
 total reward received for all actions in an online manner.  In Thompson
 sampling, the agent accomplishes this by placing a prior distribution
 $P(\ttheta)$ on the possible ``contexts'' $\ttheta \in \Theta$.  Here a context
-is a believed model of the conditional distributions $\{P\pn{r \mvert a}\}_{a
+is a believed model of the conditional distributions $\{P\pn{x \mvert y}\}_{x
 \in \Acal}$, or at least, a believed statistic of these conditional
 distributions which is sufficient for deciding an action $a$.  If actions are
 chosen so as to maximize expected reward, then one such sufficient statistic is
-the believed conditional mean $V \pn{a \mvert \ttheta} = \Ebkt{r \mvert
-a;\ttheta}$, which can be viewed as a believed value function.  For
+the believed conditional mean $V \pn{x \mvert \ttheta} = \Ebkt{y \mvert
+x;\ttheta}$, which can be viewed as a believed value function.  For
 consistency with what follows, we will assume our context $\ttheta$ takes the
 form $(\thetabf, \abf, \rbf)$ where $\abf$ is the vector of past
 actions, $\rbf$ is the vector of their rewards, and $\bm{\theta}$ (the
@@ -33,24 +33,24 @@ In this setup, Thompson sampling has the following steps:
     \item\label{itm:thompson-step-sample} {\bf Sample.} Sample a semicontext
       $\thetabf \sim P(\thetabf)$.
     \item\label{itm:thompson-step-search} {\bf Search (and act).} Choose an
-      action $a \in \Acal$ which (approximately) maximizes $V\pn{a \mvert
-      \ttheta} = \Ebkt{r \mvert a; \ttheta} = \Ebkt{r \mvert a;\,\thetabf,
+      action $x \in \Acal$ which (approximately) maximizes $V\pn{x \mvert
+      \ttheta} = \Ebkt{y \mvert x; \ttheta} = \Ebkt{y \mvert x;\,\thetabf,
       \abf, \rbf}$.
-    \item {\bf Update.} Let $r_\true$ be the reward received for action $a$.
+    \item {\bf Update.} Let $y_\true$ be the reward received for action $x$.
       Update the believed distribution on $\thetabf$, i.e., $P(\thetabf) \gets
-      P_\rmnew(\thetabf)$ where $P_\rmnew(\thetabf) = P\pn{\thetabf \mvert a \mapsto
-      r_\true}$.
+      P_\rmnew(\thetabf)$ where $P_\rmnew(\thetabf) = P\pn{\thetabf \mvert x \mapsto
+      y_\true}$.
   \end{enumerate}
   \caption{Thompson sampling.}
   \label{alg:thompson}
 \end{algorithm}
-Note that when $\Ebkt{r|a;\ttheta}$ (under the sampled value of $\thetabf$ for
-some points $a$) is far from the true value $\Ebkt[P_\true]{r \mvert a}$, the
+Note that when $\Ebkt{y|x;\ttheta}$ (under the sampled value of $\thetabf$ for
+some points $x$) is far from the true value $\Ebkt[P_\true]{y \mvert x}$, the
 chosen action $a$ may be far from optimal, but the information gained by probing
-action $a$ will improve the belief $\ttheta$.  This amounts to ``exploration.''
-When $\Ebkt{r \mvert a;\ttheta}$ is close to the true value except at points $a$
-for which $\Ebkt{r \mvert a;\ttheta}$ is low, exploration will be less likely to
-occur, but the chosen actions $a$ will tend to receive high rewards.  This
+action $x$ will improve the belief $\ttheta$.  This amounts to ``exploration.''
+When $\Ebkt{y \mvert x;\ttheta}$ is close to the true value except at points $x$
+for which $\Ebkt{y \mvert x;\ttheta}$ is low, exploration will be less likely to
+occur, but the chosen actions $x$ will tend to receive high rewards.  This
 amounts to ``exploitation.'' The trade-off between exploration and exploitation
 is illustrated in Figure \ref{fig:slide2}.  Roughly speaking, exploration will
 happen until the context $\ttheta$ is reasonably sure that the unexplored
@@ -63,20 +63,20 @@ exploit by choosing actions in regions it knows to have high value.
 \put(150,300){{\parbox{0.4\linewidth}{%
     \tiny
     \begin{align*}
-	E\pn{a' \mvert a} &= -\frac1s \pn{\widetilde{\mu}(a') -
-	\widetilde{\mu}(a)} \\
-	\widetilde{\mu}(a) &= \frac{1}{N_\avg} \sum_{i=1}^{N_\avg}
-	\widetilde{r}_{i,a}i\\ 
-	\widetilde{r}_{i,a}=\hat{f} &\sim \Ncal(\hat\mubf, \hat\Kbf_{\thetabf}\mid
+	E\pn{x' \mvert x} &= -\frac1s \pn{\widetilde{\mu}(x') -
+	\widetilde{\mu}(x)} \\
+	\widetilde{\mu}(x) &= \frac{1}{N_\avg} \sum_{i=1}^{N_\avg}
+	\widetilde{y}_{i,x}\\ 
+	\widetilde{y}_{i,x}=\yprime &\sim \Ncal(\mupost,  \Kpost \mid
 \sigma,\ell,\abf,\rbf)\\ 
-	Q_\proposal\pn{a' \mvert a} &\sim \Ncal(a,\,\propstd^2)
+	Q_\proposal\pn{x' \mvert x} &\sim \Ncal(x,\,\propstd^2)
     \end{align*}}}}
 \put(118,331){$\tau_\search$:}
 \put(62,58){{\parbox{0.4\linewidth}{%
     \tiny
     \begin{align*}
   P(\sigma,\ell \mid \abf,\rbf) &\propto \exp \big \{ {-\frac{1}{2}}\rbf^\top
-\Ktheta(\abf,\abf)^{-1}\rbf \big \}\\
+\Kse(\abf,\abf)^{-1}\rbf \big \}\\
   Q_\proposal\pn{\sigma',\ell \mvert \sigma,\ell} &= P(\sigma')\\
   Q_\proposal\pn{\sigma,\ell' \mvert \sigma,\ell} &= P(\ell')\\
   P_\accept\pn{\sigma',\ell' \mvert \sigma,\ell,\abf,\rbf}
@@ -90,8 +90,8 @@ exploit by choosing actions in regions it knows to have high value.
     \rbf^\top \Ktheta\pn{\abf, \abf \mvert \sigma', \ell'}^{{-1}} \rbf -\\ 
    &\;\;\;\;\;\;\;\; \;\;\;\;\;\;\;\;  \;\;\;\;\;\;\;\;  \;\;\;\;\;\;\;\;  \;\;\;   \rbf^\top \Ktheta\pn{\abf, \abf \mvert \sigma, \ell}^{{-1}} \rbf
   \big)\bigg \}\\
-   \Ktheta(\abf,\abf)&=\text{SE}=\bigg[\sigma^2 \exp \big \{{-\frac{(a_1 -
-a_2)^2}{2\ell}}\big \}\bigg]_{a_1,a_2 \in \abf}
+   \kse(\abf,\abf)&=\bigg[\sigma^2 \exp \big \{{-\frac{(x_1 -
+x_2)^2}{2\ell}}\big \}\bigg]_{x_1,x_2 \in \abf}
     \end{align*}}}}
 \put(65,112){$\tau_\update$:}
 \put(252,78){\bigg \} \footnotesize MH}
@@ -121,8 +121,8 @@ space $\Theta$ would be an unworkably large technical burden.  In a
 probabilstic programing language, however, the representation of
 heterogeneously structured or infinite-dimensional context spaces is quite
 natural.  Any computable model of the conditional distributions
-$\br{P\pn{r \mvert a}}_{a \in \Acal}$ can be represented as a stochastic
-procedure $(\lambda (a) \ldots)$.  Thus, for computational Thompson sampling,
+$\br{P\pn{y \mvert x}}_{x \in \Acal}$ can be represented as a stochastic
+procedure $(\lambda (x) \ldots)$.  Thus, for computational Thompson sampling,
 the most general context space $\widehat\Theta$ is the space of program texts.
 Any other context space $\Theta$ has a natural embedding as a subset of
 $\widehat\Theta$.
@@ -130,7 +130,7 @@ $\widehat\Theta$.
 We now describe a particular case of Thompson sampling with the following properties:
 \begin{itemize}
   \item The regression function has a Gaussian process prior.
-  \item The actions $a_1,a_2,\ldots \in \Acal$ are chosen by a Metropolis-like search
+  \item The actions $x_1,x_2,\ldots \in \Acal$ are chosen by a Metropolis-like search
     strategy with Gaussian drift proposals.
   \item The hyperparameters of the Gaussian process are inferred using
     Metropolis--Hastings sampling after each action.
@@ -138,24 +138,24 @@ We now describe a particular case of Thompson sampling with the following proper
 
 In this version of Thompson sampling, the contexts $\ttheta$ are Gaussian
 processes over the action space $\Acal = [-20, 20] \subseteq \R$.  That is,
-\[ V \sim \mathcal{GP}\big(\mubf(a), \Kbf_{\thetabf}(a,a)\big), \]
-where the mean $\mubf$ is a computable function $\Acal \to \R$ and the covariance
-$\Kbf_{\thetabf}$ is a computable (symmetric, positive-semidefinite) function $\Acal \times
+\[ V \sim \mathcal{GP}(\mu,k), \]
+where the mean $\mu$ is a computable function $\Acal \to \R$ and the covariance
+$k$ is a computable (symmetric, positive-semidefinite) function $\Acal \times
 \Acal \to \R$.  This represents a Gaussian process $\br{R_a}_{a \in \Acal}$,
-where $R_a$ represents the reward for action $a$. We write past actions as
+where $R_x$ represents the reward for action $x$. We write past actions as
 $\abf$ and past rewards as $\rbf$. Computationally, we represent
 a context as a data structure
-\[ \ttheta = (\thetabf, \abf, \rbf) = (\bm{\mu}, \Kbf_{\thetabf},\thetabf, \abf, \rbf), \]
+\[ \ttheta = (\thetabf, \abf, \rbf) = (\mu, k,\thetabf, \abf, \rbf), \]
 where $\mubf$ is a procedure to be used as the prior mean function and
-$\Kbf_{\thetabf}$ is a procedure to be used as the prior covariance function, parameterized by 
+$k$ is a procedure to be used as the prior covariance function, parameterized by 
 $\thetabf$.
-As above set $\bm{\mu} \equiv 0$.
+As above set $\mu \equiv 0$.
 
 Note that the context space $\Theta$ is not a finite-dimensional parametric
 family, since the vectors $\abf$ and $\rbf$ grow as more samples are
 taken.  $\Theta$ is, however, representable as a computational
 procedure together with parameters and past samples, as we do in the
-representation $\ttheta = (\mubf, \Kbf_{\thetabf}, \thetabf, \abf, \rbf)$.
+representation $\ttheta = (\mu, k, \thetabf, \abf, \rbf)$.
 
 We combine the Update and Sample steps of Algorithm \ref{alg:thompson} by
 running a Metropolis--Hastings (MH) sampler whose stationary distribution is the
@@ -200,9 +200,9 @@ involving $Q_\proposal$ equals $1$ and we have simply
     }} \\[2mm]
   &=
   \min\bigg\{1,\ \exp\bigg( -\frac12\bigg(
-    \rbf^T \Ktheta\pn{\abf, \abf \mvert \sigma', \ell'}^{-1} \rbf \\
+    \rbf^T K \pn{\abf, \abf \mvert \sigma', \ell'}^{-1} \rbf \\
   & \qquad\qquad\qquad\qquad\qquad -
-    \rbf^T \Ktheta\pn{\abf, \abf \mvert \sigma, \ell}^{-1} \rbf
+    \rbf^T K \pn{\abf, \abf \mvert \sigma, \ell}^{-1} \rbf
   \bigg)\bigg)\bigg\}.
 \end{align*}
 The proposal and acceptance/rejection process described above define a
@@ -217,19 +217,20 @@ As in MH, each iteration of $\tau_\search$ produces a proposal which is either
 accepted or rejected, and the state of this Markov chain after a specified
 number of steps is the new action $a$.  The Markov chain's initial state is the
 most recent action, and the proposal distribution is Gaussian drift:
-\[ Q_\proposal\pn{a' \mvert a} \sim \Ncal(a,\,\propstd^2), \]
+\[ Q_\proposal\pn{x' \mvert x} \sim \Ncal(x,\,\propstd^2), \]
 where the drift width $\propstd$ is specified ahead of time.  The acceptance
 probability of such a proposal is
-\[ P_\accept\pn{a' \mvert a} = \min\br{1,\ \exp\pn{-E\pn{a' \mvert a}}}, \]
+\[ P_\accept\pn{x' \mvert x} = \min\br{1,\ \exp\pn{-E\pn{x' \mvert x}}}, \]
 where the energy function $E\pn{\bullet \mvert a}$ is given by a Monte Carlo
 estimate of the difference in value from the current action:
-\[ E\pn{a' \mvert a} = -\frac1s \pn{\widetilde{\mu}(a') - \widetilde{\mu}(a)} \]
+\[ E\pn{x' \mvert x} = -\frac1s \pn{\widetilde{\mu}(x') - \widetilde{\mu}(x)} \]
 where
-\[ \widetilde{\mu}(a) = \frac{1}{N_\avg} \sum_{i=1}^{N_\avg} \widetilde{r}_{i,a} \]
+\[ \widetilde{\mu}(x) = \frac{1}{N_\avg} \sum_{i=1}^{N_\avg} \widetilde{y}_{i,x} \]
 and
-\[ \widetilde{r}_{i,a}=\hat{f} \sim \Ncal(\hat\mubf, \hat\Kbf_{\thetabf})) \]
-and $\br{\widetilde{r}_{i,a}}_{i=1}^{N_\avg}$ are i.i.d.\ for a fixed $a$.
-(In the above, $\hat\mubf$ and $\hat\Kbf_{\thetabf}$ are the mean and variance of a posterior sample at the single point $\hat\xbf = (a)$.)
+\[ \widetilde{y}_{i,x}=\yprime \sim \Ncal(\mupost, \Kpost) \]
+and $\br{\widetilde{y}_{i,a}}_{i=1}^{N_\avg}$ are i.i.d.\ for a fixed $a$.
+(In the above, $\mupost$ and $\Kpost$ are the mean and variance of a posterior
+sample at the single point $\xprime = (x^\prime)$.)
 Here the temperature parameter $s \geq 0$ and the population size $N_\avg$ are
 specified ahead of time.  Proposals of estimated value higher than that of the current action are
 always accepted, while proposals of estimated value lower than that of the
@@ -239,8 +240,8 @@ The rate of the decay is determined by the temperature parameter $s$,
 where high temperature corresponds to generous acceptance probabilities.
 For $s=0$, all proposals of lower value are rejected; for $s=\infty$, all
 proposals are accepted.
-For points $a$ at which the posterior mean $\hat\mubf$ is low but the
-posterior variance $\hat\Kbf_{\thetabf}$ is high, it is possible (especially when
+For points $a$ at which the posterior mean $\mupost$ is low but the
+posterior variance $\Kpost$ is high, it is possible (especially when
 $N_\avg$ is small) to draw a ``wild'' value of $\widetilde{\mu}(a)$, resulting in a
 favorable acceptance probability.
 
