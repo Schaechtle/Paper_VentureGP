@@ -9,7 +9,7 @@ using a stochastic grammar  (see Fig. \ref{fig:schema}).
 \begin{figure}
 \centering
 \input{figs/schematic.tex}
-\caption{\small(a) Bayesian GP structure learning. A set of
+\caption{\footnotesize (a) Bayesian GP structure learning. A set of
 base kernels (BK) with priors on there hyper-parameters serve as hypothesis space
 and is supplied as input to the stochastic grammar. The stochastic grammar has
 two parts: (i) a sampler that selects a random set $\Sbf$  of primitive kernels from BK
@@ -17,9 +17,10 @@ and (ii) a kernel composer that combines the individual base kernels and generat
 a composite kernel function
 $k_{\thetabf}$. This serves as input for
 \gpmem.  We observe value pairs $\xbf,\ybf$ of unstructured time series data on
-the bottom of the schematic. (b) An example of composite kernel structure. We
-use the Struct($k_{\thetabf}$) to compute a symbolic interpretation for
-$k_{\thetabf}$. We use addition and multiplication to combine base kernels.
+the bottom of the schematic.
+(b) An example of composite kernel structure. Struct($\ktheta$) takes as input a
+kernel $\ktheta$ as sampled in (a) and interprets it symbolically and simplifies
+it. Rules for simplification can be found in Appendix B. We use addition and multiplication to combine base kernels.
 Base kernels and compositional kernels are shown in (c) alongside ther
 interpretation with Struct().}\label{fig:schema}
 \end{figure}
