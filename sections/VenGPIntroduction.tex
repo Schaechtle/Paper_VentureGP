@@ -7,4 +7,56 @@ This paper describes Gaussian process memoization, a technique for integrating \
 This paper presents three applications of gpmem: (i) a replication of results~\citet{neal1997monte} on outlier rejection via hyper-parameter inference; (ii) a fully Bayesian extension to the Automated Statistician project; and (iii) an implementation of Bayesian optimization via Thompson sampling. The first application can in principle be replicated in several other probabilistic languages embedding the proposal that is described in this paper. The remaining two applications rely on distinctive capabilities of Venture~\citep{mansinghka2014venture}: support for fully Bayesian structure learning and language constructs for inference programming. All applications share a single 50-line Python library and require fewer than 20 lines of probabilistic code each.
 % ToDo: the 50 lines are bit understated
 
+\subsection{Related Work}
+A recent review on artificial intelligence and machine learning in Natur named
+\ac{GP}s and probabilistic programming as amongst the most promising directions for 
+future research \citep{ghahramani2015probabilistic}. A practitioner can find many software packages
+for \ac{GP}s available for free~\citep[e.g.][]{rasmussen2010gaussian,gpy2014,PyGPs}.
+However, the context that a practitioner can provide with them is mostly limited to regression and
+classification tasks. Yet, \ac{GP}s performed well in applications that go much
+further than these tasks. Neal shows an interesting application of Bayesian regression in
+the presence of outliers with a hierarchical system of hyper-priors~\citet{neal1997monte}.
+\ac{GP}s have been applied to emulated complex computation such as in the case of
+\ac{CCF}~\citep{kwan2013cosmic}. At the heart of this project is the
+\ac{CCF} that exploits accuracy of large scale  high-resolution cosmological
+simulations that are computationally expensive. Here, a sophisticated sampling scheme
+provides an optimal sampling strategy for the cosmological models to be
+simulated. The measurements from the simulations are then translated into functions that can
+be easily interpolated with \ac{GP}s.
+
+The discovery of symbolic relations and concepts has also been the
+focus of attention of Bayesian non-parametrics~\citep[e.g.][]{kemp2006learning}.
+The Automatic Statistician introduces inductive learning of
+symbolic expressions by kernel structure learning, through performing a greedy search over
+the space of possible \ac{GP} kernel
+structure~\citep{duvenaud2013structure,lloyd2014automatic}. The resulting
+structure comes with symbolic interpretation that can be understood by humans. The
+engineering involved a significant work-around for the
+GPML-toolbox~\citep{rasmussen2010gaussian} which, whilst providing a novel
+solution, still struggles to fulfill requirements to be fully Bayesian.
+
+A further example of advanced use of \ac{GP}s beyond regression and
+classification is the seemingly deterministic domain of
+optimization. To be Bayesian over the values of expensive functions, \ac{GP}s were used
+as emulators, leading to efficient optimization of otherwise expensive machine learning algorithms~\citep{snoek2012practical}. Bayesian optimization
+updates the belief system of a Bayesian agent when new information about the
+true underlying function to optimize becomes available. A sampling scheme for
+performing Bayesian Optimization in very high dimensions has been introduced
+by~\citep{mahendran2012adaptive}.  
+
+
+Probabilistic programming systems on the other hand have pushed the boundaries
+of models usable for machine learning with general purpose inference machinery.
+Examples include picture, which is combining fast data-driven methods for image
+interpretation such as deep neural networks with generative
+modelling~\citep{kulkarni2015picture}. Classification with large, deep and evolving hierarchical
+models as needed for the identification and tracking of resident space objects
+was enabled with the Figaro language~\citep{ruttenberg2014hierarchical}.
+Nitti and colleagues present a probabilistic programming approach to
+planning with \ac{MDP}s in hybrid domains, that is discrete and continuous-valued
+domains as well as domains with an unknown number of
+objects~\citep{nitti2015planning}. Bayesian Program
+induction outperforms deep neural networks in tasks with only one training example provided~\citep{lake2015humanlevel}. This kind of learning is
+particularly hard for machine learning while at the same time considerably easy
+for humans. 
 
