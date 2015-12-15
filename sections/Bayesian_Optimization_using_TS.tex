@@ -16,7 +16,7 @@ sampling, the agent accomplishes this by placing a prior distribution
 $P(\ttheta)$ on the possible ``contexts'' $\ttheta \in \Theta$.  Here a context
 is a believed model of the conditional distributions $\{P\pn{x \mvert y}\}_{x
 \in \Acal}$, or at least, a believed statistic of these conditional
-distributions which is sufficient for deciding an action $a$.  If actions are
+distributions which is sufficient for deciding an action $x$.  If actions are
 chosen so as to maximize expected reward, then one such sufficient statistic is
 the believed conditional mean $V \pn{x \mvert \ttheta} = \Ebkt{y \mvert
 x;\ttheta}$, which can be viewed as a believed value function.  For
@@ -46,7 +46,7 @@ In this setup, Thompson sampling has the following steps:
 \end{algorithm}
 Note that when $\Ebkt{y|x;\ttheta}$ (under the sampled value of $\thetabf$ for
 some points $x$) is far from the true value $\Ebkt[P_\true]{y \mvert x}$, the
-chosen action $a$ may be far from optimal, but the information gained by probing
+chosen action $x$ may be far from optimal, but the information gained by probing
 action $x$ will improve the belief $\ttheta$.  This amounts to ``exploration.''
 When $\Ebkt{y \mvert x;\ttheta}$ is close to the true value except at points $x$
 for which $\Ebkt{y \mvert x;\ttheta}$ is low, exploration will be less likely to
@@ -160,7 +160,7 @@ representation $\ttheta = (\mu, k, \thetabf, \abf, \rbf)$.
 We combine the Update and Sample steps of Algorithm \ref{alg:thompson} by
 running a Metropolis--Hastings (MH) sampler whose stationary distribution is the
 posterior $P\pn{\thetabf \mvert \abf, \rbf}$.  The functional forms of
-$\mubf$ and $\Kbf_{\thetabf}$ are fixed in our case, so inference is only done
+$\mu$ and $k$ are fixed in our case, so inference is only done
 over the parameters $\thetabf = \br{\sigma,\ell}$; hence we equivalently write
 $P\pn{\sigma,\ell \mvert \abf, \rbf}$ for the stationary
 distribution.  We make MH proposals to one variable at a time, using the prior
@@ -215,7 +215,7 @@ For Step \ref{itm:thompson-step-search} (Search) of Thompson sampling, we
 explore the action space using an MH-like transition operator $\tau_\search$.
 As in MH, each iteration of $\tau_\search$ produces a proposal which is either
 accepted or rejected, and the state of this Markov chain after a specified
-number of steps is the new action $a$.  The Markov chain's initial state is the
+number of steps is the new action $x$.  The Markov chain's initial state is the
 most recent action, and the proposal distribution is Gaussian drift:
 \[ Q_\proposal\pn{x' \mvert x} \sim \Ncal(x,\,\propstd^2), \]
 where the drift width $\propstd$ is specified ahead of time.  The acceptance
@@ -228,7 +228,7 @@ where
 \[ \widetilde{\mu}(x) = \frac{1}{N_\avg} \sum_{i=1}^{N_\avg} \widetilde{y}_{i,x} \]
 and
 \[ \widetilde{y}_{i,x}=\yprime \sim \Ncal(\mupost, \Kpost) \]
-and $\br{\widetilde{y}_{i,a}}_{i=1}^{N_\avg}$ are i.i.d.\ for a fixed $a$.
+and $\br{\widetilde{y}_{i,x}}_{i=1}^{N_\avg}$ are i.i.d.\ for a fixed $x$.
 (In the above, $\mupost$ and $\Kpost$ are the mean and variance of a posterior
 sample at the single point $\xprime = (x^\prime)$.)
 Here the temperature parameter $s \geq 0$ and the population size $N_\avg$ are
@@ -240,16 +240,16 @@ The rate of the decay is determined by the temperature parameter $s$,
 where high temperature corresponds to generous acceptance probabilities.
 For $s=0$, all proposals of lower value are rejected; for $s=\infty$, all
 proposals are accepted.
-For points $a$ at which the posterior mean $\mupost$ is low but the
+For points $x$ at which the posterior mean $\mupost$ is low but the
 posterior variance $\Kpost$ is high, it is possible (especially when
-$N_\avg$ is small) to draw a ``wild'' value of $\widetilde{\mu}(a)$, resulting in a
+$N_\avg$ is small) to draw a ``wild'' value of $\widetilde{\mu}(x)$, resulting in a
 favorable acceptance probability.
 
 
 
-Indeed, taking an action $a$ with low estimated value but high uncertainty
+Indeed, taking an action $x$ with low estimated value but high uncertainty
 serves the useful function of improving the accuracy of the estimated value
-function at points near $a$ (see Figure \ref{fig:slide2}).\footnote{
+function at points near $x$ (see Figure \ref{fig:slide2}).\footnote{
   At least, this is true when we use a smoothing prior covariance function such
   as the squared exponential.
 }$^,$\footnote{

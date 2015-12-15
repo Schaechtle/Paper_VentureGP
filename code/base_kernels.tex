@@ -5,13 +5,13 @@
 \begin{lstlisting}[mathescape,label=alg:base_kernels,basicstyle=\selectfont\ttfamily,numbers=none,caption={Initialize
 Base Kernels BK and $P(n)$},escapechar=\#]
 #\linenumber{1}# // Initialize hyper-parameters
-#\linenumber{2}#assume theta_1 = tag("hyper-parameters", 1, gamma(5,1));
-#\linenumber{3}#assume theta_2 = tag("hyper-parameters", 2, gamma(5,1));
-#\linenumber{4}#assume theta_3 = tag("hyper-parameters", 3, gamma(5,1));
-#\linenumber{5}#assume theta_4 = tag("hyper-parameters", 4, gamma(5,1));
-#\linenumber{6}#assume theta_5 = tag("hyper-parameters", 5, gamma(5,1));
-#\linenumber{7}#assume theta_6 = tag("hyper-parameters", 6, gamma(5,1));
-#\linenumber{8}#assume theta_7 = tag("hyper-parameters", 7, gamma(5,1));
+#\linenumber{2}#assume theta_1 = tag(scope="hyper-parameters", block=1, gamma(5,1));
+#\linenumber{3}#assume theta_2 = tag(scope="hyper-parameters", block=2, gamma(5,1));
+#\linenumber{4}#assume theta_3 = tag(scope="hyper-parameters", block=3, gamma(5,1));
+#\linenumber{5}#assume theta_4 = tag(scope="hyper-parameters", block=4, gamma(5,1));
+#\linenumber{6}#assume theta_5 = tag(scope="hyper-parameters", block=5, gamma(5,1));
+#\linenumber{7}#assume theta_6 = tag(scope="hyper-parameters", block=6, gamma(5,1));
+#\linenumber{8}#assume theta_7 = tag(scope="hyper-parameters", block=7, gamma(5,1));
 #\linenumber{9}#
 #\linenumber{11}# // Make kernels
 #\linenumber{12}#assume lin = apply_function(make_linear, theta_1);

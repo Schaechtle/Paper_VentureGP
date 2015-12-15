@@ -5,8 +5,8 @@
 \begin{lstlisting}[mathescape,label=alg:grammar,basicstyle=\selectfont\ttfamily,numbers=none,caption={
 Stochastic Grammar},escapechar=\#]
 #\linenumber{1}#// Select a random subset of the set possible primitive kernels (BK)
-#\linenumber{2}#assume primitive_kernel_selection = tag("grammar", 0,
-#\linenumber{3}#				 select_primitive_kernels(BK));
+#\linenumber{2}#assume primitive_kernel_selection = tag( scope="grammar", block=0,
+#\linenumber{3}#					select_primitive_kernels(BK));
 #\linenumber{4}#// Construct kernel composition with a composer procedure
 #\linenumber{5}#assume kernel_composer = proc(l) {
 #\linenumber{6}#  if (size(l) <= 1) {
@@ -20,7 +20,7 @@ Stochastic Grammar},escapechar=\#]
 #\linenumber{14}#  }
 #\linenumber{15}#};
 #\linenumber{16}#
-#\linenumber{17}#assume K = tag("grammar", 1,
+#\linenumber{17}#assume K = tag( scope="grammar", block=1,
 	        	kernel_composer(primitive_kernel_selection));
 \end{lstlisting}
 

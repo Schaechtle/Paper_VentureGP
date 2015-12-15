@@ -1,8 +1,13 @@
 \begin{align}
-\text{SE} &= \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2}) \label{eq:SE}\\
-\text{LIN} &=   \sigma^2(x x^\prime) \label{eq:LIN}\\
-\text{C} &=   \sigma^2\label{eq:C}\\
-\text{WN} &= \sigma^2 \delta_{x,x^\prime} \label{eq:WN} \\
-\text{RQ} &=    \sigma^2 \bigg(1 + \frac{(x - x^\prime)^2}{2 \alpha \ell^2} \bigg)^{-\alpha} \label{eq:RQ} \\
-\text{PER} &=  \sigma^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg). \label{eq:PER}
+\kse &= \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2}) \label{eq:SE}\\
+\klin &=   \sigma^2(x x^\prime) \label{eq:LIN}\\
+k^{\text{constant}} &=   \sigma^2\label{eq:C}\\
+\kwn &= \sigma^2 \delta_{x,x^\prime} \label{eq:WN} \\
+k^{\text{rational quadratic}}  &=    \sigma^2 \bigg(1 + \frac{(x - x^\prime)^2}{2 \alpha \ell^2} \bigg)^{-\alpha} \label{eq:RQ} \\
+\kper &=  \sigma^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg). \label{eq:PER}
 \end{align}
+From top to bottom: the squared-exponential covariance function (\ref{eq:SE}),
+also know as smoothing kernel; the linear kernel (\ref{eq:LIN});  the constant 
+kernel (\ref{eq:C}); the white noise
+kernel (\ref{eq:WN}); the
+rational quadratic kernel (\ref{eq:RQ}); and the periodic kernel (\ref{eq:PER}).

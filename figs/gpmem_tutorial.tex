@@ -125,7 +125,7 @@ sample f_emu(array(-20, $\cdots$, 20));
  &   \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_5.png}} \\ \hline
 % line 5
  \small\begin{lstlisting}[mathescape,escapechar=\#]
-infer mh("hyper_parameter", one, 50);
+infer mh(scope="hyper-parameter", block=one, steps=50);
 
 sample f_emu(array(-20, $\cdots$, 20));
 

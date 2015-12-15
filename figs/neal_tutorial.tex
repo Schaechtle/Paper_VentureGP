@@ -24,9 +24,9 @@
 \multicolumn{2}{}{}
   \begin{minipage}{4cm}
  \footnotesize\begin{lstlisting}
- assume sf = tag("hyper", 0, gamma(alpha_sf, beta_sf)));
- assume l = tag("hyper", 1, gamma(alpha_l, beta_l)));
- assume sigma = tag("hyper", 2, uniform_continuous(0, 2));
+ assume sf = tag(scope="hyper", block=0, gamma(alpha_sf, beta_sf)));
+ assume l = tag(scope="hyper", block=1, gamma(alpha_l, beta_l)));
+ assume sigma = tag(scope="hyper", block=2, uniform_continuous(0, 2));
 \end{lstlisting}
 \end{minipage}
   \\
@@ -58,14 +58,15 @@ sample f_emu(array(-2, $\cdots$, 2));
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Metropolis-Hastings
 infer repeat(100, do(
-    mh("hyperhyper", one, 2),
-    mh("hyper",      one, 1)));#\vspace{1mm}#
+    mh(scope="hyperhyper",block=one, steps=2),
+    mh(scope="hyper",     block=one, steps=1)));#\vspace{1mm}#
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
  &   \raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_Bayesian.png}} \\ \hline
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Optimization
-infer map("hyper", all, 0.01, 15);
+infer gradient-ascent(scope="hyper",
+			block=all, steps=10);
 
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}

@@ -145,10 +145,35 @@ due to different levels of observation noise.
 
 % Panel 6
 Finally, we can update our posterior by inferring the posterior over hyper-parameter values $\thetabf$.
-We can take 50 \ac{MH} steps by calling that where we take an \ac{MH} steps for either of the two blocks for the scope "hyper-parameter": 
-   \begin{lstlisting}
-    infer mh( "hyper-parameter", one, 50);
+For this we use the defined scopes, which denote a collection of related random choices, such
+as all hyper-parameters $\thetabf$. Scopes may be further subdivided into blocks, on 
+which block proposals can be made.
+In the program above we assign two blocks, 0 and 1 for each hyper-parameter. These tags are supplied to the
+inference program (in this case, MH) to specify on which random variables inference
+should be done:
+    \begin{lstlisting}
+    infer mh(scope="hyper-parameters", block=one, steps=50);
     \end{lstlisting}
+In this case, we perform one \ac{MH} transition over the scope hyper-parameters
+and choose a random block, that is we choose one hyper-parameter at random.
+We can also define custom inference actions. Let's define \ac{MH} with Gaussian
+drift proposals.
+    \begin{lstlisting}
+    define drift_kernel = proc(x) { normal(x, 1) };
+
+    define my_markov_chain =
+    mh_correct(
+	on_subproblem(scope="hyper-parameters", block=2,
+	    symmetric_local_proposal(drift_kernel)));
+    
+    infer my_markov_chain;
+    \end{lstlisting}
+Note that this inference is not in the Figure. The important part of the above code snippet is \texttt{drift\_kernel}, which is where we say 
+that at each step of our Markov chain, we would like to propose a transition by sampling
+a new state from a unit normal distribution whose mean is the current state. 
+We apply this inference action only for $\texttt{block}$ 2 in the
+$\texttt{scope}$ "hyper-parameters".
+
 The newly inferred hyper-parameters allow us now adequately reflect uncertainty
 about the curve given all incorporated observations (compare
 Fig. \ref{fig:gpmem_tutorial}, bottom panel (f) on  the right with the samples

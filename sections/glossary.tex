@@ -1,39 +1,89 @@
-
 \begin{tabular}{l l}
- $x,x_i$ 			& Scalar,possibly index with i   \\
-$f \sim \ac{GP}(m,K)$   & function $f$ distributed as a Gaussian Process with
-mean function f and covariance function K \\
- $\xbf$			& Column vector, training data: regression input    \\
- $\ybf$			& Column vector, training data: regression output    \\
- $\xprime$		& Column vector, unseen test input: regression input    \\
-$\xstar$         & Column vector, unseen test
-input: regression input before any data has been observed    \\
-$\ystar$		& Column vector, sample from the predictive prior
-conditioned on $\thetabf$ and unsee test input $\xstar$ \\
- $\Kbf_theta$		& Matrix    \\
- $\mathcal{D}$		& Data matrix \\
- $\mathbb{E}$		& Expectation    \\
- $\mathcal{N}$		& (Multivariate-) Gaussian \\
- $\mathcal{GP}$		& Gaussian Process \\
- $\mu$                  & Mean \\
- $\bm{\mu}$             & Mean vector \\
- $\sigma$               & Standard deviation \\
- $m(x)$                 & Mean function \\
- $k(x,x')$              & Kernel or covariance function \\
- $\mathbf{K}=\mathbf{K}(\mathbf{x},\mathbf{x})$& Prior Kernel or covariance function given a data vector \\
- $\mathbf{\hat{x}}$     & unseen input data \\
- $\mathbf{K}(\mathbf{x},\mathbf{\hat{x}})$& Cross covariance \\
- $f = f(x)$             & One-dimensional sample from a GP \\
- $\mathbf{f}$           &  Sample from a GP prior $\backslash$ regression target, i.e. observed output \\
- $\mathbf{\hat{f}}$     &  Sample from a predictive posterior, that is regression output for unseen data $\mathbf{\hat{x}}$\\
- $\bm{\hat{\mu}}$       & Posterior mean for $\mathbf{\hat{f}}$ \\
- $\mathbf{\hat{K}}$     & Posterior covariance for $\mathbf{\hat{f}}$ \\
- SE	        & Squared exponential covariance function on a data vector \\
- LIN		        & Linear covariance function on a data vector \\
- PER		        & Periodic covariance function on a data vector \\
- RQ		        & Rational quadratic covariance function on a data vector \\
- C		        & Constant covariance function on a data vector \\
- WN		        & White noise covariance function on a data vector \\
- $\land$                & Logical and \\
- $\lor$                 & Logical or \\
+$\mathcal{N}$		&  (Multivariate-) Gaussian \\
+$\mathcal{GP}$		&  Gaussian Process \\
+$\mathbb{E}$		&  Expectation    \\
+$x,x_i$ 			&  Scalar, possibly indexed with $i$   \\
+$\xbf$				&  Column vector, training data:
+regression input (also actions in section \ref{sec:thompson})    \\
+$\ybf$				&  Column vector, training data:
+regression output  (also rewards in section \ref{sec:thompson})    \\
+$\Acal$				& A set of possible actions \\
+
+ $\xprime$			&  Column vector, unseen test input: regression input    \\
+ $\yprime$			&  Column vector, sample from predictive posterior, that
+is a sample from\\
+&$\mathcal{N}(\mupost,\Kpost)$    \\
+
+$\xstar$         &  Column vector, unseen test
+input: regression input before any data\\
+&has been observed    \\
+$\ystar$		&  Column vector, sample from the predictive prior
+conditioned on $\thetabf$\\
+& and unseen test input $\xstar$ \\
+$\Dbf$		&  Data matrix $[\xbf\; \ybf]$ \\
+
+$\mu(x)$                 &  Mean function \\
+$\thetabf_{\text{mean}}$	&  hyper-parameters for a mean function
+\\
+$k \text{ or } k(x_i,x_j)$	&  a covariance function or kernel, that is a
+function that takes two scalars as input \\
+
+$\thetabf$			&  hyper-parameters for a
+kernel/covariacne function (also semicontext in section \ref{sec:thompson})\\
+$k(x_i,x_j \midtheta )$		&  a kernel conditioned on its
+hyper-parameters \\
+$K(\xbf,\xprime \midtheta )$    &  Function outputting a matrix of dimension $I \times J$
+with entries $k(x_i,x_j \midtheta )$;\\
+&with $x_i \in \xbf$ and $x_j \in \xprime$ where $I$ and $J$ indicate the length
+of the\\
+&column vectors $\xbf$ and
+$\xprime$ \\
+
+$\ktheta$			&  a covariance function parameterized with
+$\thetabf$\\
+
+$\Ktheta\text{ or }\Kbf_{(\thetabf,\xbf,\xbf)}$		&  covariance matrix
+computed with by $K(\xbf,\xbf \midtheta)$   \\
+$\mupost$ &  Posterior mean vector for $\yprime \mid \xbf, \xprime, \ybf, \thetabf$ \\
+$\Kpost$     &  Posterior covariance matrix for $\yprime \mid \xbf, \xprime, \ybf, \thetabf$ \\
+$\Lbf$			&lower triangular matrix, given by the Cholesky factorization as 
+$\Lbf\coloneqq \text{chol}(\Ktheta)$\\
+
+$\kse$ &  Squared exponential covariance function  \\
+$\klin$ &  Linear covariance function  \\
+$k^{\text{constant}}$ &  Constant covariance function  \\
+$\kwn$ &  White noise covariance function  \\
+$k^{\text{rational quadratic}}$  &  Rational quadratic covariance function  \\
+$\kper$ &  Periodic covariance function  \\
+SE			&  Symbolic expression for the squared exponential covariance function  \\
+LIN		        &  Symbolic expression for the linear covariance function  \\
+PER		        &  Symbolic expression for the periodic covariance function  \\
+RQ		        &  Symbolic expression for the rational quadratic covariance function  \\
+C		        &  Symbolic expression for the constant covariance function  \\
+WN		        &  Symbolic expression for the white noise covariance function  \\
+\end{tabular}
+\newpage
+\begin{tabular}{l l}
+$\land$                &  Logical and \\
+$\lor$                 &  Logical or \\
+$\Krv$			& Random variable over kernel functions \\
+$\Ksrv$			& Random variable over symbolic interpretations for
+kernel functions \\
+Struct$(k)$		& Symbolic interpretation and simplification for kernel $k$ \\
+BK			& A set of base kernels \\
+$\Sbf$			& A subset of BK, randomly selected \\
+$\Omegabf$		& Random variable for composition operators, in our
+case that is kernel addition\\
+&and multiplication $\{+,\times\}$\\
+$\Gamma(\alpha,\beta)$ & Gamma distribution with shape parameter $\alpha$ and
+rate $\beta$ \\
+
+$\ell$			& Length-scale parameter for $\kse$  \\
+$sf$			& Scale factor parameter\\
+$\ttheta \in \Theta$    & Context in Thompson sampling\\ 
+$\Theta$    & Context space\\ 
+$V$			& Value function\\
+$Q_\proposal$		& Proposal distribution\\
+$E$			& Energy function\\
+$s$			& Temperature parameter \\
 \end{tabular}

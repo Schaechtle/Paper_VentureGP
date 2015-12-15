@@ -12,8 +12,8 @@ learning: },escapechar=\#]
 #\linenumber{5}#	predict f_compute(first(lookup(data, n)))};
 #\linenumber{6}#// Perform inference
 #\linenumber{7}#infer repeat(200, do(
-#\linenumber{8}#	mh("grammar", one, 1),
-#\linenumber{9}#	mh("hyper-parameters", one, 2)));
+#\linenumber{8}#	mh(scope="grammar", block=one, steps=1),
+#\linenumber{9}#	mh(scope="hyper-parameters", block=one, steps=2)));
 \end{lstlisting}
 
 \end{minipage}

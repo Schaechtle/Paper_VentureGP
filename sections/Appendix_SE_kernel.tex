@@ -1,7 +1,16 @@
+\myparagraph{Squared-exponential Kernel in Venture}
 \begin{lstlisting}[mathescape,escapechar=\#]
-
-assume sf = tag("hyper-parameters", 1, gamma(5,1));
-assume l = tag("hyper-parameters", 2, gamma(5,1));
+assume sf = tag(scope="hyper-parameters", block=1, gamma(5,1));
+assume l = tag("scope="hyper-parameters", block=2, gamma(5,1));
 assume kse  = apply_function(make_squaredexp, sf, l);
 
+\end{lstlisting}
+
+\myparagraph{Hierarchical Hyper-priors}
+\begin{lstlisting}[mathescape,escapechar=\#]
+assume alpha_sf = tag(scope="hyperhyper", block=1, gamma(5,1));
+assume beta_sf = tag("scope="hyperhyper", block=2, gamma(5,1));
+
+assume alpha_l = tag(scope="hyperhyper", block=1, gamma(5,1));
+assume beta_l = tag("scope="hyperhyper", block=2, gamma(5,1));
 \end{lstlisting}

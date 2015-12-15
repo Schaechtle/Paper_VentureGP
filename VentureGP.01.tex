@@ -61,7 +61,7 @@ defaultpen(fontsize(11));
 \newcommand{\prior}{{\textrm{prior}}}
 \newcommand{\noisy}{{\textrm{noisy}}}
 \newcommand{\noise}{{\textrm{noise}}}
-
+\newcommand{\sigmanoise}{\sigma_{\text{noise}}}
 \newcommand{\Acal}{\mathcal{X}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\xprime}{\mathbf{x}^\prime}
@@ -77,14 +77,17 @@ defaultpen(fontsize(11));
 \newcommand{\wbf}{\mathbf{w}}
 \newcommand{\xbf}{\mathbf{x}}
 \newcommand{\Mbf}{\mathbf{M}}
+\newcommand{\Dbf}{\mathbf{D}}
 \newcommand{\ybf}{\mathbf{y}}
 \newcommand{\Kbf}{\mathbf{K}}
+\newcommand{\Lbf}{\mathbf{L}}
 \newcommand{\Sbf}{\mathbf{S}}
 \newcommand{\Ktheta}{\mathbf{K}_{\bm{\theta}}}
 \newcommand{\ktheta}{k_{\bm{\theta}}}
 \newcommand{\Kpost}{\mathbf{K}_{\bm{\theta}}^\text{post}}
 \newcommand{\mupost}{\bm{\mu}_{\bm{\theta}}^\text{post}}
 \newcommand{\thetabf}{\bm{\theta}}
+\newcommand{\Omegabf}{\bm{\Omega}}
 \newcommand{\midtheta}{\mid \bm{\theta}}
 \newcommand{\Ibf}{\mathbf{I}}
 \newcommand{\mubf}{\bm{\mu}}
@@ -98,6 +101,8 @@ defaultpen(fontsize(11));
 \newcommand{\Kse}{K^\text{se}}
 \newcommand{\Ksrv}{\bm{\mathcal{K}}_\text{Struct}}
 \newcommand{\Struct}{\text{Struct}}
+\newcommand{\Simplify}{\text{Simplify}}
+\newcommand{\Parse}{\text{Parse}}
 %k\newcommand{\kper}{k^\text{periodic}}
 
 
@@ -162,6 +167,7 @@ defaultpen(fontsize(11));
 \acro{MDP} {Markov Decision Processes} 
 \acro{MH} {Metropolis-Hastings}
 \acro{SP} {Stochastic Process}
+\acro{CCF} {Cosmic Calibration Framework}
 \end{acronym}
 
 \setlength{\multicolsep}{0.0pt plus 2.0pt minus 1.5pt}
@@ -324,10 +330,11 @@ The third is a reinforcement learning application, where \ac{GP}s are used as pa
 \subsection*{C The Struct-Operator}
 \input{sections/Appendix_Struct.tex}
 
-\subsection*{D Squared Exponential Kernel in Venture}
+\subsection*{D Additional Venture Code}
 \input{sections/Appendix_SE_kernel.tex}
-%\subsection*{E Glossary}
-%\input{sections/glossary.tex}
+\newpage
+\subsection*{E Glossary}
+\input{sections/glossary.tex}
 %\subsection*{C Additional Structure Learning Results}
 %\input{sections/Appendix_Structure_Results.tex}
 

@@ -133,12 +133,12 @@ where $n$ is the number of data points.
 Both log-likelihood and predictive posterior can be computed efficiently using a \ac{SP} in Venture~\citep{mansinghka2014venture}
 with an algorithm that resorts to Cholesky factorization\citep[chap. 2]{rasmussen2006gaussian}. 
 We write the Cholesky factorization as 
-$\mathbf{L} \coloneqq \text{chol}(\Ktheta)$ when
+$\Lbf\coloneqq \text{chol}(\Ktheta)$ when
 :
 \begin{equation}
-\Ktheta = LL^\top
+\Ktheta = \Lbf\Lbf^\top
 \end{equation}
-where L is a lower triangular matrix. This allows us to compute the inverse of a covariance matrix as
+where $\Lbf$ is a lower triangular matrix. This allows us to compute the inverse of a covariance matrix as
 \begin{equation}
 \Ktheta^{-1} = (\mathbf{L}^{-1})^\top (\mathbf{L}^{-1})
 \end{equation}
@@ -233,9 +233,11 @@ in (\ref{eq:PER1}) we have $\bm{\theta}=\{\sigma_2,p,\ell\}$ and in
 (\ref{eq:LINxPER}) we have $\bm{\theta}=\{\sigma_1,\sigma_2,p,\ell\}$.
 Adjusting these hyper-parameters changes lower level qualitative attributes such as length
 scales ($\ell$) while preserving the higher level qualitative properties of the distribution
-such as linearity.
+such as linearity. 
 
-If we choose suitable hyper-parameters, for example by performing inference, we
+
+
+If we choose suitable set of hyper-parameters, for example by performing inference, we
 can capture the underlying dynamics of the data well (see Fig.
 \ref{fig:composition_tutorial} (f-h)) while sampling $\yprime$.
 Note that goodness of fit is not only limited to the parameters. A too simple qualitative structure
