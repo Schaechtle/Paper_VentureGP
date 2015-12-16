@@ -1,0 +1,15 @@
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[caption={Initialize \gpmem\ for Bayesian
+optimization},mathescape,numbers=none,label=alg:init_bayesopt,escapechar=\#]
+#\linenumber{1}#assume sf = tag(scope="hyper", uniform_continuous(0, 10));
+#\linenumber{2}#assume l = tag(scope="hyper",  uniform_continuous(0, 10));
+#\linenumber{3}#assume se = make_squaredexp(sf, l);
+#\linenumber{4}#assume blackbox_f = get_bayesopt_blackbox();
+#\linenumber{5}#assume (f_compute, f_emulate) = gpmem(blackbox_f, se);
+\end{lstlisting}
+
+\end{minipage}
+\end{mdframed}

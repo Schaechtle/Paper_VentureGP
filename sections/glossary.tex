@@ -55,6 +55,7 @@ $k^{\text{constant}}$ &  Constant covariance function  \\
 $\kwn$ &  White noise covariance function  \\
 $k^{\text{rational quadratic}}$  &  Rational quadratic covariance function  \\
 $\kper$ &  Periodic covariance function  \\
+
 SE			&  Symbolic expression for the squared exponential covariance function  \\
 LIN		        &  Symbolic expression for the linear covariance function  \\
 PER		        &  Symbolic expression for the periodic covariance function  \\
@@ -67,9 +68,16 @@ WN		        &  Symbolic expression for the white noise covariance function  \\
 $\land$                &  Logical and \\
 $\lor$                 &  Logical or \\
 $\Krv$			& Random variable over kernel functions \\
-$\Ksrv$			& Random variable over symbolic interpretations for
 kernel functions \\
-Struct$(k)$		& Symbolic interpretation and simplification for kernel $k$ \\
+Parse$(k)$		& Parse the structure for kernel $k$ \\
+Simplify$(k)$		& Simplify the functional expression for kernel $k$ \\
+Struct$(k)$		& Symbolic interpretation for kernel $k$ \\
+$\Cont(k,k^t)$          & A kernel $k^t$ contains the global kernel structure
+$k$\\
+$\SEK$			&  Operator to check if $\Struct(\Ksrv=k)=\text{SE}$\\
+$\LINK$			&  Operator to check if $\Struct(\Ksrv=k)=\text{LIN}$\\
+$\PERK$			&  Operator to check if $\Struct(\Ksrv=k)=\text{PER}$\\
+$\WNK$			&  Operator to check if $\Struct(\Ksrv=k)=\text{WN}$\\
 BK			& A set of base kernels \\
 $\Sbf$			& A subset of BK, randomly selected \\
 $\Omegabf$		& Random variable for composition operators, in our

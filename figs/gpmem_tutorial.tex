@@ -20,16 +20,17 @@
 
  $\thetabf \;\;\,\,= \{\sigma,\ell \} \rightarrow$ Scope\vspace{1mm}
 
- $\sigma\;\;\; \sim P(\sigma)\, \rightarrow$ Block 0\vspace{1mm}
+ $\sigma\;\;\; \sim P(\sigma)\,$\vspace{1mm}
 
- $\ell\;\;\;\, \sim P(\ell)\;\, \rightarrow$ Block 1\vspace{1mm}
+ $\ell\;\;\;\, \sim P(\ell)\;\,$\vspace{1mm}
 
 
 %\scriptnotesize
 %
 %%$\mu(\mathbf{x}) =\mu(\mathbf{x}) + \mathbf{K}_\theta(\mathbf{x},\mathbf{x}_{past})\mathbf{K}_\theta(\mathbf{x}_{past},\mathbf{x}_{past})^{-1}(\mathbf{y}_{past} - \mu(\mathbf{x}_{past}))$
  };
- \node[draw,rectangle,dashed,minimum size=1cm,left= 2.2cm of f] (resources) {\includegraphics[width=2.8cm]{figs/resources.png}};
+ \node[draw,rectangle,dashed,minimum size=1cm,left= 2.2cm of f] (resources)
+{\includegraphics[width=2.8cm]{figs/resources.jpg}};
 
 \node[draw,rectangle,below=0.8cm of gpmem,text width =7cm] (f_emu) {\centering $f_{emu}$ \vspace{1mm}
 
@@ -125,7 +126,7 @@ sample f_emu(array(-20, $\cdots$, 20));
  &   \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_5.png}} \\ \hline
 % line 5
  \small\begin{lstlisting}[mathescape,escapechar=\#]
-infer mh(scope="hyper-parameter", block=one, steps=50);
+infer mh(scope="hyper-parameter", steps=50);
 
 sample f_emu(array(-20, $\cdots$, 20));
 

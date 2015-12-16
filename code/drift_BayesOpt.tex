@@ -1,0 +1,41 @@
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[caption={Bayesian optimization with Gaussian drift
+proposals},mathescape,numbers=none,label=alg:drift_bayesopt,escapechar=\#]
+#\linenumber{1}#// A naive estimate of the argmax of the given function
+#\linenumber{2}#define mc_argmax = proc(func) {
+#\linenumber{3}#  candidate_xs = mapv(proc(x) {normal(x, 1)},
+#\linenumber{4}#                 fill(20,last));
+#\linenumber{5}#  candidate_ys = mapv(func, candidate_xs);
+#\linenumber{6}#  lookup(candidate_xs, argmax_of_array(candidate_ys))
+#\linenumber{7}#};
+#\linenumber{8}#
+#\linenumber{9}#// Shortcut to sample the emulator at a single point without packing
+#\linenumber{10}#// and unpacking arrays
+#\linenumber{11}#define emulate_pointwise = proc(x) {
+#\linenumber{12}#  run(sample(lookup(f_emulate(array(unquote(x))), 0)))
+#\linenumber{13}#};
+#\linenumber{15}#
+#\linenumber{16}#// Initialize helper variables
+#\linenumber{17}#assume previous_point = uniform_continuous(-20,20);
+#\linenumber{18}#run(observe(previous_point ,run(sample(previous_point)),prev));
+#\linenumber{19}#
+#\linenumber{20}#// Main inference loop
+#\linenumber{21}#infer repeat(15, do(pass,
+#\linenumber{22}#  // find the next point with mc argmax
+#\linenumber{23}#  next_point <- action(mc_argmax(
+#\linenumber{24}#		        emu_pointwise,run(sample(previous_point)))),
+#\linenumber{25}#  // Probe V at the point mc_argmax(emu_pointwise)
+#\linenumber{26}#  predict(first(package)(unquote(next_point))),
+#\linenumber{27}#  // Clear the previous point
+#\linenumber{28}#  forget(quote(prev)),
+#\linenumber{29}#  // Remember the current probe as the previous one for the next iter.
+#\linenumber{30}#  observe(previous_point, next_point,prev),
+#\linenumber{31}#  // Infer hyper-parameters
+#\linenumber{32}#  mh(scope="hyper", steps=50)));
+\end{lstlisting}
+
+\end{minipage}
+\end{mdframed}

@@ -7,7 +7,7 @@ We cast the multi-armed bandit problem as a one-state Markov
 decision process (MDP), and describe how Thompson sampling can be used to choose
 actions for that MDP.
 
-The MDP is as follows: An agent is to take a sequence of actions $x_1, x_2,
+The MDP can be described as follows: An agent is to take a sequence of actions $x_1, x_2,
 \ldots$ from a (possibly infinite) set of possible actions $\Acal$.  After each
 action, a reward $y \in \R$ is received, according to an unknown conditional
 distribution $P_\true\pn{y \mvert x}$.  The agent's goal is to maximize the
@@ -99,7 +99,7 @@ x_2)^2}{2\ell}}\big \}\bigg]_{x_1,x_2 \in \abf}
 %\put(105,107){\footnotesize True Posterior}
 %\put(105,90){\footnotesize MH:}
 \end{overpic}
-  \caption{
+  \caption{\footnotesize
     Two possible actions (in green) for an iteration of Thompson sampling.  The
     believed distribution on the value function $V$ is depicted in red.  In this
     example, the true reward function is deterministic, and is drawn in blue.
@@ -118,7 +118,7 @@ numerical parameters for a family of distributions of a fixed functional
 form.  With work, a mixture of a few functional forms is possible; but
 without probabilistic programming machinery, implementing a rich context
 space $\Theta$ would be an unworkably large technical burden.  In a
-probabilstic programing language, however, the representation of
+probabilistic programing language, however, the representation of
 heterogeneously structured or infinite-dimensional context spaces is quite
 natural.  Any computable model of the conditional distributions
 $\br{P\pn{y \mvert x}}_{x \in \Acal}$ can be represented as a stochastic
@@ -257,11 +257,12 @@ function at points near $x$ (see Figure \ref{fig:slide2}).\footnote{
   a desirable property; indeed, this is why we use $\muhat$ rather than the
   exact posterior mean $\mu$.
 }
-We see a comlete probabilistic program with \gpmem\ implementing Bayesian optimization
-with Thompson Sampling below (Listing \ref{alg:bayesopt}).
- \input{code/code_venBayesOpt.tex}
-
-
+We see a complete probabilistic program with \gpmem\ implementing Bayesian optimization
+with Thompson Sampling and both, uniform proposals and drift proposals below
+(Listing \ref{alg:init_bayesopt},\ref{alg:uniform_bayesopt} and \ref{alg:drift_bayesopt}).
+ \input{code/init_BayesOpt.tex}
+ \input{code/uniform_BayesOpt.tex}
+ \input{code/drift_BayesOpt.tex}
  \begin{figure}
   \setlength{\tabcolsep}{1pt} 
  \centering
@@ -303,7 +304,7 @@ with Thompson Sampling below (Listing \ref{alg:bayesopt}).
 \put(-387,-78){\footnotesize$i = 11$}
 \put(-255,-78){\footnotesize$i = 12$}
 \put(-123,-78){\footnotesize$i = 13$}
-\caption{Top: the estimated optimum over time. Blue and Red represent optimization with uniform and Gaussian drift proposals. Black lines indicate the local optima of the true functions. Bottom: a sequence of actions. Depicted are iterations 7-12 with uniform proposals.}\label{fig:bopt_results}
+\caption{\footnotesize Top: the estimated optimum over time. Blue and Red represent optimization with uniform and Gaussian drift proposals. Black lines indicate the local optima of the true functions. Bottom: a sequence of actions. Depicted are iterations 7-12 with uniform proposals.}\label{fig:bopt_results}
 \end{figure}
 In Fig. \ref{fig:bopt_results} we show results for our implementation of Bayesian Optimization 
 with Thompson sampling. We compare two different proposal distributions, namely uniform proposals

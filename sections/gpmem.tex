@@ -39,13 +39,13 @@ $f(\xtt_1),\ldots,f(\xtt_k)$ will in general be dependent.
 \put(-460,-10){(d)}
 \put(-460,-75){(e)}
 \put(-460,-130){(f)}
-\caption{\small \gpmem\ tutorial. The top shows a schematic of \gpmem.
+\caption{\footnotesize \gpmem\ tutorial. The top shows a schematic of \gpmem.
   \texttt{f\_compute} probes an outside resource.
   This can be expensive (top left).
   Every probe is memoized and improves the emulator. Below the schematic we see the evolution
   of \gpmem's state of believe of the world given certain Venture
   directives. On the right, we depict the true function (blue), samples from the
-emulator (red) and incorporated observations (black). We omid code for the
+emulator (red) and incorporated observations (black). We omit code for the
 hyper-parameters and \texttt{kse}, it can be found in Appendix D.}
 \label{fig:gpmem_tutorial}
 \end{figure}
@@ -66,7 +66,7 @@ k = \kse = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2}).
 The hyper-parameters $\thetabf$ for this kernel are sampled from a 
 prior distribution which is depicted in the top right box.
 Note that we annotate $\bm{\theta}=\{\texttt{sf},\texttt{l}\}$ for subsequent
-inference as belonging to (i) the scope "hyper-parameter" and (ii) blocks 0 and 1 respectively.
+inference as belonging to the scope "hyper-parameter".
 
 \gpmem\ implements a memoization table, where all previously
 computed function evaluations ($\{\xbf,\ybf\}$) are stored. We also initialize a \ac{GP}-prior that
@@ -116,12 +116,12 @@ where the second line corresponds to:
 \Bigg).
 \]
 % Panel 3
-In Fig. \ref{fig:gpmem_tutorial} (c), we probe the external function $\ftt$ at point 12.6 and memoize it's result by calling 
+In Fig. \ref{fig:gpmem_tutorial} (c), we probe the external function $\ftt$ at point 12.6 and memoize its result by calling 
    \begin{lstlisting}
     predict f_compute (12.6);
     \end{lstlisting}
 When we subsequently sample from the emulator, that is compute the $\yprime$ at the input
-$\xprime= \bmat{-20, \cdots, 20}^\top$. We see how the posterior which shifts from uncertainty to near certainty close to the input 12.6.
+$\xprime= \bmat{-20, \cdots, 20}^\top$, we see how the posterior shifts from uncertainty to near certainty close to the input 12.6.
 
 % Panel 4
 We can repeat the process at a different point (probing point -6.4 in Fig.
@@ -130,7 +130,7 @@ We can repeat the process at a different point (probing point -6.4 in Fig.
 % Panel 5
 We can add information to $\texttt{f}_\text{emu}$ about presumable value pairs of $\ftt$ without calling $\texttt{f}_\text{compute}$
 (Fig. \ref{fig:gpmem_tutorial} (e)).
-If a friend tells us the value of $\ftt$ we can call observe to store this information in the incorporated observations for $\texttt{f}_\text{emu}$ only:
+If a friend tells us the value of $\ftt$ we can call $\texttt{observe}$ to store this information in the incorporated observations for $\texttt{f}_\text{emu}$ only:
     \begin{lstlisting}
     observe f_emu( -3.1) = 2.60;
     \end{lstlisting}
@@ -145,36 +145,33 @@ due to different levels of observation noise.
 
 % Panel 6
 Finally, we can update our posterior by inferring the posterior over hyper-parameter values $\thetabf$.
-For this we use the defined scopes, which denote a collection of related random choices, such
-as all hyper-parameters $\thetabf$. Scopes may be further subdivided into blocks, on 
-which block proposals can be made.
-In the program above we assign two blocks, 0 and 1 for each hyper-parameter. These tags are supplied to the
+For this we use the defined scopes, which tag a collection of related random choices, such
+as all hyper-parameters $\thetabf$.
+These tags are supplied to the
 inference program (in this case, MH) to specify on which random variables inference
 should be done:
     \begin{lstlisting}
-    infer mh(scope="hyper-parameters", block=one, steps=50);
+    infer mh(scope="hyper-parameters", steps=50);
     \end{lstlisting}
 In this case, we perform one \ac{MH} transition over the scope hyper-parameters
-and choose a random block, that is we choose one hyper-parameter at random.
+and choose a random member of this scope, that is we choose one hyper-parameter at random.
 We can also define custom inference actions. Let's define \ac{MH} with Gaussian
 drift proposals.
     \begin{lstlisting}
     define drift_kernel = proc(x) { normal(x, 1) };
 
     define my_markov_chain =
-    mh_correct(
-	on_subproblem(scope="hyper-parameters", block=2,
-	    symmetric_local_proposal(drift_kernel)));
-    
+	apply_mh_correction(
+	    subproblem=choose_by_scope("hyper-parameters"),
+	    proposal=symmetric_local_proposal_from_chain(drift_kernel))
+
     infer my_markov_chain;
     \end{lstlisting}
 Note that this inference is not in the Figure. The important part of the above code snippet is \texttt{drift\_kernel}, which is where we say 
 that at each step of our Markov chain, we would like to propose a transition by sampling
 a new state from a unit normal distribution whose mean is the current state. 
-We apply this inference action only for $\texttt{block}$ 2 in the
-$\texttt{scope}$ "hyper-parameters".
 
-The newly inferred hyper-parameters allow us now adequately reflect uncertainty
+The newly inferred hyper-parameters allow us now to adequately reflect uncertainty
 about the curve given all incorporated observations (compare
 Fig. \ref{fig:gpmem_tutorial}, bottom panel (f) on  the right with the samples
 before inference, one panel above (e)).

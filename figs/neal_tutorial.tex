@@ -24,9 +24,9 @@
 \multicolumn{2}{}{}
   \begin{minipage}{4cm}
  \footnotesize\begin{lstlisting}
- assume sf = tag(scope="hyper", block=0, gamma(alpha_sf, beta_sf)));
- assume l = tag(scope="hyper", block=1, gamma(alpha_l, beta_l)));
- assume sigma = tag(scope="hyper", block=2, uniform_continuous(0, 2));
+ assume sf = tag(scope="hyper", gamma(alpha_sf, beta_sf)));
+ assume l = tag(scope="hyper", gamma(alpha_l, beta_l)));
+ assume sigma = tag(scope="hyper", uniform_continuous(0, 2));
 \end{lstlisting}
 \end{minipage}
   \\
@@ -41,7 +41,8 @@ assume (f_compute, f_emu) =
     gpmem(f_look_up, composite_covariance);#\vspace{1mm}#
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
- &  \raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_example_before_observation.png}}  \\ \hline
+ &
+\raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_example_before_observation.jpg}}  \\ \hline
 % line 3
 
 \footnotesize\begin{lstlisting}[aboveskip=-0.8 \baselineskip,mathescape,escapechar=\#]
@@ -54,22 +55,24 @@ for (n = 0; n < size(data); n++){
     predict f_compute(first(lookup(data,n)))};#\vspace{1mm}#
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
- &  \raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_example_after_observation.png}}  \\ \hline
+ &
+\raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_example_after_observation.jpg}}  \\ \hline
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Metropolis-Hastings
 infer repeat(100, do(
-    mh(scope="hyperhyper",block=one, steps=2),
-    mh(scope="hyper",     block=one, steps=1)));#\vspace{1mm}#
+    mh(scope="hyperhyper", steps=2),
+    mh(scope="hyper",      steps=1)));#\vspace{1mm}#
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
- &   \raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_Bayesian.png}} \\ \hline
+ &   \raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_Bayesian.jpg}} \\ \hline
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Optimization
 infer gradient-ascent(scope="hyper",
-			block=all, steps=10);
+			       steps=10);
 
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
- &   \raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_example_map_inference_alpha0p01_iter15.png}} \\ \hline
+ &
+\raisebox{-0.5\height}{\includegraphics[height=3.4cm]{figs/neal_example_map_inference_alpha0p01_iter15.jpg}} \\ \hline
 
  \end{tabular}

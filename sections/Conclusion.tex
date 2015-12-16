@@ -1,6 +1,38 @@
-We provided \gpmem, an elegant linguistic framework for function learning-related tasks such as Bayesian optimization and \ac{GP} kernel structure learning.
-We highlighted how \gpmem\ overcomes shortcomings of the notations currently used
-in statistics, and how language constructs from programming allow the expression
-of models which would be cumbersome (prohibitively so, in some cases) to express
-in statistics notation. We evaluated our contribution on a range of hard problems for state-of-the-art Bayesian nonparametrics. 
+This paper has shown that it is feasible and useful to embed Gaussian processes
+in higher-order probabilistic programming languages by treating them as a kind
+of statistical memoizer. It has described classic GP regression with both fully
+Bayesian and MAP inference in a hierarchical hyperprior, as well as state-of-the-art
+applications to discovering symbolic structure in time series and to Bayesian optimization.
+All the applications share a common 50-line Python GP library and require fewer than 20 lines
+of probabilistic code each.
 
+These results suggest several research directions. First, it will be important
+to develop versions of {\tt gpmem} that are optimized for larger-scale
+applications. Possible approaches include the standard low-rank approximations
+to the kernel matrix that are popular in machine learning~\citep{bui2014tree} as well
+as more sophisticated sampling algorithms for approximate conditioning of the
+GP~\citep{lawrence2009efficient}.
+Second, it seems fruitful to abstract the notion of a "generalizing" memoizer
+from the specific choice of a Gaussian process model as the mechanism for
+generalization. "Generalizing" or statistical memoizers with custom regression techniques could be broadly useful in performance engineering and scheduling systems.
+The timing data from performance benchmarks could be run through a generalizing memoizer by default.
+This memoizer could be queried (and its output error bars examined) to inform the best strategy
+for performing the computation or predict the likely runtime of long-running jobs.
+ Third, the structure learning application suggests follow-on research in information
+retrieval for structured data. It should be possible to build a time series search engine
+that can handle search predicates such as "has a rising trend starting around
+1988" or "is perodic during the 1990s".
+The variation on the Automated Statistician presented in this paper can provide ranked result
+sets for these sorts of queries because it tracks posterior uncertainty over structure and also
+because the space of structural patterns that it can handle is easy to modify by making small
+changes to a short VentureScript program.
+
+
+The field of Bayesian nonparametrics offers a principled, fully Bayesian
+response to the empirical modeling philosophy in machine learning~\citep{ghahramani2013bayesian},
+where Bayesian inference is used to encode a state of broad ignorance rather
+than a bias stemming from strong prior knowledge. It is perhaps surprising that
+two key objects from Bayesian nonparametrics, Dirichlet processes and Gaussian
+processes, fit naturally in probabilistic programming as variants of
+memoization~\citep{roy2008stochastic}. It is not yet clear if the same will be true
+for other processes, e.g. Wishart processes, or hierarchical Beta processes. We hope that the results in this paper encourage the development of other nonparametric libraries for higher-order probabilistic programming languages.

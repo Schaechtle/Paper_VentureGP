@@ -202,12 +202,12 @@ Fig. \ref{fig:composition_tutorial} (c) and (d))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{figure}
 \input{figs/composition/composition.tex}
-\caption{We depict kernel composition. 
+\caption{\footnotesize We depict kernel composition. 
 (a) shows raw data (black) generated with a sine function with linearly growing amplitude (blue).
 This data is used for all the plots (c-h). 
 (b) shows the linear and the periodic base kernel in functional form as well as a composition of both. 
 The multiplication of the two kernels indicates local interaction. The local interaction we account for in this case is the growing amplitude (a). For each column (c-h) $\bm{\theta}$ is different.(c-e) show samples from the prior
-prior predictive $\ystar$ where random parameters are used, that is, we sample before any data points are observed.
+predictive $\ystar$ where random parameters are used, that is, we sample before any data points are observed.
 (f-h) show samples from the predictive posterior $\yprime$, after the data has been observed.}
 \label{fig:composition_tutorial}
 \end{figure}
@@ -217,7 +217,8 @@ That means that we can also combine these properties.
 By using multiplication of kernels we can model a local interaction of two components, for example 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{equation}\label{eq:LINxPER}
-    \klin \times \kper =  \sigma_1^2(x x^\prime)\, \sigma_2^2 \exp \bigg( \frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg) 
+    \klin \times \kper =  \sigma_1^2(x x^\prime)\, \sigma_2^2 \exp \bigg(
+\frac{2 \sin^2 ( \pi (x - x^\prime)/p}{\ell^2} \bigg).
 \end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 This results in a combination of the higher level properties of linearity and  periodicity.
@@ -237,7 +238,7 @@ such as linearity.
 
 
 
-If we choose suitable set of hyper-parameters, for example by performing inference, we
+If we choose a suitable set of hyper-parameters, for example by performing inference, we
 can capture the underlying dynamics of the data well (see Fig.
 \ref{fig:composition_tutorial} (f-h)) while sampling $\yprime$.
 Note that goodness of fit is not only limited to the parameters. A too simple qualitative structure

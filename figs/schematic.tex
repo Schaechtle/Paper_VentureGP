@@ -70,9 +70,10 @@ $\;$Kernel Composer\\ % I can't believe that this is the simpliest way to
 \end{tikzpicture}\vspace{2mm}
 \caption{} 
 \end{subfigure}
+\addtocounter{subfigure}{2}
 \begin{subfigure}[b]{0.49\textwidth}\centering
 \begin{tikzpicture}[grow=right, sloped]
-\node[operator] {\small $+$}
+\node[operator,yshift=5.2cm] {\small $+$}
     child {
         node[operator] {\small $+$}        
             child {
@@ -128,10 +129,8 @@ $\;$Kernel Composer\\ % I can't believe that this is the simpliest way to
     };
 
 
-\node[xshift=-1.4cm] (K) {$k_{\thetabf}=$}; 
- \node[xshift=1.6cm,below =2.4cm of K] (Keq)
-{$\text{Struct}(k_{\thetabf})=\text{SE}_{\theta^{1,2}} +\text{WN}_{\theta^3} + \text{LIN}_{\theta^4} \times ( \cdots )$};
-\node[draw,rectangel,font=\tiny,text width = 6.7 cm, yshift=3.1cm] (simplification) {
+\node[xshift=-1.4cm,yshift=5.2cm] (K) {$\Parse(\ktheta)=$}; 
+\node[draw,rectangel,font=\tiny,text width = 6.7 cm, yshift=0.8cm] (simplification) {
 SE $\times$ SE $\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\,\rightarrow$ SE\\
 $\{$SE, PER, C, WN$\} \times$ WN $\;\;\;\;\,\rightarrow$ WN\\
 $\{$SE, PER, C, WN, LIN$\} \times$ C $\rightarrow$ $\{$SE, PER, C, WN, LIN$\}$\\
@@ -139,16 +138,22 @@ LIN $+$ LIN $\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\rightarrow$ 
 PER $+$ LIN $ \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\,\rightarrow$ LIN $+$ PER, $\cdots$\\
 PER $\times$ LIN $\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\,\rightarrow$ LIN $\times$ PER,$\cdots$\\
 };
-\node[above=0.0cm of simplification](simplification_with){Simplificaton 
- with Struct()};
+\node[above=0.0cm of simplification](simplification_with){\small Simplificaton 
+ with $\Simplify()$};
+
+\node[yshift=-3cm] (Keq)
+{$\text{Struct}(k)=\text{SE} +\text{WN} + \text{LIN} \times ( \cdots )$};
 \node[yshift=-0.3cm](helper){};
 \node[yshift=-2.7cm](helper2){};
-\node[draw, rectangle, above=1.2cm of
-simplification_with](interpretation){$\klin \rightarrow \text{LIN}$};
-\node[above=0.0cm of interpretation](interpretation_with){Interpretation 
+\node[above=-0.1cm of
+Keq](interpretation){\small$\kper \rightarrow \text{PER},\;\klin \rightarrow
+\text{LIN},\;\kse \rightarrow \text{SE},\cdots$};
+\node[above=0.0cm of interpretation](interpretation_with){\small Interpretation 
  with Struct()};
-\draw[thick,->] (interpretation) -- (simplification_with);
-\draw[thick,dashed,->] (helper) -- (helper2);
+\node[draw, rectangle, below=0.0cm of interpretation_with,minimum width = 8cm, minimum height
+=1.2cm] (structbox){};
+\node[below=0.3cm of simplification,xshift=-0.2cm]{(c)};
+\node[above=0.6cm of simplification_with,xshift=-0.2cm]{(b)};
 \end{tikzpicture}
 \caption{} 
 \end{subfigure}
