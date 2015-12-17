@@ -1,4 +1,5 @@
-\ac{GP}s are a Bayesian method for regression. We consider the regression input
+\acused{GP}
+Gaussian Processes (GPs) are a Bayesian method for regression. We consider the regression input
 to be real-valued scalars $x_i$ and the regression output $f(x_i)=y_i$ as the value of a
 function $f$ at $x_i$. The complete training data will be denoted by column
 vectors $\mathbf{x}$ and $\mathbf{y}$. Unseen test input is denoted with
@@ -163,7 +164,6 @@ and
 %This results in a computational complexity of $\mathcal{O}(n^3)$ in the number of data points for
 %sampling with a complexity of $n^3/6$ for (\ref{eq:chol_L}) an $n^2/2$ for (\ref{eq:alpha}). 
 This results in a computational complexity for sampling in the number of data points of $O(n^3/6)$ for (\ref{eq:chol_L}) an $O(n^2/2)$ for (\ref{eq:alpha}). 
-
 Above, we defined the \ac{GP} prior as $\ystar \sim
 \mathcal{N}\big(0,K(\xbf_*,\xbf_* \midtheta )\big)$.
 We see that this prior is fully determined by its covariance function.

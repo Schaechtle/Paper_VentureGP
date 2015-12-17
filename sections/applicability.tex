@@ -1,7 +1,0 @@
-More generally, \gpmem\ is relevant not just when a data set is available, but also whenever we have at hand a function $f_\restr$ which is expensive or impractical to evaluate many times.
-\gpmem\ allows us to model $f_\restr$ with a GP-based emulator $f_\emu$, and also to use $f_\emu$ during the learning process to choose, in an online manner, an effective set of probe points $\{x_i\}$ on which to use our few evaluations of $f_\restr$.
-This idea is illustrated in detail in Section \ref{sec:bayesopt}.
-Before doing this, we will illustrate another benefit of having a probabilistic programming apparatus for GP modelling: the linguistically unified treatment of inference over structure and inference over parameters.
-This unification makes interleaved joint inference over structure and parameters very natural, and allows us to give a short, elegant description of what it means to ``learn the covariance function,'' both in prose and in code.
-Furthermore, the example in Section \ref{sec:structurelearning} below recovers the performance of current state-of-the-art GP-based models.
-
