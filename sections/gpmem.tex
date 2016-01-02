@@ -27,26 +27,15 @@ $f(\xtt_1),\ldots,f(\xtt_k)$ will in general be dependent.
 
 
 \begin{figure}
-\input{figs/gpmem_tutorial.tex}
-%\put(-245,10){\line(1,0){200}}
-\put(-33,77){\color{ForestGreen}\thicklines \vector(0,-1){15}}
-\put(-96,6){\color{ForestGreen}\thicklines \vector(0,-1){15}}
-\put(-48,-63){\thicklines \vector(0,-1){15}}
-\put(-84,-43){\thicklines \vector(0,-1){15}}
-\put(-73,-68){\thicklines \vector(0,1){15}}
-\put(-460,110){(b)}
-\put(-460,45){(c)}
-\put(-460,-10){(d)}
-\put(-460,-75){(e)}
-\put(-460,-130){(f)}
+\noindent\input{figs/gpmem_tutorial.tex}
+\captionsetup{aboveskip=-3pt}
 \caption{\footnotesize \gpmem\ tutorial. The top shows a schematic of \gpmem.
   \texttt{f\_compute} probes an outside resource.
   This can be expensive (top left).
   Every probe is memoized and improves the emulator. Below the schematic we see the evolution
   of \gpmem's state of believe of the world given certain Venture
   directives. On the right, we depict the true function (blue), samples from the
-emulator (red) and incorporated observations (black). We omit code for the
-hyper-parameters and \texttt{kse}, it can be found in Appendix D.}
+emulator (red) and incorporated observations (black).}
 \label{fig:gpmem_tutorial}
 \end{figure}
 

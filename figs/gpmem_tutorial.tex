@@ -1,3 +1,4 @@
+
 \centering
 % for double arrows a la chef
 % adapt line thickness and line width, if needed
@@ -7,15 +8,15 @@
  \node[draw,right = 0.5cm of start,circle,minimum size=1.5cm] (K) {$\kse
 \midtheta$};
  %\node[below left of=f_K,xshift=-1.7cm,yshift=-0.1cm] (theta) {$\bm{\theta} \sim P(\bm{\theta})$};
- \node[draw,rectangle,below=1.2cm of start, text width = 8cm] (gpmem) {\centering\texttt{gpmem}\vspace{2mm}
+ \node[draw,rectangle,below=1.2cm of start, text width = 8cm] (gpmem) {\centering\texttt{gpmem}\vspace{1mm}
 
-\small$\text{memo table} = (\xbf,\ybf)$\vspace{1mm}
+\small$\text{memo table} = (\xbf,\ybf)$\vspace{0.7mm}
 
 \small$\;\;\;\;\;\;\;\;\;\;P(f_{emu}(x) \mid \xbf,\ybf,\thetabf)\sim
 \mathcal{N}\big(\mupost,\Kpost)\big)$
  };
 %  \node[draw,rectangle,color=ForestGreen,below = .1ex of gpmem,minimum width=1.5cm, minimum height=0.4cm,yshift=0.9cm,xshift=0.3cm] (mark) {};
-  \node[draw,rectangle,dashed,right=2cm of K, text width = 3.5cm] (math) {\footnotesize
+  \node[draw,rectangle,dashed,right=1.6cm of K, text width = 3.4cm] (math) {\footnotesize
  $\kse\,= \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2})$\vspace{1mm}
 
  $\thetabf \;\;\,\,= \{\sigma,\ell \} \rightarrow$ Scope\vspace{1mm}
@@ -34,6 +35,7 @@
 
 \node[draw,rectangle,below=0.8cm of gpmem,text width =7cm] (f_emu) {\centering $f_{emu}$ \vspace{1mm}
 
+\renewcommand{\arraystretch}{0.5}
 \begin{tabular}{l|l}\footnotesize
   \footnotesize$x$ & \footnotesize$f(x)$ \\ \hline
   \footnotesize $x_1$  &\footnotesize$y_1$ \\
@@ -84,52 +86,90 @@
 %    (emu_annotate) edge [->,in=310, out=270,thick]  (f_emu);
   % Note: If you have no branches, the 2nd pass is not needed
 \node[above=1 cm of start] (alabel) {(a) \gpmem: Schematic};
-\end{tikzpicture}
-
-
-\begin{tabular}{ll}
-% line 1
-& \\
-\hline
+\node[below=-0.3cm of f_emu,xshift=-1.3cm] (b_code){
 \small\begin{lstlisting}[mathescape,escapechar=\#]
-define f = proc(x) {
-  exp(-0.1*abs(x-2)) * 10 * cos(0.4*x) + 0.2};#\vspace{1mm}#
+define f = proc(x) {exp(-0.1*abs(x-2)) * 10 * cos(0.4*x) + 0.2};#\vspace{1mm}#
+assume sf = tag(scope="hyper-parameters", gamma(5,1));
+assume l = tag(scope="hyper-parameters", gamma(5,1));
+assume kse  = apply_function(make_squaredexp, sf, l)#\vspace{1mm}#;
+\end{lstlisting}
+};
+\node[below=-0.25cm of b_code,xshift=-2.3cm] (c_code){
+\small\begin{lstlisting}[mathescape,escapechar=\#]
 assume (f_compute, f_emu) = gpmem(f, kse);#\vspace{1mm}#
 sample f_emu(array(-20, $\cdots$, 20));
-
 \end{lstlisting}
-& \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_1.png}} \\ \hline
-% line 2
+};
+
+\node[below=0.2cm of c_code,xshift=-0.95cm] (d_code){
 \small\begin{lstlisting}[mathescape,escapechar=\#]
-predict f_compute(12.6);
-
+predict f_compute(12.6);#\vspace{1mm}#
 sample f_emu(array(-20, $\cdots$, 20));
-
 \end{lstlisting}
- &  \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_2.png}}  \\ \hline
-% line 3
- \small\begin{lstlisting}[mathescape,escapechar=\#]
-predict f_compute(-6.4);
+};
 
+\node[below=0.5cm of d_code] (e_code){
+\small\begin{lstlisting}[mathescape,escapechar=\#]
+predict f_compute(-6.4);#\vspace{1mm}#
 sample f_emu(array(-20, $\cdots$, 20));
-
 \end{lstlisting}
- &  \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_3.png}}  \\ \hline
-% line 4
- \small\begin{lstlisting}[mathescape,escapechar=\#]
+};
+
+\node[below=-0.0cm of e_code] (f_code){
+
+\small\begin{lstlisting}[mathescape,escapechar=\#]
 observe f_emu(-3.1) =  2.60;
 observe f_emu(7.8)  = -7.60;
 observe f_emu(0.0)  = 10.19;#\vspace{1mm}#
 sample f_emu(array(-20, $\cdots$, 20));
 
 \end{lstlisting}
- &   \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_5.png}} \\ \hline
-% line 5
- \small\begin{lstlisting}[mathescape,escapechar=\#]
-infer mh(scope="hyper-parameter", steps=50);
+};
 
+\node[below=0.0cm of f_code,xshift=1.2cm] (g_code){
+\small\begin{lstlisting}[mathescape,escapechar=\#]
+infer mh(scope="hyper-parameter", steps=50);#\vspace{1mm}#
 sample f_emu(array(-20, $\cdots$, 20));
-
 \end{lstlisting}
- &   \raisebox{-0.5\height}{\includegraphics[height=2.0cm]{figs/tutorial_6.png}}
-\end{tabular}
+};
+
+% samples/curve images
+\node[right=-4.5cm of b_code,yshift=-2.2cm] (c_pic){
+\includegraphics[height=2.0cm]{figs/tutorial_1.png}
+};
+\node[below=-0.1cm of c_pic] (d_pic){
+\includegraphics[height=2.0cm]{figs/tutorial_2.png}
+};
+\node[below=-0.1cm of d_pic] (e_pic){
+\includegraphics[height=2.0cm]{figs/tutorial_3.png}
+};
+\node[below=-0.1cm of e_pic] (f_pic){
+\includegraphics[height=2.0cm]{figs/tutorial_5.png}
+};
+\node[below=-0.1cm of f_pic] (g_pic){
+\includegraphics[height=2.0cm]{figs/tutorial_6.png}};
+
+% horizontal lines
+\draw 
+  ([xshift=-0.2cm,yshift=-0.6cm]b_code.north west) --
+([xshift=0.8cm,yshift=-0.6cm]b_code.north east); 
+\draw 
+  ([xshift=-0.2cm,yshift=0.2cm]b_code.south west) -- ([xshift=0.8cm,yshift=0.2cm]b_code.south east);   
+ \draw 
+  ([xshift=-0.2cm,yshift=-1.9cm]b_code.south west) -- ([xshift=0.8cm,yshift=-1.9cm]b_code.south east); 
+ \draw 
+  ([xshift=-0.2cm,yshift=-4.1cm]b_code.south west) -- ([xshift=0.8cm,yshift=-4.1cm]b_code.south east); 
+ \draw 
+  ([xshift=-0.2cm,yshift=-6.3cm]b_code.south west) -- ([xshift=0.8cm,yshift=-6.3cm]b_code.south east); 
+ \draw 
+  ([xshift=-0.2cm,yshift=-8.5cm]b_code.south west) -- ([xshift=0.8cm,yshift=-8.5cm]b_code.south east); 
+
+% labels
+\node[below=0.9cm of f_emu,xshift=-8.5cm] (b) {(b)};
+\node[below=1.4cm of b] (c) {(c)};
+\node[below=1.4cm of c] (d) {(d)};
+\node[below=1.4cm of d] (e) {(e)};
+\node[below=1.6cm of e] (f) {(f)};
+\node[below=1.5cm of f] (g) {(g)};
+\end{tikzpicture}
+
