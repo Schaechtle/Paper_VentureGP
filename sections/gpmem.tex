@@ -55,7 +55,7 @@ k = \kse = \sigma^2 \exp(-\frac{(x-x^\prime)^2}{2\ell^2}).
 The hyper-parameters $\thetabf$ for this kernel are sampled from a 
 prior distribution which is depicted in the top right box.
 Note that we annotate $\bm{\theta}=\{\texttt{sf},\texttt{l}\}$ for subsequent
-inference as belonging to the scope "hyper-parameter".
+inference as belonging to the scope ``hyper-parameter".
 
 \gpmem\ implements a memoization table, where all previously
 computed function evaluations ($\{\xbf,\ybf\}$) are stored. We also initialize a \ac{GP}-prior that
@@ -80,8 +80,9 @@ We can either define the function f that serves as as input for \gpmem\
  natively in Venture
 (as shown in the Fig. \ref{fig:gpmem_tutorial} (b)) or we interleave Venture with foreign code. 
 This can be useful when $\ftt$ is computed with the help of outside resources.
+We define and parameterize a squared-exponent
 Before making any observations or calls to $\ftt$
-we can sample from the prior at the inputs from -20 to 20 using the emulator:
+we can sample from the prior at the inputs from -20 to 20 using the emulator (Fig. \ref{fig:gpmem_tutorial} (c)):
     \begin{lstlisting}
     assume (f_compute, f_emu) = gpmem(f, kse));
 
@@ -105,7 +106,7 @@ where the second line corresponds to:
 \Bigg).
 \]
 % Panel 3
-In Fig. \ref{fig:gpmem_tutorial} (c), we probe the external function $\ftt$ at point 12.6 and memoize its result by calling 
+In Fig. \ref{fig:gpmem_tutorial} (d), we probe the external function $\ftt$ at point 12.6 and memoize its result by calling 
    \begin{lstlisting}
     predict f_compute (12.6);
     \end{lstlisting}
@@ -114,11 +115,11 @@ $\xprime= \bmat{-20, \cdots, 20}^\top$, we see how the posterior shifts from unc
 
 % Panel 4
 We can repeat the process at a different point (probing point -6.4 in Fig.
-\ref{fig:gpmem_tutorial} (d)) to see that we gain certainty about another part of the curve. 
+\ref{fig:gpmem_tutorial} (e)) to see that we gain certainty about another part of the curve. 
 
 % Panel 5
 We can add information to $\texttt{f}_\text{emu}$ about presumable value pairs of $\ftt$ without calling $\texttt{f}_\text{compute}$
-(Fig. \ref{fig:gpmem_tutorial} (e)).
+(Fig. \ref{fig:gpmem_tutorial} (f)).
 If a friend tells us the value of $\ftt$ we can call $\texttt{observe}$ to store this information in the incorporated observations for $\texttt{f}_\text{emu}$ only:
     \begin{lstlisting}
     observe f_emu( -3.1) = 2.60;
@@ -162,5 +163,5 @@ a new state from a unit normal distribution whose mean is the current state.
 
 The newly inferred hyper-parameters allow us now to adequately reflect uncertainty
 about the curve given all incorporated observations (compare
-Fig. \ref{fig:gpmem_tutorial}, bottom panel (f) on  the right with the samples
-before inference, one panel above (e)).
+Fig. \ref{fig:gpmem_tutorial}, bottom panel (g) on  the right with the samples
+before inference, one panel above (f)).

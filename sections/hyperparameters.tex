@@ -60,8 +60,7 @@ and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
 \end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We model this in Venture as illustrated in Fig. \ref{fig:neal_tutorial} (c),
-using the build-in \ac{SP} $\texttt{gamma}$. Note that we omit the prior
-distributions of (\ref{eq:hyper-alpha}) due to limited space in the tutorial.
+using the build-in \ac{SP} $\texttt{gamma}$. 
 
 In Fig. \ref{fig:neal_tutorial}, panel (d), we see that $k^{\text{se}+\text{wn}}$
 is defined as a composite covariance function. It is the sum ($\texttt{add\_funcs}$) of
@@ -74,11 +73,11 @@ instead.}.
 We then initialize \gpmem\ feeding it with $\texttt{composite\_covariance}$ and the data
 look-up function $\texttt{f\_look\_up}$. 
 We sample from the prior $\ystar$ with random parameters $\texttt{sf,l}$ and $\texttt{sigma}$ and 
-without any observations available.
+without any observations available (Fig. \ref{fig:neal_tutorial}, panel (e)).
 We depict those samples on the right (red), alongside the true function that generated the data (blue) and
 the data points we have available in the data set (black).
 
-We can incorporate observations using both \texttt{observe} and \texttt{predict} (Fig. \ref{fig:neal_tutorial} (e)).
+We can incorporate observations using both \texttt{observe} and \texttt{predict} (Fig. \ref{fig:neal_tutorial} (f)).
 When we subsequently sample $\yprime$ from the emulator with
 $\mathcal{N}(\mupost,\Kpost)$, we can see that the \ac{GP} posterior incorporates knowledge 
 about the $\texttt{data}$. Yet, the hyper-parameters $\texttt{sf,l}$ and $\texttt{sigma}$ are still
@@ -87,7 +86,7 @@ random, so the emulator does not capture the true underlying dynamics
 
 Next, we demonstrate how we can capture these underlying dynamics within only
 100  nested \ac{MH} steps on the hyper-parameters to get a good approximation
-for their posterior $\yprime$ (Fig. \ref{fig:neal_tutorial} (f)).
+for their posterior $\yprime$ (Fig. \ref{fig:neal_tutorial} (g)).
 We say nested because we first take two sweeps in the scope
 $\texttt{hyperhyper}$ which characterizes (\ref{eq:hyper-alpha}) and then one
 sweep on the scope $\texttt{hyper}$ which characterizes (\ref{eq:hyper-ell}).
@@ -97,5 +96,5 @@ Note that Neal devises an additional noise model and performs a large number of 
 Finally, we can change our inference strategy altogether. If we decide that instead of
 following a Bayesian sampling approach, we would like to perform empirical optimization,
 we do this by only changing one line of code, deploying $\texttt{gradient-ascent}$ instead
-of $\texttt{mh}$ (Fig. \ref{fig:neal_tutorial} (g)). 
+of $\texttt{mh}$ (Fig. \ref{fig:neal_tutorial} (h)). 
 

@@ -22,7 +22,7 @@
 
 \node[below=1.0cm of start] (b_code){
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
-// Data and look-up function
+// Define data and look-up function
 define data = array(array(-1.87, 0.13), ..., array(1.67, 0.81));
 assume f_look_up = proc(index) {lookup(data, index)};
 \end{lstlisting}
@@ -31,20 +31,20 @@ assume f_look_up = proc(index) {lookup(data, index)};
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#
 ]
 // Initialize hyper-priors
-assume alpha_sf = tag(scope= "hyperhyper", gamma(5,1));
-assume beta_sf = tag(scope= "hyperhyper", gamma(5,1));
-assume alpha_l = tag(scope= "hyperhyper", gamma(5,1));
-assume beta_l = tag(scope= "hyperhyper", gamma(5,1));#\vspace{1mm}#
-assume sf = tag(scope= "hyper", gamma(alpha_sf, beta_sf)));
-assume l = tag(scope= "hyper", gamma(alpha_l, beta_l)));
+assume alpha_sf = tag(scope="hyperhyper", gamma(5,1));
+assume beta_sf = tag(scope="hyperhyper", gamma(5,1));
+assume alpha_l = tag(scope="hyperhyper", gamma(5,1));
+assume beta_l = tag(scope="hyperhyper", gamma(5,1));#\vspace{1mm}#
+assume sf = tag(scope="hyper", gamma(alpha_sf, beta_sf)));
+assume l = tag(scope="hyper", gamma(alpha_l, beta_l)));
 \end{lstlisting}
 };
 % (d) & (e)
-\node[below=-0.72cm of c_code,xshift=-0.95cm] (d_code){
+\node[below=-0.72cm of c_code,xshift=-0.65cm] (d_code){
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Initialize covariance function
-assume se = make_squaredexp(sf, l);
-assume wn = make_whitenoise(sigma);
+assume se = apply_function(make_squaredexp(sf, l));
+assume wn = apply_function(make_whitenoise(sigma));
 assume composite_covariance = add_funcs(se, wn);#\vspace{8mm}#
 // Create a prober and emulator using gpmem
 assume (f_compute, f_emu) =
@@ -70,8 +70,8 @@ sample f_emu(array(-2, $\cdots$, 2));
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Metropolis-Hastings
 infer repeat(100, do(
-    mh(scope= "hyperhyper", steps=2),
-    mh(scope= "hyper",      steps=1)));#\vspace{1mm}#
+    mh(scope="hyperhyper", steps=2),
+    mh(scope="hyper",      steps=1)));#\vspace{1mm}#
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
 };
@@ -79,7 +79,7 @@ sample f_emu(array(-2, $\cdots$, 2));
 \node[below=0.5cm of f_code,xshift=0.3cm] (g_code){
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Optimization
-infer gradient-ascent(scope= "hyper",
+infer gradient-ascent(scope="hyper",
 			       steps=10);
 
 sample f_emu(array(-2, $\cdots$, 2));
