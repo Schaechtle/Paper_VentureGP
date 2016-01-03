@@ -26,9 +26,6 @@
  $\ell\;\;\;\, \sim P(\ell)\;\,$\vspace{1mm}
 
 
-%\scriptnotesize
-%
-%%$\mu(\mathbf{x}) =\mu(\mathbf{x}) + \mathbf{K}_\theta(\mathbf{x},\mathbf{x}_{past})\mathbf{K}_\theta(\mathbf{x}_{past},\mathbf{x}_{past})^{-1}(\mathbf{y}_{past} - \mu(\mathbf{x}_{past}))$
  };
  \node[draw,rectangle,dashed,minimum size=1cm,left= 2.2cm of f] (resources)
 {\includegraphics[width=2.8cm]{figs/resources.jpg}};
@@ -50,7 +47,7 @@
  \end{tabular}
 
 };
-%\node[right = 1.2 cm of f_emu,inner sep = 0pt,outer sep=0pt,minimum size=25pt] (emu_annotate) {Infer: $\theta\;$};
+
 
 \node[below = .1ex of gpmem,inner sep = 0pt,outer sep=0pt,xshift=-0.3cm] (helper1) {};
 \node[below = .1ex of gpmem,inner sep = 0pt,outer sep=0pt,xshift=0.7cm] (helper2) {};
@@ -62,29 +59,23 @@
 \node[right = 1cm of f_emu] (GaussianHat)
 {$\yprime$} ;
 
-%\node[right =1. cm  of f_emu, yshift=1.5cm] (infer) {\small Infer: $\ell$, $sf$} ;
+
 
 % 1st pass: draw arrows
 
-  \draw[thick,dashed,->] (resources) --node [pos=0.5,below] {\footnotesize resource}  node [pos=0.5,above] {\footnotesize outside} (f);
-  \draw[thick,dashed,->] (math) -- node [pos=0.5,above] {\footnotesize Kernel} (K);
-  \draw[thick,->] (K) -- (gpmem);
-  \draw[thick,->] (f) -- (gpmem);
- % \draw[thick,->] (theta) -- (gpmem);
-  \draw[thick,->] (gpmem) -- (f_emu);
+\draw[thick,dashed,->] (resources) --node [pos=0.5,below] {\footnotesize resource}  node [pos=0.5,above] {\footnotesize outside} (f);
+\draw[thick,dashed,->] (math) -- node [pos=0.5,above] {\footnotesize Kernel} (K);
+\draw[thick,->] (K) -- (gpmem);
+\draw[thick,->] (f) -- (gpmem);
+\draw[thick,->] (gpmem) -- (f_emu);
 
- % \draw[thick,->,color=ForestGreen] (helper_compute) -- node[pos=0.5, sloped, below] {probe} (helper1);
- % \draw[thick,->,color=ForestGreen] (helper2) -- node[pos=0.5, sloped,above] {improves} (helper_emu);
-   % \draw[thick,->,dashed,color=ForestGreen] (helper_resource) -- node[pos=0.5,above] {$f_{com}(x_2)=y_2$} (f_compute);
-  %  \draw[thick,->,dashed,color=ForestGreen] (helper_resource) -- (resources);
-     \draw[thick,->,dashed] (x_hat) -- (f_emu);
-     \draw[thick,->,dashed] (f_emu) -- (GaussianHat);
- % \draw[thick,->] (theta) -- (gpmem);
+\draw[thick,->,dashed] (x_hat) -- (f_emu);
+\draw[thick,->,dashed] (f_emu) -- (GaussianHat);
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%  Code             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%\path[](f_emu) edge [in=90, out=50,thick] (emu_annotate)
-%    (emu_annotate) edge [->,in=310, out=270,thick]  (f_emu);
-  % Note: If you have no branches, the 2nd pass is not needed
 \node[above=1 cm of start] (alabel) {(a) \gpmem: Schematic};
 \node[below=-0.3cm of f_emu,xshift=-1.3cm] (b_code){
 \small\begin{lstlisting}[mathescape,escapechar=\#]
@@ -163,6 +154,26 @@ sample f_emu(array(-20, $\cdots$, 20));
   ([xshift=-0.2cm,yshift=-6.3cm]b_code.south west) -- ([xshift=0.8cm,yshift=-6.3cm]b_code.south east); 
  \draw 
   ([xshift=-0.2cm,yshift=-8.5cm]b_code.south west) -- ([xshift=0.8cm,yshift=-8.5cm]b_code.south east); 
+
+% arrows
+% (d)
+\node[below = -2.45cm of d_pic,xshift=1.53cm] (arrow_d_end){};
+\node[below = -1.45cm of d_pic,xshift=1.53cm] (arrow_d_head){};
+\draw[->] (arrow_d_end) -- (arrow_d_head);
+% (e)
+\node[below = -1.9cm of e_pic,xshift=-0.62cm] (arrow_e_end){};
+\node[below = -0.9cm of e_pic,xshift=-0.62cm] (arrow_e_head){};
+\draw[->] (arrow_e_end) -- (arrow_e_head);
+% (f)
+\node[below = -2.49cm of f_pic,xshift=-0.26cm] (arrow_f_end1){};
+\node[below = -1.49cm of f_pic,xshift=-0.26cm] (arrow_f_head1){};
+\draw[green,->] (arrow_f_end1) -- (arrow_f_head1);
+\node[below = -2.05cm of f_pic,xshift=0.1cm] (arrow_f_end2){};
+\node[below = -1.05cm of f_pic,xshift=0.1cm] (arrow_f_head2){};
+\draw[green,->] (arrow_f_head2) -- (arrow_f_end2);
+\node[below = -2.45cm of f_pic,xshift=1.53cm] (arrow_f_end3){};
+\node[below = -1.45cm of f_pic,xshift=1.53cm] (arrow_f_head3){};
+\draw[green,->] (arrow_f_end3) -- (arrow_f_head3);
 
 % labels
 \node[below=0.9cm of f_emu,xshift=-8.5cm] (b) {(b)};
