@@ -12,16 +12,16 @@ applications. Possible approaches include the standard low-rank approximations
 to the kernel matrix that are popular in machine learning~\citep{bui2014tree} as well
 as more sophisticated sampling algorithms for approximate conditioning of the
 GP~\citep{lawrence2009efficient}.
-Second, it seems fruitful to abstract the notion of a "generalizing" memoizer
+Second, it seems fruitful to abstract the notion of a ``generalizing" memoizer
 from the specific choice of a Gaussian process model as the mechanism for
-generalization. "Generalizing" or statistical memoizers with custom regression techniques could be broadly useful in performance engineering and scheduling systems.
+generalization. ``Generalizing" or statistical memoizers with custom regression techniques could be broadly useful in performance engineering and scheduling systems.
 The timing data from performance benchmarks could be run through a generalizing memoizer by default.
 This memoizer could be queried (and its output error bars examined) to inform the best strategy
 for performing the computation or predict the likely runtime of long-running jobs.
  Third, the structure learning application suggests follow-on research in information
 retrieval for structured data. It should be possible to build a time series search engine
-that can handle search predicates such as "has a rising trend starting around
-1988" or "is perodic during the 1990s".
+that can handle search predicates such as ``has a rising trend starting around
+1988" or ``is perodic during the 1990s".
 The variation on the Automated Statistician presented in this paper can provide ranked result
 sets for these sorts of queries because it tracks posterior uncertainty over structure and also
 because the space of structural patterns that it can handle is easy to modify by making small
