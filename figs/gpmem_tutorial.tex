@@ -72,11 +72,11 @@
 \draw[thick,->,dashed] (x_hat) -- (f_emu);
 \draw[thick,->,dashed] (f_emu) -- (GaussianHat);
 
+\node[above=1 cm of start] (alabel) {(a) \gpmem: Schematic};
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%  Code             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\node[above=1 cm of start] (alabel) {(a) \gpmem: Schematic};
 \node[below=-0.3cm of f_emu,xshift=-1.3cm] (b_code){
 \small\begin{lstlisting}[mathescape,escapechar=\#]
 define f = proc(x) {exp(-0.1*abs(x-2)) * 10 * cos(0.4*x) + 0.2};#\vspace{1mm}#
