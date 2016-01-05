@@ -80,9 +80,10 @@ We can either define the function f that serves as as input for \gpmem\
  natively in Venture
 (as shown in the Fig. \ref{fig:gpmem_tutorial} (b)) or we interleave Venture with foreign code. 
 This can be useful when $\ftt$ is computed with the help of outside resources.
-We define and parameterize a squared-exponent
+We define and parameterize a squared-exponential kernel (b) which we then supply to
+\gpmem\ (Fig. \ref{fig:gpmem_tutorial} (c)).
 Before making any observations or calls to $\ftt$
-we can sample from the prior at the inputs from -20 to 20 using the emulator (Fig. \ref{fig:gpmem_tutorial} (c)):
+we can sample from the prior at the inputs from -20 to 20 using the emulator :
     \begin{lstlisting}
     assume (f_compute, f_emu) = gpmem(f, kse));
 
