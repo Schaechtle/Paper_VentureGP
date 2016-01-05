@@ -32,11 +32,11 @@ assume f_look_up = proc(index) {lookup(data, index)};
 ]
 // Initialize hyper-priors
 assume alpha_sf = tag(scope="hyperhyper", gamma(5,1));
-assume beta_sf = tag(scope="hyperhyper", gamma(5,1));
-assume alpha_l = tag(scope="hyperhyper", gamma(5,1));
-assume beta_l = tag(scope="hyperhyper", gamma(5,1));#\vspace{1mm}#
+assume beta_sf  = tag(scope="hyperhyper", gamma(5,1));
+assume alpha_l  = tag(scope="hyperhyper", gamma(5,1));
+assume beta_l   = tag(scope="hyperhyper", gamma(5,1));#\vspace{1mm}#
 assume sf = tag(scope="hyper", gamma(alpha_sf, beta_sf)));
-assume l = tag(scope="hyper", gamma(alpha_l, beta_l)));
+assume l  = tag(scope="hyper", gamma(alpha_l, beta_l)));
 \end{lstlisting}
 };
 % (d) & (e)
