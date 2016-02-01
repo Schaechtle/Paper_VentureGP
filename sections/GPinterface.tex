@@ -1,0 +1,41 @@
+Random samples from a \ac{GP}, like all random samples in Venture programs,
+are generated with the invocation of \ac{SP}s.
+Such \ac{SP}s accept input arguments that are values in Venture and sample output
+values given those inputs. A \ac{PSP} is the most basic unit of computation in
+Venture. It can be deterministic or random. If a \ac{PSP} is random then it can simulate from a family of
+distributions. In addition to simulating,
+a random PSPs may be able to report the logdensity of an output given an input.
+
+Different \ac{SP}s and \ac{PSP}s ar used to construct the \ac{GP} interface:
+\begin{enumerate}
+% this is not how I should tell the story, it should be different,
+% 1. maker, 2. it's child, which is a AAA
+\item MakeGPOutputPSP is a deterministic PSP whose output is a \ac{GP}, namely the
+GPSP, given a
+covariance and a mean function as input. Inputting a mean function is optional,
+if it is not supplied, it is set to constant 0.
+
+\item GPSP of is type SP. GPSP can \ac{AAA}. \ac{AAA}-\ac{SP}s can keep track of
+their outputs and report
+the joint logdensity of all of its applications. This is crucial so that we do
+not need to visit all of it's absorbing nodes to explicitly to account for their
+logdensities. For Venture, the construct of the scaffold can stop upon
+reaching an \ac{AAA} node. GPSP is responsible for tracking the the sufficient statisticis
+from the applications of GPSP and for evaluating the log density of all those
+applications as a block. It also constructs the auxialiary SP.
+\item GPSPAux of type SPAux. An SPAux is stateless but comes with an auxilliary
+store that carries mutable information. In cae of the \ac{GP} it tracks the
+samples that were incorporated.
+\item GPOutputPSP of type Random PSP.  It is this SP that actually samples
+regression output at given input.
+\end{enumerate}
+
+
+%procedures that return other stochastic procedures and implement this optimization are said to be
+%absorbing at applications, often abbreviated AAA.
+
+
+
+%We can achieve this efficient inference scheme by letting
+%make beta bernoulli be responsible for tracking the sufficient statistics from the applications of
+%collapsed coin, and for 

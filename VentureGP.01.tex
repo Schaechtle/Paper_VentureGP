@@ -168,12 +168,15 @@ defaultpen(fontsize(11));
 \newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
 
 \begin{acronym}
+\acro{AAA} {absorb at applications}
 \acro{GP} {Gaussian Processes}
 \acro{MAP} {Maximum a posteriori}
 \acro{MCMC} {Markov Chain Monte Carlo}
 \acro{MDP} {Markov Decision Processes} 
 \acro{MH} {Metropolis-Hastings}
+\acro{PSP} {Primitive Stochastic Prodecure}
 \acro{SP} {Stochastic Process}
+\acro{SPI} {Stochastic Procedure Interface}
 \acro{CCF} {Cosmic Calibration Framework}
 \end{acronym}
 
@@ -295,7 +298,8 @@ Gaussian Processes (GPs) are widely used tools in statistics, machine learning, 
 
 %\subsection{A Bayesian interpretation}
 %\input{sections/MHvsMAP.tex}
-
+\section{The Gaussian Process Interface}
+\input{sections/GPinterface.tex}
 \section{Gaussian Process Memoization in Venture}
 \input{sections/gpmem.tex}
 
