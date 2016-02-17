@@ -294,12 +294,13 @@ Is there a linear component AND white noise in the data?
 Finally, we define the logical OR as
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{align*}
-P(\Struct(\Ksrv^a)\, \lor\, \Struct(\Ksrv^b) \mid \xbf, \ybf, \thetabf)
-=& P(\Struct(\Ksrv^a) \mid \xbf, \ybf, \thetabf) + P(\Struct(\Ksrv^b) \mid \xbf, \ybf, \thetabf)\\
- &- P(\Struct(\Ksrv^a) \land \Struct(\Ksrv^b) \mid \xbf, \ybf, \thetabf)
+P(\Struct(\Ksrv^a= & k^a)\, \lor\, \Struct(\Ksrv^b=k^b) \mid \xbf, \ybf, \thetabf) \\
+= & P(\Struct(\Ksrv^a=k^a) \mid \xbf, \ybf, \thetabf) \\
+ & + P(\Struct(\Ksrv^b=k^b) \mid \xbf, \ybf, \thetabf) \\
+ & - P(\Struct(\Ksrv^a=k^a) \land \Struct(\Ksrv^b=k^b) \mid \xbf, \ybf, \thetabf).
 \end{align*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-where we drop $=k$ for readability. This allows us to ask questions about structures that are logically connected with OR, such as:
+This allows us to ask questions about structures that are logically connected with OR, such as:
 \begin{quotation}
 Is there white noise or heteroskedastic noise?
 \end{quotation}
