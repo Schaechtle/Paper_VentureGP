@@ -67,10 +67,10 @@ In Fig. \ref{fig:neal_tutorial}, panel (d), we see that $k^{\text{se}+\text{wn}}
 is defined as a composite covariance function. It is the sum ($\texttt{add\_funcs}$) of
 a squared exponential kernel ($\texttt{make\_squaredexp}$) and a white noise
 ($\kwn$, Appendix A)
-kernel which is implemented with $\texttt{make\_whitenoise}$\footnote{Note
-that in Neal's work \citeyearpar{neal1997monte} the sum of an SE
-plus a constant kernel is used. We use a WN kernel for illustrative purposes
-instead.}. 
+kernel which is implemented with $\texttt{make\_whitenoise}$.\footnote{
+Neal \citeyearpar{neal1997monte} uses the sum of an SE
+plus a constant kernel. For illustration, we use a WN kernel
+instead.}
 We then initialize \gpmem\ feeding it with $\texttt{composite\_covariance}$ and the data
 look-up function $\texttt{f\_look\_up}$. 
 We sample from the prior $\ystar$ with random parameters $\texttt{sf,l}$ and $\texttt{sigma}$ and 
