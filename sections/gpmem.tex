@@ -144,15 +144,21 @@ Finally, we can update our posterior by inferring the posterior over hyper-param
 For this we use the defined scopes, which tag a collection of related random choices, such
 as all hyper-parameters $\thetabf$.
 These tags are supplied to the
-inference program (in this case, MH) to specify on which random variables inference
+inference program to specify on which random variables inference
 should be done:
     \begin{lstlisting}
     infer mh(scope="hyper-parameters", steps=50);
     \end{lstlisting}
 In this case, we perform one \ac{MH} transition over the scope hyper-parameters
 and choose a random member of this scope, that is we choose one hyper-parameter at random.
-We can also define custom inference actions. Let's define \ac{MH} with Gaussian
-drift proposals.
+
+The newly inferred hyper-parameters allow us now to adequately reflect uncertainty
+about the curve given all incorporated observations (compare
+Fig. \ref{fig:gpmem_tutorial}, bottom panel (g) on  the right with the samples
+before inference, one panel above (f)).
+
+It bears mention that Venture supports custom inference actions.
+For example, \ac{MH} with Gaussian drift proposals looks like this:
     \begin{lstlisting}
     define drift_kernel = proc(x) { normal(x, 1) };
 
@@ -163,11 +169,8 @@ drift proposals.
 
     infer my_markov_chain;
     \end{lstlisting}
-Note that this inference is not in the Figure. The important part of the above code snippet is \texttt{drift\_kernel}, which is where we say 
+The important part of the above code snippet is \texttt{drift\_kernel}, which is where we say 
 that at each step of our Markov chain, we would like to propose a transition by sampling
-a new state from a unit normal distribution whose mean is the current state. 
-
-The newly inferred hyper-parameters allow us now to adequately reflect uncertainty
-about the curve given all incorporated observations (compare
-Fig. \ref{fig:gpmem_tutorial}, bottom panel (g) on  the right with the samples
-before inference, one panel above (f)).
+a new state from a unit normal distribution whose mean is the current state.
+As written, this kernel will be applied to one hyper parameter at a time.
+The behavior of this inference program is not displayed in the Figure.
