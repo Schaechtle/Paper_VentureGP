@@ -219,24 +219,28 @@ Both datasets served as illustrations in the Automatic Statistician project.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \myparagraph{Querying time series}
-With our Bayesian approach to structure learning we can gain valuable insights
+Our Bayesian approach to structure learning permits valuable insights
 into time series data that were previously unavailable.
-This is due to our ability to estimate posterior marginal probabilities over the kernel structure.
-Over this marginal, we define boolean search operations that allow us to query the data
-for the probability of certain structures to hold true globally.
+The critical capability is estimating the posterior marginal
+probability distribution over the kernel structure.
+For instance, we can define boolean search operations over this marginal
+that allow one to query the data
+for the probability that certain structures are present globally.
+
+To wit, we can formulate the question ``is a structure $\Ksrv=k$ present globally in
+the data?'' as the probability
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{align}
 \label{eq:bool_present}
-P(\Struct(\Ksrv=k) \mid \xbf,\ybf,\thetabf) =& \frac{1}{T}
+P(\Struct(\Ksrv=k) \mid \xbf,\ybf,\thetabf) \approx & \frac{1}{T}
 \sum\limits_{t=1}^T \Cont(k,k^t)\\
-&\text{where}\, \Cont(k,k^t) = \begin{cases}
+\text{where}\ \ \Cont(k,k^t) = & \begin{cases}
   1, & \text{if } k \underset{global}{\in} k^t, \\
   0, & \text{otherwise}.
 \end{cases} 
 \end{align}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-to ask whether it is true that a global structure $\Ksrv=k$ is present. $T$
-is the number of all posterior samples for $\Ksrv$ and $k^t$ is one such
+$T$ is the number of all posterior samples for $\Ksrv$ and $k^t$ is one such
 sample. $\underset{global}{\in} k^t$ reads as ``is one of $k^t$'s global
 functional components".
 We can now ask simple questions, for example:
