@@ -54,7 +54,10 @@ and in turn sample the $\alpha$ and $\beta$ from $\Gamma$ distributions as well:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{equation}
 \label{eq:hyper-alpha}
-\alpha_1 \sim \Gamma(\alpha^1_{\alpha},\beta^1_{ \alpha } ),\; \alpha_2 \sim \Gamma(\alpha^2_{\alpha},\beta^2_{\alpha}),\cdots
+\alpha_1 \sim \Gamma(\alpha^1_{\alpha},\beta^1_{ \alpha } ),\;
+\beta_1 \sim \Gamma(\alpha^1_{\beta},\beta^1_{ \beta } ),\;
+\alpha_2 \sim \Gamma(\alpha^2_{\alpha},\beta^2_{\alpha}),\;
+\beta_2 \sim \Gamma(\alpha^2_{\beta},\beta^2_{\beta}).
 \end{equation}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We model this in Venture as illustrated in Fig. \ref{fig:neal_tutorial} (c),
