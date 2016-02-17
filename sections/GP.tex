@@ -131,8 +131,9 @@ The log-likelihood of a \ac{GP} can then be written as:
 - \frac{n}{2}\log 2\pi
 \end{equation}
 where $n$ is the number of data points.
-Both log-likelihood and predictive posterior can be computed efficiently using a \ac{SP} in Venture~\citep{mansinghka2014venture}
-with an algorithm that resorts to Cholesky factorization~\citep[chap. 2]{rasmussen2006gaussian}.
+Efficient computation of both the log-likelihood and the predictive posterior
+can be packaged for Venture as a \ac{SP}~\citep{mansinghka2014venture}.
+Our algorithm of choice resorts to Cholesky factorization~\citep[chap. 2]{rasmussen2006gaussian}.
 We write the Cholesky factorization as 
 $\Lbf\coloneqq \text{chol}(\Ktheta)$ when
 :
