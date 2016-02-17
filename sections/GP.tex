@@ -125,32 +125,31 @@ The log-likelihood of a \ac{GP} can then be written as:
 \begin{equation}
 \label{eq:gplogdens}
 \log P(\ybf \mid \xbf,\thetabf) =
--\frac12 \ybf^\top 
+-\frac12 \ybf^\top
 \Ktheta^{-1} \ybf
 - \frac12\log \abs{\Ktheta}
-- \frac{n}{2}\log 2\pi
+- \frac{n}{2}\log 2\pi,
 \end{equation}
 where $n$ is the number of data points.
 Efficient computation of both the log-likelihood and the predictive posterior
 can be packaged for Venture as a \ac{SP}~\citep{mansinghka2014venture}.
 Our algorithm of choice resorts to Cholesky factorization~\citep[chap. 2]{rasmussen2006gaussian}.
-We write the Cholesky factorization as 
+We write the Cholesky factorization as
 $\Lbf\coloneqq \text{chol}(\Ktheta)$ when
-:
 \begin{equation}
-\Ktheta = \Lbf\Lbf^\top
+\Ktheta = \Lbf\Lbf^\top,
 \end{equation}
 where $\Lbf$ is a lower triangular matrix. This allows us to compute the inverse of a covariance matrix as
 \begin{equation}
 \Ktheta^{-1} = (\mathbf{L}^{-1})^\top (\mathbf{L}^{-1})
 \end{equation}
-and its determinant as 
+and its determinant as
 \begin{equation}
-det(\Ktheta) = det(\mathbf{L})^2
+det(\Ktheta) = det(\mathbf{L})^2.
 \end{equation}
 We compute (\ref{eq:gplogdens}) as
 \begin{equation}
-\log(P(\ybf \mid \xbf, \thetabf)\coloneqq - \frac{1}{2} \ybf^\top \bm{\alpha} - \sum_i \log \mathbf{L}_{ii} - \frac{n}{2} \log 2 \pi
+\log(P(\ybf \mid \xbf, \thetabf)\coloneqq - \frac{1}{2} \ybf^\top \bm{\alpha} - \sum_i \log \mathbf{L}_{ii} - \frac{n}{2} \log 2 \pi,
 \end{equation}
 where 
 \begin{equation}
