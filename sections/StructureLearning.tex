@@ -27,9 +27,9 @@ interpretation with Struct().}\label{fig:schema}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 This allows us to read an unstructured time series and automatically output a high-level,
 qualitative description of it. The stochastic grammar takes a set of primitive base kernels 
-    $\text{BK}=\{k_{\bm{\theta}^1}^1,\cdots,k_{\bm{\theta}^m}^m\}$
-
-    $\thetabf^*=\{\thetabf^1,\cdots,\thetabf^m\}$ (Fig. \ref{fig:schema} (a) and (b))
+    $\text{BK}=\{k_{\bm{\theta}^1}^1,\cdots,k_{\bm{\theta}^m}^m\}$ with
+    $\thetabf^*=\{\thetabf^1,\cdots,\thetabf^m\}$ (Fig. \ref{fig:schema} (a) and
+(b)).
 We depict the input for the
 stochastic grammar in Listing \ref{alg:base_kernels}.
 
@@ -265,7 +265,7 @@ where
 \begin{figure}
 \centering
 \input{figs/structureQuery.tex}
-\caption{{\footnotesize \bf Querying structural motifs in in time series using posterior inference
+\caption{{\footnotesize \bf Querying structural motifs in time series using posterior inference
 over kernel structure.} The kernel structure serves as a way to formulate
 natural language questions about the data (blue). The initial question of interest
 (top) is a fairly
@@ -289,7 +289,7 @@ are shown in the middle of the tree, queries related to trends on the left.}\lab
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 By estimating $P(\LINK \land \WNK \mid \xbf, \ybf, \thetabf)$ we can use this operator to ask questions such as 
 \begin{quotation}
-Is there a linear component AND a white noise in the data? 
+Is there a linear component AND white noise in the data? 
 \end{quotation}
 Finally, we define the logical OR as
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

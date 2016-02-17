@@ -3,7 +3,7 @@ in higher-order probabilistic programming languages by treating them as a kind
 of statistical memoizer. It has described classic GP regression with both fully
 Bayesian and MAP inference in a hierarchical hyperprior, as well as state-of-the-art
 applications to discovering symbolic structure in time series and to Bayesian optimization.
-All the applications share a common 50-line Python GP library and require fewer than 20 lines
+All the applications share a common 100-line Python GP library and require fewer than 20 lines
 of probabilistic code each.
 
 These results suggest several research directions. First, it will be important
@@ -32,7 +32,7 @@ The field of Bayesian nonparametrics offers a principled, fully Bayesian
 response to the empirical modeling philosophy in machine learning~\citep{ghahramani2013bayesian},
 where Bayesian inference is used to encode a state of broad ignorance rather
 than a bias stemming from strong prior knowledge. It is perhaps surprising that
-two key objects from Bayesian nonparametrics, Dirichlet processes and Gaussian
-processes, fit naturally in probabilistic programming as variants of
+two key objects from Bayesian nonparametrics, Dirichlet processes and \ac{GP}s,
+fit naturally in probabilistic programming as variants of
 memoization~\citep{roy2008stochastic}. It is not yet clear if the same will be true
 for other processes, e.g. Wishart processes, or hierarchical Beta processes. We hope that the results in this paper encourage the development of other nonparametric libraries for higher-order probabilistic programming languages.
