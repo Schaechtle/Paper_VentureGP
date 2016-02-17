@@ -123,7 +123,7 @@ human readable interpretation (e). We used (d) to plot (b).}\label{fig:posterior
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We illustrate results in Fig \ref{fig:posterior}. In Fig \ref{fig:posterior} (a) we depict the raw data. 
-We see mean centered CO$_2$ measurements of the Mauna Loa Observatory, an atmospheric
+These are mean centered CO$_2$ measurements of the Mauna Loa Observatory, an atmospheric
 baseline station on Mauna Loa, on the island of Hawaii. 
 A description of the data set  can be found in  \citealp[][chapter 5]{rasmussen2006gaussian}.  
 We use those raw data to compute a posterior on structure, parameters and \ac{GP}
@@ -138,7 +138,7 @@ posterior distribution of
 symbolic expressions describing different kernel structures. 
 This allows us to compute the posterior of symbollically equivalent structures,
 such as $\Struct(\klin + \kper)=\Struct(\kper + \klin)$. Both structures yield
-and addition of a linear kernel and a periodic kernel, that is LIN + PER.
+a sum of a linear kernel and a periodic kernel, that is LIN + PER.
 Therefore, we parse $k$ with $\Parse(k)$, we simplify an expression with $\Simplify(k)$ and
 then compute $\Struct(k)$.
 For the Mauna Loa Co$_2$ data, this distribution peaks at:
