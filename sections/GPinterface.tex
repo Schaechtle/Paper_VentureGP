@@ -11,8 +11,7 @@ Different \ac{PSP}s and \ac{SP}s are used to construct the \ac{GP} interface:
 GPSP, given a
 covariance and a mean function as input. Inputting a mean function is optional,
 if it is not supplied, it is set to constant 0.
-
-\item GPSP of is type SP. GPSP can \ac{AAA}. \ac{AAA}-\ac{SP}s can keep track of
+\item GPSP of is type SP\@. GPSP can \ac{AAA}\@. \ac{AAA}-\ac{SP}s can keep track of
 their outputs and report
 the joint log-density of all of its applications. This is crucial so that we do
 not need to visit all of the dependent units of computation to explicitly account for their
@@ -21,10 +20,10 @@ factoring of global inference problems into coherent sub-problems, can stop upon
 reaching an \ac{AAA} node. GPSP is responsible for tracking the sufficient statistics
 from the applications of GPSP and for evaluating the log density of all those
 applications as a block. It also constructs the auxiliary SP (SPAux).
-\item GPSPAux of type SPAux. An auxiliary SP is stateless but comes with an auxiliary
+\item GPSPAux of type SPAuwx. An auxiliary SP is stateless but comes with an auxiliary
 store that carries mutable information. In case of the \ac{GP} it tracks the
 samples that were incorporated.
-\item GPOutputPSP of type Random PSP.  It is this SP that actually samples
+\item GPOutputPSP of type Random PSP\@.  It is this SP that actually samples
 regression output at given input.
 \end{enumerate}
 
