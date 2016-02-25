@@ -1,3 +1,37 @@
+% 
+% Who is a candidate reader?
+%   I would say that there are two candidate readers. 
+%     1. an ML person with background in nonparametrics. This reader does not care
+%     about implementation (but she should!). We need to convince her that SPs are
+%     a good way to think of GPs 
+%     2. people with prob prog background that before reading our paper,
+%     did not care about GPs
+% 
+% What is the idea that they are supposed to gain?
+%   The idea that they are supposed to gain is that SPs as the basic units of
+%   computation in Venture are good way to talk and think about GPs. 
+% 
+% There were too many irrelevant concepts at once.
+%   I tried to divide what was there into relevant and irrelevant.
+%   Relevant:
+%     SP
+%     GPSP
+%     GPout(P)SP
+%     MakeOutput(P)SP
+%   Irrelevant:
+%     AAA
+%     PSP 
+%     GPSPAux/Aux
+% 
+% Decision: I removed the PSP here - resulting in the description being somewhat
+% unfaithful the implementation because GPoutPSP will be described as GPoutSP.
+% PSP being  a kind of SP, I think that we are still telling a version of
+% the truth. 
+% 
+% Issues:
+%   - first paragraph is too assertive
+%   - transition from first to second paragraph is not smooth
+% 
 Random samples from a \ac{GP}, like all random samples in Venture programs,
 are generated with the invocation of \ac{SP}s. \ac{SP}s are the basic units of
 computation in Venture. They provide a general framework to think about
@@ -23,10 +57,3 @@ applications as a block.
 \item GPOutputPSP of type Random PSP\@.  It is this SP that actually samples
 regression output at given input.
 \end{enumerate}
-
-
-%procedures that return other stochastic procedures and implement this optimization are said to be
-%absorbing at applications, often abbreviated AAA.
-
-
-
