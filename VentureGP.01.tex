@@ -279,7 +279,9 @@ defaultpen(fontsize(11));
 Gaussian Processes (GPs) are widely used tools in statistics, machine learning, robotics, computer vision, and 
 scientific computation. However, despite their popularity, they can be difficult to apply; all but the simplest 
 classification or regression applications require specification and inference over complex covariance functions that do 
-not admit simple analytical posteriors. This paper shows how to embed Gaussian processes in any higher-order 
+not admit simple analytical posteriors.  Probabilistic programming shows potential for reducing the latter barrier,
+if the computational surface of a GP can be suitably packaged for cooperating with available generic inference tactics.
+This paper shows how to embed Gaussian processes in any higher-order 
 probabilistic programming language, using an idiom based on memoization, and demonstrates its utility by implementing 
 and extending classic and state-of-the-art GP applications. The interface to Gaussian processes, called \gpmem, takes an 
 arbitrary real-valued computational process as input and returns a statistical emulator that automatically improves as 
