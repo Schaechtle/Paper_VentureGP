@@ -32,28 +32,110 @@
 %   - first paragraph is too assertive
 %   - transition from first to second paragraph is not smooth
 % 
-Random samples from a \ac{GP}, like all random samples in Venture programs,
-are generated with the invocation of \ac{SP}s. \ac{SP}s are the basic units of
-computation in Venture. They provide a general framework to think about
-probabilities that is particularly handy for \ac{GP}s. This framework does not
-only define the implementation of a \ac{GP} model and possible inference over it but also
-the representation and formulation of a \ac{GP} as a probabilistic model.
-This aspect is somewhat different from the view of traditional machine learning,
-seeing the software engineering and programming aspects only as a vehicle to
-realize and communicate an idea.  In contrast, the language of samplers and \ac{SP}s provide a
-different view point to what a \ac{GP} can and cannot compute.
 
-\ac{SP}s in general accept input arguments that are values in Venture and sample output
-values given those inputs. They can be deterministic or random. If an \ac{SP} is random
-then it can simulate from a family of distributions. In addition to simulating,
-a random \ac{SP} may be able to report the log-density of an output given an input.
-Different \ac{SP}s are used to construct the \ac{GP} interface:
-\begin{enumerate}
-  \item MakeGPOutputSP is a deterministic \ac{SP} whose output is a
-    \ac{GP}-sampler, namely the GPSP, given a covariance and a mean function as input. 
-\item GPSP of is type SP\@. GPSP is responsible for tracking the sufficient statistics
-from the applications of GPSP and for evaluating the log density of all those
-applications as a block.
-\item GPOutputPSP of type Random PSP\@.  It is this SP that actually samples
-regression output at given input.
-\end{enumerate}
+Smoothly integrating Gaussian processes into a probabilistic
+programming system calls for several facilities.  One natural
+embedding of a \ac{GP} is as a higher-order stochastic function that
+accepts the mean and covariance kernel functions and returns a
+function from inputs to outputs:
+
+    \begin{lstlisting}
+    assume gp = make_gp(mu, K);
+    // Jointly sample values for the inputs 3, 4, 5
+    predict gp(3);
+    predict gp(4);
+    predict gp(5);
+    \end{lstlisting}
+
+The different invocations of \texttt{gp} above are not independent
+(unless \texttt{K} gives zero covariance for those pairs of inputs),
+though they are exchangeable.  Furthermore, it is not possible to
+construct a finite object conditioned on which all future invocations
+of \texttt{gp} become independent, as it would need to contain an
+infinite amount of information.  Consequently, those applications need
+to refer to some shared state that is updated in response to
+applications appearing (and, if they occur in conditional control
+branches, disappearing).
+
+In addition to sampling, the \ac{GP} library must also expose the
+ability to report the probability density function of any given
+application of \texttt{gp} (conditioned on the results of all the
+others).  Finally, since they have to maintain sufficient statistics
+to implement coupling anyway, it makes sense to expose to the runtime
+system the ability to evaluate the joint probability density of all
+extant applications of \texttt{gp} without having to query each
+individually, for example for doing inference on (the parameters of)
+the covariance kernel.
+
+We wanted to take advantage of optimized linear algebra subroutines
+for the covariance matrix manipulations, so we implemented the
+Gaussian process for Venture as a (higher-order) foreign \ac{SP}.
+Our \ac{GP} implementation thus exercises all the major components of
+the Venture \ac{SP} interface:
+
+\begin{itemize}
+
+  \item \texttt{make\_gp} is an \ac{SP} that accepts a representation
+  of the mean and covariance kernels and returns a freshly
+  made \texttt{gp} procedure.
+
+  \item a given made \texttt{gp} is another, foreign \ac{SP} that
+  is to accept an input point and return the value of the \ac{GP} at that
+  point.  In detail:
+
+  \item When a \texttt{gp} is created, Venture invokes
+  its \texttt{constructSPAux} method (``aux'' for ``auxiliary
+  information''), which creates an (initially empty) store of seen
+  applications of that \ac{GP}.
+
+  \item Venture uses the \texttt{simulate} and \texttt{logDensity}
+  methods of the \texttt{gp} \ac{SP} to sample from or evaluate the
+  probability density function of the Gaussian distribution that
+  describes the value of the \ac{GP} at that input point.  These
+  distributions are conditioned on other extant applications of
+  the \texttt{gp} because the \texttt{simulate}
+  and \texttt{logDensity} methods have access to the auxiliary store
+  of seen input-output pairs.
+
+  \item When applications of \texttt{gp} are created (resp.\
+  destroyed), Venture invokes that \ac{SP}'s \texttt{incorporate}
+  (resp.\ \texttt{unincorporate}) method with the input-output pair.
+  For a \texttt{gp}, that adds (resp.\ removes) that point from
+  the auxiliary store.
+
+  \item \texttt{gp} sets a flag that indicates to Venture that it can
+  evaluate the joint probability density of all extant applications of
+  itself by examining its auxiliary store.  Therefore, when Venture
+  evaluates proposals to, for example, the parameters of a \ac{GP}
+  covariance kernel, it can compute that \ac{GP}'s applications'
+  contribution to any relevant acceptance ratios by invoking
+  the \texttt{logDensityOfCounts} method, instead of
+  calling \texttt{logDensity} for each application separately.
+
+  \item The \ac{GP} implementation supports gradient inference methods
+  (gradient optimization, Hamiltonian Monte Carlo, etc.) by defining
+  the \texttt{gradientOfLogDensityOfCounts} method appropriately.
+
+\end{itemize}
+
+% TODO:
+
+% - Do we want a citation at the end to something that explains
+%   Venture's architecture in more detail, so that the reader can
+%   choose to figure out what happens on the Venture side, in between
+%   all those method calls?
+
+% - Related: Do we want to reassure a hypothetical savvy reader that
+%   Venture does a valid interleaving of unincorporate, logDensity,
+%   incorporate, logDensity for proposals that touch multiple
+%   exchangeably coupled applications?  The previous exposition
+%   glosses over this.
+
+% - The previous exposition also glosses over the SP/PSP distinction
+%   (which I do not view as essential anyway), and the detail that
+%   the childrenCanAAA flag is actually on make_gp rather than gp.
+
+% - The exposition also glosses over details of the automatic
+%   differentiation system, as well as the limitation that the
+%   covariance functions have to be foreign to Venture as well
+%   (and the completely baroque reason why!)
