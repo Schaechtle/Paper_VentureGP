@@ -61,7 +61,7 @@ In addition to sampling, the \ac{GP} library must also expose the
 ability to report the probability density function of any given
 application of \texttt{gp} (conditioned on the results of all the
 others).  Finally, since they have to maintain sufficient statistics
-to implement coupling anyway, it makes sense to expose to the runtime
+to implement exchangeable coupling anyway, it makes sense to expose to the runtime
 system the ability to evaluate the joint probability density of all
 extant applications of \texttt{gp} without having to query each
 individually, for example for doing inference on (the parameters of)
