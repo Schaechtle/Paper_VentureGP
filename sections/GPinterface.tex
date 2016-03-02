@@ -139,3 +139,10 @@ the Venture \ac{SP} interface:
 %   differentiation system, as well as the limitation that the
 %   covariance functions have to be foreign to Venture as well
 %   (and the completely baroque reason why!)
+
+In the rest of the paper, we do not use \texttt{make\_gp} directly,
+but wrap it in the generalizing memoizer \texttt{gpmem}, introduced in
+the next section.  As far as implementation in Venture goes, it
+suffices to arrange for the \texttt{f\_compute} that \texttt{gpmem}
+returns to insert computed input-output pairs into the auxiliary store
+constructed for the \texttt{f\_emu} that \texttt{gpmem} also returns.
