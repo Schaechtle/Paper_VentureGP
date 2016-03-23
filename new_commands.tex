@@ -1,0 +1,123 @@
+% math operators
+\DeclareMathOperator*{\Cov}{Cov}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\Uniform}{Uniform}
+\DeclareMathOperator{\SE}{SE}
+
+% commands
+\newcommand{\gpmem}{\texttt{gpmem}}
+\newcommand{\emu}{{\textrm{emu}}}
+\newcommand{\true}{{\textrm{true}}}
+\newcommand{\rmnew}{{\textrm{new}}}
+\newcommand{\past}{{\textrm{past}}}
+\newcommand{\prior}{{\textrm{prior}}}
+\newcommand{\noisy}{{\textrm{noisy}}}
+\newcommand{\noise}{{\textrm{noise}}}
+\newcommand{\sigmanoise}{\sigma_{\text{noise}}}
+\newcommand{\Acal}{\mathcal{X}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\xprime}{\mathbf{x}^\prime}
+\newcommand{\yprime}{\mathbf{y}^\prime}
+\newcommand{\yprimetop}{\mathbf{y}^{\prime \top}}
+\newcommand{\xstar}{\mathbf{x}^*}
+\newcommand{\ystar}{\mathbf{y}^*}
+\newcommand{\abf}{\mathbf{x}}
+\newcommand{\tbf}{\mathbf{t}}
+\newcommand{\fbf}{\mathbf{f}}
+\newcommand{\hbf}{\mathbf{h}}
+\newcommand{\rbf}{\mathbf{y}}
+\newcommand{\wbf}{\mathbf{w}}
+\newcommand{\xbf}{\mathbf{x}}
+\newcommand{\Mbf}{\mathbf{M}}
+\newcommand{\Dbf}{\mathbf{D}}
+\newcommand{\ybf}{\mathbf{y}}
+\newcommand{\Kbf}{\mathbf{K}}
+\newcommand{\Lbf}{\mathbf{L}}
+\newcommand{\Sbf}{\mathbf{S}}
+\newcommand{\Ktheta}{\mathbf{K}_{\bm{\theta}}}
+\newcommand{\ktheta}{k_{\bm{\theta}}}
+\newcommand{\Kpost}{\mathbf{K}_{\bm{\theta}}^\text{post}}
+\newcommand{\mupost}{\bm{\mu}_{\bm{\theta}}^\text{post}}
+\newcommand{\thetabf}{\bm{\theta}}
+\newcommand{\Omegabf}{\bm{\Omega}}
+\newcommand{\midtheta}{\mid \bm{\theta}}
+\newcommand{\Ibf}{\mathbf{I}}
+\newcommand{\mubf}{\bm{\mu}}
+\newcommand{\Krv}{\bm{\mathcal{K}}}
+\newcommand{\Klin}{K^\text{linear}}
+\newcommand{\Kper}{K^\text{periodic}}
+\newcommand{\klin}{k^\text{linear}}
+\newcommand{\kwn}{k^\text{wn}}
+\newcommand{\kper}{k^\text{periodic}}
+\newcommand{\kse}{k^\text{se}}
+\newcommand{\Kse}{K^\text{se}}
+\newcommand{\Ksrv}{\bm{\mathcal{K}}}
+\newcommand{\Struct}{\text{Struct}}
+\newcommand{\Simplify}{\text{Simplify}}
+\newcommand{\Parse}{\text{Parse}}
+\newcommand{\Cont}{\text{Contains}}
+\newcommand{\WN}{\text{WN}}
+\newcommand{\WNK}{\text{WN}(\Ksrv)}
+\newcommand{\LINK}{\text{LIN}(\Ksrv)}
+\newcommand{\PERK}{\text{PER}(\Ksrv)}
+\newcommand{\SEK}{\text{SE}(\Ksrv)}
+\newcommand{\CK}{\text{C}(\Ksrv)}
+
+
+
+\newcommand{\pn}[1]{\left( #1 \right)}
+\newcommand{\bkt}[1]{\left[ #1 \right]}
+\newcommand{\br}[1]{\left\{ #1 \right\}}
+\newcommand{\abs}[1]{\left\lvert #1 \right\rvert}
+\newcommand{\Ebkt}[2][]{\mathbb{E}_{#1}\bkt{#2}}
+\newcommand{\mvert}{\ \middle\vert\ }
+
+\newcommand{\bmat}[1]{\begin{bmatrix} #1 \end{bmatrix}}
+
+\newcommand{\Ncal}{\mathcal{N}}
+\newcommand{\ftt}{\texttt{f}}
+\newcommand{\gtt}{\texttt{g}}
+\newcommand{\xtt}{\texttt{x}}
+\newcommand{\mm}{\texttt{mem\&em}}
+
+\newcommand{\quadmem}{\texttt{quadmem}}
+\newcommand{\compute}{{\textrm{compute}}}
+\newcommand{\probe}{{\textrm{probe}}}
+
+
+\newcommand{\rmnext}{{\textrm{next}}}
+
+
+\newcommand{\noiseless}{{\textrm{noiseless}}}
+\newcommand{\proposal}{{\textrm{proposal}}}
+\newcommand{\update}{{\textrm{update}}}
+\newcommand{\search}{{\textrm{search}}}
+\newcommand{\accept}{{\textrm{accept}}}
+\newcommand{\current}{{\textrm{current}}}
+\newcommand{\MC}{{\textrm{MC}}}
+\newcommand{\MH}{{\textrm{MH}}}
+\newcommand{\avg}{{\textrm{avg}}}
+\newcommand{\reg}{{\textrm{reg}}}
+\newcommand{\ttheta}{\vartheta}
+\newcommand{\muhat}{\widehat{\mu}}
+
+\newcommand{\xtil}{\widetilde{x}}
+\newcommand{\ytil}{\widetilde{y}}
+
+\newcommand{\s}[2]{#2^{(#1)}}
+\newcommand{\GP}{\mathcal{GP}}
+\newcommand{\propstd}{\texttt{propstd}}
+
+
+
+\newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
+
+% Colors
+\definecolor{mygreen}{rgb}{0,0.6,0}
+\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+\definecolor{mymauve}{rgb}{0.58,0,0.82}
+\definecolor{mygreen}{rgb}{0,0.4,0}
+\definecolor{mypurple}{rgb}{0.38,0,0.83}
+\definecolor{myorange}{rgb}{0.75,0.3,0}
+\definecolor{myblue}{RGB}{76,114,176}
