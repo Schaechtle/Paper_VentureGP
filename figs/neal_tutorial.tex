@@ -70,8 +70,8 @@ sample f_emu(array(-2, $\cdots$, 2));
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Metropolis-Hastings
 infer repeat(100, do(
-    mh(scope="hyperhyper", steps=2),
-    mh(scope="hyper",      steps=1)));#\vspace{1mm}#
+    mh(scope="hyperhyper", steps=1),
+    mh(scope="hyper",      steps=3)));#\vspace{1mm}#
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
 };
