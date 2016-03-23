@@ -8,22 +8,7 @@ We can apply \gpmem\ for regression in a hierarchical Bayesian setting
 structure.}
 \label{fig:neal_tutorial}
 \end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-In a Bayesian treatment of  hyper-parameter learning for \ac{GP}s,
-we can write the posterior probability of the hyper-parameters of a GP  (Fig.
-\ref{fig:neal_tutorial}, (a)) given covariance function $\Krv=k$ as:
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{equation}
-\label{eq:hyperProbability}
-P(\thetabf=\{sf,\ell,\sigma\} \mid \mathbf{D},\Krv ) = \frac{P(\mathbf{D} \mid
-\thetabf, \Krv)P(\thetabf \mid \Krv) }{P(\mathbf{D} \mid
-\Krv)}
-\end{equation}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-where $\mathbf{D} = \{\xbf, \ybf\}$ is a training data set and $\Krv$ is treated
-as a random variable over covariance functions.
-
-We demonstrate \gpmem's application to regression using an example
+Here, we show hyper-parameter inference for regression using an example
 taken from a paper on the treatment of outliers with hierarchical
 Bayesian hyper-priors for \ac{GP}s~\citep{neal1997monte}:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
