@@ -109,9 +109,12 @@
 \newcommand{\GP}{\mathcal{GP}}
 \newcommand{\propstd}{\texttt{propstd}}
 
-
-
 \newcommand{\myparagraph}[1]{\paragraph{#1}\mbox{}\\}
+
+% Venture terminology
+\chardef\_=`\_ % http://tex.stackexchange.com/questions/4375/chardef-and-underscore
+\newcommand{\se}{\ttfamily{gp\_cov\_scale(sf, gp\_cov\_se(l))}}
+\newcommand{\wn}{\ttfamily{gp\_cov\_scale(sigma, gp\_cov\_delta())}}
 
 % Colors
 \definecolor{mygreen}{rgb}{0,0.6,0}

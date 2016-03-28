@@ -82,7 +82,7 @@
 define f = proc(x) {exp(-0.1*abs(x-2)) * 10 * cos(0.4*x) + 0.2};#\vspace{1mm}#
 assume sf  = tag(scope="hyper-parameters", gamma(5,1));
 assume l   = tag(scope="hyper-parameters", gamma(5,1));
-assume kse = apply_function(make_squaredexp(sf, l))#\vspace{1mm}#;
+assume kse = gp_cov_scale(sf, gp_cov_se(l))#\vspace{1mm}#;
 \end{lstlisting}
 };
 \node[below=-0.25cm of b_code,xshift=-2.3cm] (c_code){

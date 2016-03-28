@@ -23,7 +23,7 @@
 \node[below=1.0cm of start] (b_code){
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Define data and look-up function
-define data = array(array(-1.87, 0.13), ..., array(1.67, 0.81));
+define data = array(array(-1.87, 0.13), #\ldots#, array(1.67, 0.81));
 assume f_look_up = proc(index) {lookup(data, index)};
 \end{lstlisting}
 };
@@ -35,17 +35,18 @@ assume alpha_sf = tag(scope="hyperhyper", gamma(5,1));
 assume beta_sf  = tag(scope="hyperhyper", gamma(5,1));
 assume alpha_l  = tag(scope="hyperhyper", gamma(5,1));
 assume beta_l   = tag(scope="hyperhyper", gamma(5,1));#\vspace{1mm}#
-assume sf = tag(scope="hyper", gamma(alpha_sf, beta_sf)));
-assume l  = tag(scope="hyper", gamma(alpha_l, beta_l)));
+assume sf       = tag(scope="hyper", gamma(alpha_sf, beta_sf)));
+assume l        = tag(scope="hyper", gamma(alpha_l, beta_l)));
+assume sigma    = tag(scope="hyper", gamma(5,1));
 \end{lstlisting}
 };
 % (d) & (e)
-\node[below=-0.72cm of c_code,xshift=-0.65cm] (d_code){
+\node[below=-0.65cm of c_code,xshift=-0.65cm] (d_code){
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Initialize covariance function
-assume se = apply_function(make_squaredexp(sf, l));
-assume wn = apply_function(make_whitenoise(sigma));
-assume composite_covariance = add_funcs(se, wn);#\vspace{8mm}#
+assume se = #\se#;
+assume wn = #\wn#;
+assume composite_covariance = gp_cov_sum(se, wn);
 // Create a prober and emulator using gpmem
 assume (f_compute, f_emu) =
     gpmem(f_look_up, composite_covariance);#\vspace{1mm}#
@@ -53,7 +54,7 @@ sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
 };
 % (f)
-\node[below=0.01cm of d_code,xshift=-0.18cm] (e_code){
+\node[below=0.16cm of d_code,xshift=-0.18cm] (e_code){
 \footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
 // Observe all data points
 for (n = 0; n < size(data); n++){
@@ -89,16 +90,16 @@ sample f_emu(array(-2, $\cdots$, 2));
 
 
 % samples/curve images
-\node[below=1.2cm of c_code,xshift=6cm] (d_pic){
+\node[below=1.1cm of c_code,xshift=6cm] (e_pic){
 \includegraphics[height=3.4cm]{figs/neal_example_before_observation.jpg}
 };
-\node[below=-0.4cm of d_pic] (e_pic){
+\node[below=-0.4cm of e_pic] (f_pic){
 \includegraphics[height=3.4cm]{figs/neal_example_after_observation.jpg}
 };
-\node[below=-0.4cm of e_pic] (f_pic){
+\node[below=-0.4cm of f_pic] (g_pic){
 \includegraphics[height=3.4cm]{figs/neal_Bayesian.jpg}
 };
-\node[below=-0.4cm of f_pic] (g_pic){
+\node[below=-0.4cm of g_pic] (h_pic){
 \includegraphics[height=3.4cm]{figs/neal_example_map_inference_alpha0p01_iter15.jpg}
 };
 
@@ -112,15 +113,15 @@ sample f_emu(array(-2, $\cdots$, 2));
   ([xshift=-0.2cm,yshift=0.08cm]b_code.south west) -- ([xshift=0.8cm,yshift=0.08cm]b_code.south east);   
 % (c)
  \draw 
-  ([xshift=-0.2cm,yshift=-2.75cm]b_code.south west) --
-([xshift=0.8cm,yshift=-2.75cm]b_code.south east); 
+  ([xshift=-0.2cm,yshift=-3.17cm]b_code.south west) --
+([xshift=0.8cm,yshift=-3.17cm]b_code.south east); 
 % (d)
  \draw 
-  ([xshift=-0.2cm,yshift=-4.45cm]b_code.south west) --
-([xshift=0.8cm,yshift=-4.45cm]b_code.south east); 
+  ([xshift=-0.2cm,yshift=-4.78cm]b_code.south west) --
+([xshift=0.8cm,yshift=-4.78cm]b_code.south east); 
 % (e)
  \draw 
-  ([xshift=-0.2cm,yshift=-7.5cm]b_code.south west) -- ([xshift=0.8cm,yshift=-7.5cm]b_code.south east); 
+  ([xshift=-0.2cm,yshift=-7.7cm]b_code.south west) -- ([xshift=0.8cm,yshift=-7.7cm]b_code.south east); 
 % (f)
  \draw 
   ([xshift=-0.2cm,yshift=-10.8cm]b_code.south west) -- ([xshift=0.8cm,yshift=-10.8cm]b_code.south east); 
