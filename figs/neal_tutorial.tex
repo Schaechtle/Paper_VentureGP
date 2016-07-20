@@ -21,67 +21,66 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \node[below=1.0cm of start] (b_code){
-\footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
+\footnotesize\begin{lstlisting}[mathescape,escapechar=\@]
 // Define data and look-up function
-define data = array(array(-1.87, 0.13), #\ldots#, array(1.67, 0.81));
+define data      = array(array(-1.87, 0.13),@\ldots@, array(1.67,0.81));
 assume f_look_up = proc(index) {lookup(data, index)};
 \end{lstlisting}
 };
 \node[below=-0.65cm of b_code,xshift=-0.58cm] (c_code){
-\footnotesize\begin{lstlisting}[mathescape,escapechar=\#
+\footnotesize\begin{lstlisting}[mathescape,escapechar=\@
 ]
 // Initialize hyper-priors
-assume alpha_sf = tag(scope="hyperhyper", gamma(5,1));
-assume beta_sf  = tag(scope="hyperhyper", gamma(5,1));
-assume alpha_l  = tag(scope="hyperhyper", gamma(5,1));
-assume beta_l   = tag(scope="hyperhyper", gamma(5,1));#\vspace{1mm}#
-assume sf       = tag(scope="hyper", gamma(alpha_sf, beta_sf)));
-assume l        = tag(scope="hyper", gamma(alpha_l, beta_l)));
-assume sigma    = tag(scope="hyper", gamma(5,1));
+assume alpha_sf @$\sim$@ gamma(5,1)                 #"hyperhyper";
+assume beta_sf  @$\sim$@ gamma(5,1)                 #"hyperhyper";
+assume alpha_l  @$\sim$@ gamma(5,1)                 #"hyperhyper";
+assume beta_l   @$\sim$@ gamma(5,1)                 #"hyperhyper";@\vspace{1mm}@
+assume sf       @$\sim$@ gamma(alpha_sf, beta_sf))) #"hyper";
+assume l        @$\sim$@ gamma(alpha_l, beta_l)))   #"hyper";
+assume sigma    @$\sim$@ gamma(5,1))                #"hyper"; 
 \end{lstlisting}
 };
 % (d) & (e)
 \node[below=-0.65cm of c_code,xshift=-0.65cm] (d_code){
-\footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
+\footnotesize\begin{lstlisting}[mathescape,escapechar=\@]
 // Initialize covariance function
-assume se = #\se#;
-assume wn = #\wn#;
+assume se = @\se@;
+assume wn = @\wn@;
 assume composite_covariance = gp_cov_sum(se, wn);
 // Create a prober and emulator using gpmem
 assume (f_compute, f_emu) =
-    gpmem(f_look_up, composite_covariance);#\vspace{1mm}#
+    gpmem(f_look_up, composite_covariance);@\vspace{1mm}@
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
 };
 % (f)
 \node[below=0.16cm of d_code,xshift=-0.18cm] (e_code){
-\footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
+\footnotesize\begin{lstlisting}[mathescape,escapechar=\@]
+
 // Observe all data points
-for (n = 0; n < size(data); n++){
-    observe f_emu(first(lookup(data,n))) =
-        second(lookup(data,n))};
+for (x,y) in data {
+                   observe f_emu(x) = y};
 // Or: probe all data points
-for (n = 0; n < size(data); n++){
-    predict f_compute(first(lookup(data,n)))};#\vspace{1mm}#
+for (x,_) in data {
+                   predict f_compute(x)};@\vspace{1mm}@
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
 };
 % (g)
 \node[below=-0.0cm of e_code,xshift=-0.77cm] (f_code){
-\footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
+\footnotesize\begin{lstlisting}[mathescape,escapechar=\@]
 // Metropolis-Hastings
 infer repeat(100, do(
-    mh(scope="hyperhyper", steps=1),
-    mh(scope="hyper",      steps=3)));#\vspace{1mm}#
+                mh(#"hyperhyper", steps=1),
+                mh(#"hyper",      steps=3)));@\vspace{1mm}@
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}
 };
 
 \node[below=0.5cm of f_code,xshift=0.3cm] (g_code){
-\footnotesize\begin{lstlisting}[mathescape,escapechar=\#]
+\footnotesize\begin{lstlisting}[mathescape,escapechar=\@]
 // Optimization
-infer gradient-ascent(scope="hyper",
-			       steps=10);
+infer gradient-ascent(#"hyper", steps=10);
 
 sample f_emu(array(-2, $\cdots$, 2));
 \end{lstlisting}

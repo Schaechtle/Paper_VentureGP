@@ -1,0 +1,46 @@
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[mathescape,label=alg:base_kernels,basicstyle=\selectfont\ttfamily,numbers=left,caption={Compilation},escapechar=\@]
+assume produce_covariance = proc(ast){
+    cond(
+      (first(ast) == "WN")(gp_cov_delta(tolerance_constant)),
+      (first(ast) == "C")(gp_cov_const(first(second(ast)))),
+      (first(ast) == "LIN")(gp_cov_linear(first(second(ast)))),
+      (first(ast) == "SE")(gp_cov_se(first(second(ast)))),
+      (first(ast) == "PER")(gp_cov_periodic(first(second(ast)), 
+                                            second(second(ast)))),
+      (first(ast) =="+")(gp_cov_sum(
+                                    produce_covariance(second(ast)),
+                                    produce_covariance(third(ast))
+                        )),
+      (first(ast) =="*")(gp_cov_product(
+                                    produce_covariance(second(ast)),
+                                    produce_covariance(third(ast))
+                        )),
+      else("error"))
+  };
+
+assume simplify = proc(ast){ast};
+
+assume produce_binary = proc(ast){
+  // baseline noise for stability
+  noise = gp_cov_scale(0.1,gp_cov_delta(tolerance_constant));
+  covariance_kernel = gp_cov_sum(produce_covariance(ast), noise);
+  //covariance_kernel = produce_covariance(ast);
+  make_gp(gp_mean_const(0.), covariance_kernel)
+};
+
+assume compile = proc(ast) {
+  simplified_ast = simplify(ast);
+  produce_binary(simplified_ast)
+ };
+
+assume ast  @$\sim$@ generate_abstract_syntax_tree();
+
+assume executable = compile(ast);
+\end{lstlisting}
+\end{minipage}
+\end{mdframed}
+

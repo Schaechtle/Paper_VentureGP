@@ -147,7 +147,7 @@ These tags are supplied to the
 inference program to specify on which random variables inference
 should be done:
     \begin{lstlisting}
-    infer mh(scope="hyper-parameters", steps=50);
+    infer mh(#"hyper-parameters", steps=50);
     \end{lstlisting}
 In this case, we perform one \ac{MH} transition over the scope hyper-parameters
 and choose a random member of this scope, that is we choose one hyper-parameter at random.
@@ -164,7 +164,7 @@ For example, \ac{MH} with Gaussian drift proposals looks like this:
 
     define my_markov_chain =
 	apply_mh_correction(
-	    subproblem=choose_by_scope("hyper-parameters"),
+	    subproblem=choose_by_scope(#"hyper-parameters"),
 	    proposal=symmetric_local_proposal_from_chain(drift_kernel))
 
     infer my_markov_chain;

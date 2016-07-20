@@ -1,0 +1,37 @@
+\begin{mdframed}
+\begin{minipage}{\linewidth}
+\small
+\belowcaptionskip=-10pt
+\begin{lstlisting}[mathescape,label=alg:grammar,basicstyle=\selectfont\ttfamily,numbers=left,caption={
+Stochastic Grammar},escapechar=\@]
+assume choose_primitive = proc(){
+    rolled_dice @$\sim$@  uniform_discrete(0,5);
+    cond(
+      (rolled_dice == 0)(list("WN",list())),
+      (rolled_dice == 1)(list("C",list(gamma(5,1)))),
+      (rolled_dice == 2)(list("LIN",list(gamma(5,1)))),
+      (rolled_dice == 3)(list("SE",list(gamma(5,1)))),
+      (rolled_dice == 4)(list("PER",list(gamma(5,1), gamma(5,1)))),
+      else("error"))
+  };
+
+
+
+assume choose_operator = proc(){
+    if (flip())
+          { "+" }
+    else
+          { "*" }
+    };
+
+assume generate_abstract_syntax_tree = proc(){
+    if (flip(0.7))
+          { choose_primitive() }
+    else
+          { list(choose_operator(), generate_abstract_syntax_tree(),
+                                     generate_abstract_syntax_tree())}
+    };
+
+\end{lstlisting}
+\end{minipage}
+\end{mdframed}
